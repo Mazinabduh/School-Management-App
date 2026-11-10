@@ -1,0 +1,63 @@
+/* =========================================================
+   certificates.css — تصميم الشهادات ونتائج الطلاب الدولية
+   ========================================================= */
+.cert-paper {
+  background: #fff; border-radius: 14px; overflow: hidden;
+  box-shadow: var(--sh-3); max-width: 820px; margin: 0 auto;
+  border: 1px solid var(--line);
+}
+.cert-body { padding: 26px 30px; position: relative; }
+.cert-watermark {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  opacity: .06; pointer-events: none;
+}
+.cert-watermark img { width: 62%; }
+
+/* رأس الشهادة */
+.cert-head { display: flex; align-items: center; gap: 14px; border-bottom: 3px double var(--c-head, var(--primary)); padding-bottom: 12px; }
+.cert-head img { width: 66px; height: 66px; object-fit: contain; }
+.cert-head .ch-name { font-size: 19px; font-weight: 900; color: var(--c-head, var(--primary)); }
+.cert-head .ch-sub { font-size: 12px; color: #555; }
+.cert-head .ch-side { margin-right: auto; text-align: left; font-size: 11.5px; color: #444; line-height: 1.7; }
+
+/* عنوان النتيجة */
+.cert-title {
+  text-align: center; margin: 14px 0;
+  font-size: 17px; font-weight: 900;
+  color: var(--c-head, var(--primary));
+}
+.cert-title small { display: block; color: #666; font-weight: 700; font-size: 12px; margin-top: 2px; }
+
+/* معلومات الطالب */
+.cert-student {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 7px 18px; margin-bottom: 13px; font-size: 12.5px;
+}
+.cert-student div b { color: var(--c-head, var(--primary)); }
+
+/* جدول الدرجات في الشهادة */
+.cert-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px; }
+.cert-table th {
+  background: var(--c-head, var(--primary)); color: #fff;
+  padding: 7px 6px; font-size: 11.5px; border: 1px solid rgba(255,255,255,.25);
+}
+.cert-table td { padding: 6px; border: 1px solid #d7dfeb; text-align: center; }
+.cert-table tbody tr:nth-child(even) td { background: #f4f8fd; }
+.cert-table .row-total td { background: var(--accent-soft) !important; font-weight: 900; }
+
+/* خاتمة وتوقيعات */
+.cert-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.cert-sign { text-align: center; min-width: 150px; }
+.cert-sign .line { width: 150px; border-top: 2px dotted #7c8fa5; margin: 30px auto 5px; }
+.cert-sign small { font-size: 11px; color: #444; font-weight: 800; }
+
+.cert-qr { display: flex; align-items: center; gap: 9px; font-size: 10.5px; color: #556; max-width: 200px; }
+.cert-qr img { width: 62px; height: 62px; }
+
+/* شريط تقدير عام */
+.cert-overall {
+  display: flex; align-items: center; justify-content: space-between;
+  border-radius: 11px; padding: 10px 15px; margin: 10px 0;
+  background: var(--c-soft, var(--primary-soft)); color: var(--c-head, var(--primary));
+  font-weight: 900; font-size: 14px; gap: 10px; flex-wrap: wrap;
+}

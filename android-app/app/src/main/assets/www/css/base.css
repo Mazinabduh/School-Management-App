@@ -1,0 +1,128 @@
+/* =========================================================
+   base.css — الأساسيات وإعادة الضبط + RTL
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: var(--fs-base);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--primary); text-decoration: none; }
+ul, ol { list-style: none; }
+h1, h2, h3, h4 { line-height: 1.35; font-weight: 800; }
+
+::selection { background: var(--primary); color: #fff; }
+
+/* شريط تمرير أنيق */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ---------- أدوات مساعدة ---------- */
+.hidden, [hidden] { display: none !important; }
+.flex { display: flex; } .flex-1 { flex: 1; }
+.items-center { align-items: center; } .justify-between { justify-content: space-between; }
+.gap-4 { gap: 4px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; }
+.wrap { flex-wrap: wrap; }
+.text-center { text-align: center; }
+.muted { color: var(--text-3); font-size: var(--fs-sm); }
+.bold { font-weight: 800; }
+.mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; }
+.w-100 { width: 100%; }
+.num { font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: embed; }
+.money { font-variant-numeric: tabular-nums; }
+
+/* ألوان دلالية */
+.text-success { color: var(--success); } .text-danger { color: var(--danger); }
+.text-warn { color: var(--warn); } .text-info { color: var(--info); } .text-gold { color: var(--gold); }
+
+/* ---------- الشارات ---------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 11px; border-radius: 99px;
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.badge-success { background: var(--success-soft); color: var(--success); }
+.badge-danger  { background: var(--danger-soft);  color: var(--danger); }
+.badge-warn    { background: var(--warn-soft);    color: var(--warn); }
+.badge-info    { background: var(--info-soft);    color: var(--info); }
+.badge-gold    { background: var(--accent-soft);  color: #a07708; }
+.badge-muted   { background: var(--surface-3);    color: var(--text-2); }
+[data-theme="dark"] .badge-gold { color: var(--gold); }
+
+/* ---------- زجاجية ---------- */
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ---------- البطاقات ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sh-1);
+  padding: var(--pad);
+}
+.card-title {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-size: var(--fs-lg); font-weight: 800; margin-bottom: 12px;
+}
+
+/* ---------- الصفحة العامة ---------- */
+.page { padding: var(--pad); padding-bottom: calc(var(--bottomnav-h) + 28px); animation: pageIn .28s ease; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.page-head h2 { font-size: 21px; display: flex; align-items: center; gap: 9px; }
+.page-head .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* شبكات عامة */
+.grid { display: grid; gap: 12px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* حالات فارغة / تحميل */
+.empty-state { text-align: center; padding: 42px 16px; color: var(--text-3); }
+.empty-state .big { font-size: 52px; margin-bottom: 10px; }
+.spinner {
+  width: 26px; height: 26px; border: 3px solid var(--line);
+  border-top-color: var(--primary); border-radius: 50%;
+  animation: spin .8s linear infinite; margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* فواصل أقسام */
+.sep { height: 1px; background: var(--line); margin: 14px 0; border: 0; }
+
+/* تبويبات */
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 8px 16px; border-radius: 99px; white-space: nowrap;
+  background: var(--surface-3); color: var(--text-2);
+  border: 1px solid transparent; cursor: pointer; font-weight: 700; font-size: var(--fs-sm);
+  transition: .18s;
+}
+.tab.active { background: var(--grad-primary); color: #fff; box-shadow: var(--sh-2); }

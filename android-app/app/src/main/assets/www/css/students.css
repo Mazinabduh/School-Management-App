@@ -1,0 +1,160 @@
+/* =========================================================
+   students.css — شؤون الطلاب والتسجيل والملفات
+   ========================================================= */
+
+/* بطاقة طالب مصغرة */
+.student-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 11px 13px;
+  box-shadow: var(--sh-1); cursor: pointer; transition: .18s;
+}
+.student-card:hover { border-color: var(--primary); box-shadow: var(--sh-2); transform: translateY(-2px); }
+.student-card .s-photo {
+  width: 52px; height: 52px; border-radius: 14px; object-fit: cover;
+  background: var(--surface-3); border: 2px solid var(--line);
+}
+.student-card .s-info { flex: 1; min-width: 0; }
+.student-card .s-info b { display: block; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.student-card .s-info small { color: var(--text-3); font-size: 12px; font-weight: 600; }
+.student-card .s-badges { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+
+/* صورة الطالب الكبيرة في الملف */
+.profile-head {
+  display: flex; align-items: center; gap: 15px; flex-wrap: wrap;
+  border-radius: var(--radius-lg); padding: 18px;
+  background: var(--grad-navy); color: #fff;
+}
+.profile-head .p-photo {
+  width: 84px; height: 84px; border-radius: 22px; object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, .35); background: rgba(255, 255, 255, .1);
+}
+.profile-head h3 { font-size: 19px; }
+.profile-head .p-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 7px; }
+.profile-head .hero-chip { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .2); }
+
+/* تفاصيل الملف */
+.kv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.kv { background: var(--surface-2); border: 1px solid var(--line); border-radius: 11px; padding: 9px 12px; }
+.kv small { display: block; color: var(--text-3); font-size: 11px; font-weight: 700; }
+.kv b { font-size: 13.5px; word-break: break-word; }
+
+/* معاينة صورة قبل الرفع */
+.photo-preview {
+  width: 96px; height: 96px; border-radius: 18px; object-fit: cover;
+  border: 2px dashed var(--line-2); background: var(--surface-3); cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   بطاقات الطلاب بنمط قائمة المشتركين في تطبيق المحطة
+   (sub-card قابل للتوسيع + شارات + شبكة معلومات + أزرار إجراءات)
+   ═══════════════════════════════════════════════════════════ */
+.sub-card {
+  background: linear-gradient(135deg, var(--surface), var(--surface-2));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: var(--sh-1);
+  transition: all .25s ease;
+  position: relative;
+}
+.sub-card.active-s { border-right: 4px solid #00c96b; }
+.sub-card.disconnected-s { border-right: 4px solid #ff5252; opacity: .92; }
+.sub-card:hover { box-shadow: 0 6px 22px rgba(0, 145, 234, .18); }
+
+.sub-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; cursor: pointer; user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: linear-gradient(135deg, rgba(0, 145, 234, .06), transparent);
+  transition: background .2s ease; gap: 10px;
+}
+.sub-card-header:active { background: rgba(0, 145, 234, .1); }
+.sub-card-header-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+
+.sub-envelope-icon {
+  width: 42px; height: 42px; min-width: 42px; border-radius: 12px; overflow: hidden;
+  background: linear-gradient(145deg, #42a5f5, #1565c0);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .25);
+  position: relative;
+}
+.sub-envelope-icon.disc { background: linear-gradient(145deg, #ef5350, #c62828); }
+.sub-envelope-icon svg { width: 22px; height: 22px; stroke: #fff; position: relative; z-index: 1; }
+
+.sub-card-name {
+  font-size: 15px; font-weight: 800; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sub-card-meter { font-size: 11.5px; color: var(--text-3); font-weight: 600; margin-top: 2px; }
+.sub-card-meter b { color: var(--primary); font-weight: 700; }
+
+.sub-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.sub-badge {
+  padding: 4px 9px; border-radius: 12px; font-size: 10.5px; font-weight: 800;
+  line-height: 1; white-space: nowrap;
+}
+.sub-badge.has-arrears { background: rgba(255, 82, 82, .15); color: #ff5252; border: 1px solid rgba(255, 82, 82, .3); }
+.sub-badge.paid-up { background: rgba(0, 201, 107, .13); color: #00c96b; border: 1px solid rgba(0, 201, 107, .3); }
+.sub-badge.disc { background: rgba(255, 82, 82, .18); color: #ff5252; }
+.sub-badge.graduated { background: rgba(124, 58, 237, .13); color: #a78bfa; border: 1px solid rgba(124, 58, 237, .3); }
+
+.sub-toggle-arrow {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, .05); border: 1px solid var(--line);
+  transition: transform .3s ease, background .2s; color: var(--primary);
+}
+.sub-card.expanded .sub-toggle-arrow { transform: rotate(180deg); background: rgba(0, 145, 234, .18); }
+.sub-toggle-arrow svg { width: 16px; height: 16px; }
+
+.sub-card-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .35s cubic-bezier(.25, .46, .45, .94), padding .25s ease;
+  padding: 0 14px; will-change: max-height;
+}
+.sub-card.expanded .sub-card-body { max-height: 1600px; padding: 0 14px 14px; }
+.sub-card-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 145, 234, .3), transparent);
+  margin: 0 -2px 12px;
+}
+
+.sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.sub-info {
+  background: rgba(255, 255, 255, .03); padding: 8px 10px; border-radius: 10px;
+  font-size: 12px; color: var(--text-2); border: 1px solid var(--line);
+}
+.sub-info b { color: var(--text); font-weight: 700; margin-right: 4px; }
+
+.sub-btns {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  padding-top: 10px; border-top: 1px dashed var(--line-2);
+}
+.sub-btn {
+  padding: 7px 12px; border-radius: 9px; border: none; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; color: #fff; transition: all .15s ease;
+  display: inline-flex; align-items: center; gap: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .18); flex: 1 1 auto; min-width: 74px; justify-content: center;
+  font-family: inherit;
+}
+.sub-btn:active { transform: scale(.95); }
+.sb-view  { background: linear-gradient(135deg, #42a5f5, #1565c0); }
+.sb-call  { background: linear-gradient(135deg, #66bb6a, #2e7d32); }
+.sb-stmt  { background: linear-gradient(135deg, #ffb74d, #ef6c00); }
+.sb-card  { background: linear-gradient(135deg, #ab47bc, #7b1fa2); }
+.sb-edit  { background: linear-gradient(135deg, #26c6da, #00838f); }
+.sb-del   { background: linear-gradient(135deg, #ef5350, #c62828); }
+
+.sub-status { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 10px; font-size: 10.5px; font-weight: 700; }
+.st-on { background: rgba(0, 201, 107, .12); color: #00c96b; }
+.st-off { background: rgba(255, 82, 82, .14); color: #ff5252; }
+
+@media (max-width: 480px) {
+  .sub-grid { grid-template-columns: 1fr; }
+  .sub-card-name { font-size: 14px; }
+  .sub-card-meter { font-size: 11px; }
+  .sub-btn { padding: 6px 10px; font-size: 11px; min-width: 64px; }
+  .sub-toggle-arrow { width: 26px; height: 26px; }
+}

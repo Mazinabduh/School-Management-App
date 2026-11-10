@@ -1,0 +1,54 @@
+/* =========================================================
+   splash.css — شاشة البداية السينمائية
+   ========================================================= */
+#splash {
+  position: fixed; inset: 0; z-index: var(--z-splash);
+  background: var(--grad-navy);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .5s ease, visibility .5s;
+  overflow: hidden;
+}
+#splash.off { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* هالات ضوئية متحركة */
+#splash::before, #splash::after {
+  content: ''; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5;
+}
+#splash::before { width: 46vmax; height: 46vmax; background: rgba(0, 145, 234, .5); top: -18vmax; right: -14vmax; animation: float1 7s ease-in-out infinite alternate; }
+#splash::after  { width: 38vmax; height: 38vmax; background: rgba(230, 199, 102, .22); bottom: -14vmax; left: -10vmax; animation: float2 8s ease-in-out infinite alternate; }
+@keyframes float1 { to { transform: translate(-40px, 34px) scale(1.12); } }
+@keyframes float2 { to { transform: translate(36px, -30px) scale(1.08); } }
+
+.splash-inner { position: relative; text-align: center; color: #fff; padding: 24px; animation: splashIn .7s cubic-bezier(.2, .9, .3, 1.2); }
+@keyframes splashIn { from { opacity: 0; transform: scale(.86) translateY(22px); } to { opacity: 1; transform: none; } }
+
+#splash-logo {
+  width: 112px; height: 112px; margin: 0 auto 18px;
+  filter: drop-shadow(0 10px 30px rgba(0, 180, 255, .45));
+  animation: logoFloat 3s ease-in-out infinite alternate;
+}
+@keyframes logoFloat { to { transform: translateY(-9px); } }
+
+.splash-title { font-size: 34px; font-weight: 900; letter-spacing: .5px; }
+.splash-title span {
+  display: block; font-size: 15px; font-weight: 700; margin-top: 4px;
+  background: var(--grad-gold); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.splash-sub { margin-top: 8px; color: #9fc3e8; font-size: 13px; }
+
+.splash-bar {
+  width: min(300px, 74vw); height: 7px; margin: 22px auto 10px;
+  background: rgba(255, 255, 255, .13); border-radius: 99px; overflow: hidden;
+}
+#splash-bar {
+  display: block; height: 100%; width: 0%;
+  background: var(--grad-primary); border-radius: 99px;
+  transition: width .3s ease; box-shadow: 0 0 12px rgba(0, 212, 255, .8);
+}
+.splash-note { font-size: 12px; color: #7fa8cf; }
+
+/* حقوق YCMS في شاشة البداية */
+.splash-rights {
+  margin-top: 16px; font-size: 11px; color: #6d94bd; letter-spacing: .3px;
+  border-top: 1px solid rgba(255, 255, 255, .1); padding-top: 10px;
+}

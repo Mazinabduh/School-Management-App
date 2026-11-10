@@ -1,0 +1,103 @@
+name: بناء تطبيق ادارة المدرسة (APK)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: بناء APK موقّع
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: جلب الكود
+        uses: actions/checkout@v4
+
+      - name: تثبيت Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: تثبيت Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: false
+          packages: ''
+
+      - name: قبول تراخيص SDK مسبقاً
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          mkdir -p "$ANDROID_HOME/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_HOME/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_HOME/licenses/android-sdk-license"
+
+      - name: تثبيت Gradle 8.9
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.9'
+
+      - name: بناء نسخة Release موقّعة
+        run: gradle -p android-app assembleRelease --no-daemon
+
+      - name: إعادة تسمية APK
+        run: |
+          mkdir -p output
+          cp android-app/app/build/outputs/apk/release/app-release.apk output/school-management-v1.0.apk
+          ls -la output/
+
+      - name: رفع APK كمُخرج البناء
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: school-apk-${{ github.run_number }}
+          path: output/school-management-v1.0.apk
+          if-no-files-found: error
+
+      - name: إنشاء إصدار مع APK (كل دفعة)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0-build-${{ github.run_number }}
+          name: تطبيق ادارة المدرسة v1.0 — بناء ${{ github.run_number }}
+          body: |
+            **تطبيق ادارة المدرسة v1.0** (versionCode 1) — تحويل كامل لتطبيق EduPro المدرسي بنفس نظام تطبيق المحطة
+
+            🏢 هوية شركة YCMS:
+            - أيقونة التطبيق بشعار YCMS الرسمي
+            - شاشة إقلاع Native 100% بشعار الشركة المتوهج + جميع الحقوق محفوظة لشركة YCMS
+            - شاشة دخول native بنفس نمط تطبيق المحطة: خلفية Canvas متحركة + شعار داخل حلقة دوّارة + إظهار/إخفاء كلمة المرور + تذكرني
+            - بطاقة «حول البرنامج»: شعار YCMS + جميع الحقوق محفوظة لشركة YCMS — برمجة وتطوير: مازن عبدالوهاب — 774047989 (الرقم قابل للنقر للاتصال)
+
+            🖨️ الطباعة بنفس نظام تطبيق المحطة:
+            - محرك الطباعة الموثوق: طباعة داخل إطار معزول — الناتج يحتوي محتوى الطباعة فقط بدون أيقونات البرنامج العلوية/السفلية
+            - إعدادات الطباعة الكاملة: عدد النسخ (1-20)، نوع الصفحة (A4/A5/Letter/مخصصة)، اتجاه الصفحة ↕ عمودي / ↔ أفقي (يُحفظ فورياً)، الهوامش (أعلى/أسفل/يمين/يسار + بكامل الصفحة)
+            - إعدادات الخط: نوع الخط + حجم الخط الأساسي (7-18) + تخصيص حجم خط كل قسم (عنوان/رأس الجدول/محتوى/تذييل)
+            - معاينة مباشرة + طباعة تجريبية + CSS مخصص
+
+            📋 قائمة الطلاب بنمط قائمة المشتركين:
+            - بطاقات قابلة للتوسيع (اسم + رقم + مرحلة + شارة الحالة + متأخرات)
+            - عرض 50 طالباً ثم زر «المزيد — يوجد X إضافية (معروض N من M)»
+            - أزرار إجراءات لكل بطاقة: الملف • اتصال • الأقساط • بطاقة • تعديل • حذف
+
+            📤 التصدير:
+            - Excel (xlsx) + Word (doc) + PDF سريع عبر html2canvas + CSV
+
+            🔐 دخول مرة واحدة:
+            - «تذكرني» يحفظ الجلسة محلياً ومرآتها في التخزين الأصلي (SharedPreferences) — لا يُطلب اسم المستخدم وكلمة المرور مرة أخرى
+
+            🗑️ تطبيق فاضي:
+            - يبدأ بلا أي بيانات (لا مراحل ولا مواد ولا طلاب) — تستعيد بياناتك القديمة من النسخة الاحتياطية JSON/Excel
+
+            ✨ مزايا EduPro الكاملة:
+            - رصد الدرجات + النتائج والشهادات + الأقساط والفواتير + الميزانية + الزي والكتب + الباصات + الموظفين والرواتب + استوديو البطاقات + مركز التقارير + نسخ احتياطي
+
+            📱 التثبيت: حمّل APK وثبّته — الحساب الافتراضي admin / admin123 (غيّره بعد أول دخول)
+
+            جميع الحقوق محفوظة لشركة YCMS — برمجة وتطوير: مازن عبدالوهاب 774047989
+          files: output/school-management-v1.0.apk

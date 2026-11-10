@@ -1,0 +1,65 @@
+/* =========================================================
+   themes-intl.css — ثيمات المدارس الدولية للكشوفات (4 ثيمات)
+   تُطبَّق كصنف على حاوية المستند: تحدد --c-head و--c-soft
+   ========================================================= */
+
+/* الأساس المشترك للمستند المطبوع/المعاين */
+.intl-doc {
+  --c-head: var(--primary);
+  --c-soft: var(--primary-soft);
+  background: #fff; color: #16233b;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* ---------- 1) Royal Blue: الأزرق الملكي ---------- */
+.doc-theme-royal {
+  --c-head: #0b3d91;
+  --c-soft: rgba(11, 61, 145, .09);
+}
+.doc-theme-royal .cert-head { border-bottom-color: #0b3d91; }
+.doc-theme-royal .cert-overall { background: rgba(11, 61, 145, .08); color: #0b3d91; }
+
+/* ---------- 2) Emerald: الزمردي الخليجي ---------- */
+.doc-theme-emerald {
+  --c-head: #065f46;
+  --c-soft: rgba(6, 95, 70, .09);
+}
+.doc-theme-emerald .cert-head { border-bottom-color: #065f46; }
+.doc-theme-emerald .cert-overall { background: rgba(6, 95, 70, .08); color: #065f46; }
+
+/* ---------- 3) Gold Classic: الذهبي الكلاسيكي الفخم ---------- */
+.doc-theme-gold {
+  --c-head: #8a6a1c;
+  --c-soft: rgba(230, 199, 102, .16);
+}
+.doc-theme-gold .cert-head { border-bottom-color: #c9a227; }
+.doc-theme-gold .cert-title { color: #8a6a1c; }
+.doc-theme-gold .cert-overall { background: linear-gradient(135deg, rgba(230,199,102,.28), rgba(201,162,39,.18)); color: #6d5413; }
+.doc-theme-gold .cert-table th { background: #8a6a1c; }
+
+/* ---------- 4) Royal Purple: البنفسجي العصري ---------- */
+.doc-theme-purple {
+  --c-head: #5b21b6;
+  --c-soft: rgba(91, 33, 182, .09);
+}
+.doc-theme-purple .cert-head { border-bottom-color: #5b21b6; }
+.doc-theme-purple .cert-overall { background: rgba(91, 33, 182, .08); color: #5b21b6; }
+
+/* ترويسة مستند موحدة (فواتير/كشوف/تقارير) */
+.doc-band {
+  background: var(--c-head, var(--primary));
+  color: #fff; border-radius: 12px;
+  padding: 13px 17px; display: flex; align-items: center; gap: 13px;
+  margin-bottom: 15px;
+}
+.doc-band img { width: 52px; height: 52px; object-fit: contain; background: rgba(255,255,255,.14); border-radius: 10px; padding: 3px; }
+.doc-band .db-name { font-size: 16px; font-weight: 900; }
+.doc-band .db-meta { font-size: 11px; opacity: .92; }
+.doc-band .db-docno { margin-right: auto; text-align: left; font-size: 11.5px; background: rgba(255,255,255,.16); border-radius: 9px; padding: 5px 11px; }
+
+/* تذييل موحد */
+.doc-footer {
+  margin-top: 17px; padding-top: 9px; border-top: 2px solid var(--c-soft, var(--line));
+  display: flex; justify-content: space-between; gap: 9px;
+  font-size: 10.5px; color: #5a6b84; flex-wrap: wrap;
+}

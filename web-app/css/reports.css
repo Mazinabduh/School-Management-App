@@ -1,0 +1,23 @@
+/* =========================================================
+   reports.css — التقارير الشاملة والفلاتر
+   ========================================================= */
+.report-filter { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; }
+
+.report-tile {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  text-align: center; transition: .18s;
+}
+.report-tile:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--sh-2); }
+.report-tile .rt-ico { font-size: 30px; }
+.report-tile b { font-size: 12.5px; line-height: 1.4; color: var(--text); }
+
+/* صف ملخص في التقرير */
+.report-sum { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.report-sum .rs-box {
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 11px; padding: 8px 14px; font-size: 12px; font-weight: 700;
+  display: inline-flex; gap: 8px; align-items: center;
+}
+.report-sum .rs-box b { color: var(--primary); font-size: 14px; }

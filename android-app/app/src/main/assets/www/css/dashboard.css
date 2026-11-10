@@ -1,0 +1,80 @@
+/* =========================================================
+   dashboard.css — لوحة التحكم والإحصائيات
+   ========================================================= */
+
+/* ترحيب */
+.dash-hero {
+  border-radius: var(--radius-lg);
+  background: var(--grad-navy);
+  color: #fff; padding: 20px;
+  position: relative; overflow: hidden;
+  margin-bottom: 14px;
+}
+.dash-hero::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(600px 200px at 85% -30%, rgba(0, 212, 255, .35), transparent 60%);
+  pointer-events: none;
+}
+.dash-hero h3 { font-size: 19px; position: relative; }
+.dash-hero p { color: #a9c9ea; font-size: 13px; margin-top: 3px; position: relative; }
+.dash-hero .hero-meta { display: flex; gap: 14px; margin-top: 12px; flex-wrap: wrap; position: relative; }
+.hero-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 99px; padding: 4px 13px; font-size: 12px; font-weight: 700;
+}
+
+/* بطاقات إحصائية */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--sh-1);
+  transition: .2s; cursor: pointer;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--sh-3); border-color: var(--primary); }
+.stat-card .st-info { min-width: 0; }
+.stat-card .st-label { font-size: 12px; color: var(--text-3); font-weight: 700; white-space: nowrap; }
+.stat-card .st-value { font-size: 20px; font-weight: 900; line-height: 1.3; }
+.stat-card .st-sub { font-size: 11px; font-weight: 700; }
+
+/* إجراءات سريعة */
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.quick-item {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 13px 6px; cursor: pointer;
+  transition: .18s; text-align: center;
+}
+.quick-item:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--sh-2); }
+.quick-item span { font-size: 11.5px; font-weight: 700; color: var(--text-2); line-height: 1.3; }
+
+/* نشاطات حديثة */
+.activity-list { display: flex; flex-direction: column; gap: 2px; }
+.activity-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 6px; border-radius: 11px; transition: .15s;
+}
+.activity-item:hover { background: var(--surface-3); }
+.activity-item .a-txt { flex: 1; min-width: 0; }
+.activity-item .a-txt b { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activity-item .a-txt small { color: var(--text-3); font-size: 11.5px; }
+
+/* مالية سريعة: إيرادات/مصروفات */
+.finance-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.finance-mini .fm-box { border-radius: var(--radius); padding: 15px; color: #fff; position: relative; overflow: hidden; }
+.fm-income { background: var(--grad-success); }
+.fm-expense { background: var(--grad-danger); }
+.fm-box .fm-label { font-size: 12.5px; opacity: .92; font-weight: 700; }
+.fm-box .fm-value { font-size: 22px; font-weight: 900; margin-top: 3px; }
+.fm-box .fm-sub { font-size: 11px; opacity: .85; margin-top: 2px; }
+
+/* تنبيهات المتأخرات */
+.alert-strip {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: var(--radius); padding: 12px 14px;
+  background: var(--warn-soft); border: 1px solid rgba(217, 119, 6, .3);
+  color: var(--warn); font-weight: 700; font-size: 13.5px;
+}

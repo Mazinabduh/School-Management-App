@@ -1,0 +1,54 @@
+/* =========================================================
+   icons3d.css — الأيقونات ثلاثية الأبعاد (بلاطات متدرجة لامعة)
+   ========================================================= */
+.icon3d {
+  --ic: var(--primary);
+  width: var(--icon-size); height: var(--icon-size);
+  border-radius: 26%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: calc(var(--icon-size) * .5);
+  color: #fff; flex-shrink: 0;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .38) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(160deg, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, .45) 100%),
+    var(--ic);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, .45),
+    inset 0 -4px 8px rgba(0, 0, 0, .28),
+    0 6px 14px -4px rgba(3, 11, 26, .45),
+    0 2px 5px rgba(3, 11, 26, .18);
+  transition: transform .2s cubic-bezier(.3, 1.4, .5, 1), box-shadow .2s;
+  position: relative;
+}
+.icon3d::after {
+  content: ''; position: absolute; top: 7%; right: 12%;
+  width: 34%; height: 22%; border-radius: 50%;
+  background: rgba(255, 255, 255, .35); filter: blur(2px);
+  pointer-events: none;
+}
+.icon3d:active { transform: scale(.92) translateY(1px); box-shadow: inset 0 2px 5px rgba(0, 0, 0, .35), 0 2px 6px rgba(3, 11, 26, .2); }
+
+/* ألوان البلاطات */
+.ic-blue   { --ic: #0091ea; } .ic-sky    { --ic: #0284c7; }
+.ic-gold   { --ic: #d99a06; } .ic-green { --ic: #16a34a; }
+.ic-purple { --ic: #7c3aed; } .ic-rose  { --ic: #e11d48; }
+.ic-teal   { --ic: #0f766e; } .ic-orange{ --ic: #ea580c; }
+.ic-slate  { --ic: #475569; } .ic-indigo{ --ic: #4f46e5; }
+
+/* مقاسات */
+.icon3d.sm { --icon-size: 34px; border-radius: 24%; }
+.icon3d.lg { --icon-size: 58px; }
+.icon3d.xl { --icon-size: 68px; }
+
+/* بلاطة داخل قائمة */
+.ni-ico.icon3d { --icon-size: 34px; font-size: 16px; }
+/* أيقونة داخل زر دائري */
+.icon-orb {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff; cursor: pointer; border: 0;
+  background: linear-gradient(145deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 45%), var(--ic, var(--primary));
+  box-shadow: inset 0 2px 3px rgba(255,255,255,.5), inset 0 -4px 8px rgba(0,0,0,.3), 0 6px 14px -4px rgba(3,11,26,.4);
+  transition: .18s;
+}
+.icon-orb:active { transform: scale(.9); }

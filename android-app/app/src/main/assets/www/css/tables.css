@@ -1,0 +1,32 @@
+/* =========================================================
+   tables.css — الجداول التفاعلية المتطورة
+   ========================================================= */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--sh-1); }
+table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+.data-table thead th {
+  background: var(--surface-3); color: var(--text-2);
+  padding: 10px 11px; text-align: right; font-size: 12px; font-weight: 800;
+  border-bottom: 2px solid var(--line-2); white-space: nowrap;
+}
+.data-table tbody td { padding: 9px 11px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.data-table tbody tr { transition: background .13s; }
+.data-table tbody tr:hover { background: var(--primary-soft); }
+.data-table tbody tr:nth-child(even) { background: var(--surface-2); }
+.data-table tbody tr:hover:nth-child(even) { background: var(--primary-soft); }
+.data-table tfoot td { padding: 10px 11px; font-weight: 900; background: var(--accent-soft); border-top: 2px solid var(--line-2); }
+.data-table .row-actions { display: flex; gap: 5px; justify-content: flex-end; }
+.data-table .row-actions .icon-btn { width: 31px; height: 31px; font-size: 14px; border-radius: 9px; }
+
+/* بحث وترقيم */
+.table-toolbar { display: flex; gap: 9px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.table-toolbar .search-box { position: relative; flex: 1; min-width: 180px; }
+.table-toolbar .search-box input { width: 100%; padding-right: 36px; }
+.table-toolbar .search-box::before { content: '🔎'; position: absolute; right: 11px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .6; }
+
+.pager { display: flex; gap: 6px; justify-content: center; align-items: center; margin-top: 12px; }
+.pager button {
+  min-width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); font-weight: 800; cursor: pointer; font-size: 12.5px;
+}
+.pager button.active { background: var(--grad-primary); color: #fff; border-color: transparent; }
+.pager button:disabled { opacity: .4; cursor: default; }

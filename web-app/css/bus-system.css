@@ -1,0 +1,32 @@
+/* =========================================================
+   bus-system.css — الباصات، الخطوط، والاشتراكات
+   ========================================================= */
+.bus-card {
+  border-radius: var(--radius-lg); padding: 15px; color: #fff;
+  background: linear-gradient(140deg, #07304f 0%, #0091ea 140%);
+  position: relative; overflow: hidden; box-shadow: var(--sh-2);
+}
+.bus-card::after {
+  content: '🚌'; position: absolute; left: -8px; bottom: -14px;
+  font-size: 74px; opacity: .14; transform: rotate(-8deg);
+}
+.bus-card h4 { font-size: 15.5px; position: relative; }
+.bus-card .b-route { font-size: 12px; opacity: .92; position: relative; }
+.bus-card .b-fee { font-size: 19px; font-weight: 900; margin-top: 7px; position: relative; }
+
+/* حالة اشتراك الطالب */
+.sub-status { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; }
+
+/* مشرفات الباص */
+.crew-item {
+  display: flex; align-items: center; gap: 11px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 7px;
+}
+.crew-item .c-ava {
+  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 19px; background: var(--teal-soft);
+}
+.crew-item b { font-size: 13.5px; display: block; }
+.crew-item small { color: var(--text-3); font-size: 11.5px; }

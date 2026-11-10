@@ -1,0 +1,84 @@
+/* =========================================================
+   print.css — تنسيقات الطباعة الدقيقة: A4 عمودي/أفقي + حراري 80مم + بطاقات
+   الإطار المطبوع يُبنى داخل iframe منفصل (#print-frame)
+   ========================================================= */
+
+/* ---------- أساس مستند الطباعة (للمعاينة أيضاً) ---------- */
+.print-doc {
+  background: #fff; color: #111;
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  direction: rtl;
+}
+.print-doc .pd-page { padding: 0; }
+
+/* رأس يتكرر */
+.print-doc .pd-head { display: flex; align-items: center; gap: 12px; border-bottom: 3px double #0b3d91; padding-bottom: 8px; margin-bottom: 12px; }
+.print-doc .pd-head img { width: 58px; height: 58px; object-fit: contain; }
+.print-doc .pd-head b { font-size: 16px; color: #0b3d91; display: block; }
+.print-doc .pd-head small { color: #445; font-size: 10.5px; display: block; }
+.print-doc .pd-doc-title { text-align: center; font-size: 15px; font-weight: 900; margin: 8px 0 12px; color: #0b3d91; }
+
+/* جداول الطباعة: الترويسة تتكرر كل صفحة */
+.print-doc table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.print-doc thead { display: table-header-group; }
+.print-doc tfoot { display: table-footer-group; }
+.print-doc th, .print-doc td { border: 1px solid #9db1c9; padding: 5px 7px; text-align: center; }
+.print-doc th { background: #e8eff9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-weight: 800; }
+.print-doc tr { page-break-inside: avoid; }
+.print-doc tr:nth-child(even) td { background: #f5f8fc; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* فاصل صفحات */
+.page-break { page-break-after: always; break-after: page; }
+.avoid-break { page-break-inside: avoid; break-inside: avoid; }
+
+/* تذييل كل مستند */
+.print-doc .pd-foot {
+  margin-top: 14px; padding-top: 7px; border-top: 1.5px solid #9db1c9;
+  display: flex; justify-content: space-between; font-size: 10px; color: #556; gap: 8px; flex-wrap: wrap;
+}
+
+/* ---------- إيصال حراري 80مم ---------- */
+.thermal-80 {
+  width: 72mm; margin: 0 auto; color: #000;
+  font-family: 'Cairo', monospace; font-size: 11.5px; line-height: 1.55;
+}
+.thermal-80 .th-center { text-align: center; }
+.thermal-80 .th-logo { width: 46px; height: 46px; margin: 0 auto 4px; object-fit: contain; }
+.thermal-80 .th-school { font-weight: 900; font-size: 13px; }
+.thermal-80 .th-title { text-align: center; font-weight: 900; margin: 6px 0; border-top: 1.5px dashed #000; border-bottom: 1.5px dashed #000; padding: 5px 0; font-size: 12.5px; }
+.thermal-80 .th-row { display: flex; justify-content: space-between; gap: 8px; padding: 1.5px 0; }
+.thermal-80 .th-row b { white-space: nowrap; }
+.thermal-80 .th-total { font-size: 14px; font-weight: 900; border-top: 1.5px dashed #000; margin-top: 5px; padding-top: 5px; }
+.thermal-80 .th-dash { border-top: 1.5px dashed #000; margin: 6px 0; }
+.thermal-80 .th-qr { width: 58px; height: 58px; margin: 6px auto 2px; display: block; }
+.thermal-80 .th-foot { text-align: center; font-size: 10.5px; margin-top: 5px; }
+
+/* ---------- شبكة بطاقات PVC للطباعة ---------- */
+.idcard-print-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 6mm; padding: 8mm; justify-items: center;
+}
+.idcard-print-grid .idcard { page-break-inside: avoid; break-inside: avoid; }
+.cut-hint {
+  font-size: 9px; color: #99a; text-align: center; margin-top: 1mm;
+  border-top: 1px dashed #ccd; width: 100%;
+}
+
+/* ---------- قواعد @page عند الطباعة الفعلية من iframe ---------- */
+@media print {
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+
+  /* A4 عمودي (افتراضي) */
+  .pd-a4 { }
+  @page { size: A4 portrait; margin: 8mm; }
+
+  /* A4 أفقي — يُفعّل بجسم class=landscape عبر قاعدة مضمّنة ديناميكياً */
+  body.landscape @page { size: A4 landscape; margin: 8mm; }
+
+  /* حراري 80مم */
+  body.thermal @page { size: 80mm auto; margin: 2mm 2mm; }
+  body.thermal .print-doc { width: 76mm; }
+
+  /* الألوان مطبوعة دائماً */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}

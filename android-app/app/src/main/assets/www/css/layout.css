@@ -1,0 +1,80 @@
+/* =========================================================
+   layout.css — الهيكل العام (شريط علوي/سفلي + تجاوب)
+   ========================================================= */
+#app { min-height: 100vh; min-height: 100dvh; }
+
+/* ---------- الشريط العلوي ---------- */
+#topbar {
+  position: fixed; top: 0; right: 0; left: 0;
+  height: var(--topbar-h);
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 12px;
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  border-bottom: 1px solid var(--line);
+  z-index: var(--z-topbar);
+}
+.topbar-brand { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; }
+#topbar-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
+.topbar-names { min-width: 0; line-height: 1.3; }
+.topbar-names b { display: block; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-names small { color: var(--text-3); font-size: 11.5px; font-weight: 700; }
+.topbar-actions { display: flex; align-items: center; gap: 4px; }
+
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface-3); border: 1px solid var(--line);
+  cursor: pointer; font-size: 18px; color: var(--text-2);
+  transition: .18s; flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--primary-soft); border-color: var(--primary); transform: translateY(-1px); }
+.icon-btn:active { transform: scale(.94); }
+
+/* ---------- المحتوى ---------- */
+#page-root {
+  padding-top: var(--topbar-h);
+  min-height: 100vh; min-height: 100dvh;
+  /* على الحواسيب يُزاح بمقدار عرض القائمة (القائمة مثبتة يميناً في RTL) */
+}
+@media (min-width: 1024px) {
+  #topbar { right: var(--sidebar-w); }
+  #page-root { margin-right: var(--sidebar-w); }
+}
+
+/* ---------- الشريط السفلي (هواتف) ---------- */
+#bottomnav {
+  position: fixed; bottom: 0; right: 0; left: 0;
+  height: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex; align-items: stretch; justify-content: space-around;
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  border-top: 1px solid var(--line);
+  z-index: var(--z-bottomnav);
+}
+@media (min-width: 1024px) { #bottomnav { display: none; } }
+
+.bottomnav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; cursor: pointer; color: var(--text-3);
+  font-size: 10.5px; font-weight: 700;
+  position: relative; transition: color .18s; background: none; border: 0;
+}
+.bottomnav-item .bn-ico { font-size: 21px; line-height: 1; transition: transform .18s; filter: grayscale(.55); }
+.bottomnav-item.active { color: var(--primary); }
+.bottomnav-item.active .bn-ico { filter: none; transform: translateY(-2px) scale(1.12); }
+.bottomnav-item.active::before {
+  content: ''; position: absolute; top: 0; width: 34px; height: 3.5px;
+  border-radius: 0 0 6px 6px; background: var(--grad-primary);
+}
+
+/* زر "المزيد" */
+#btn-more-sheet { position: relative; }
+.more-dot {
+  position: absolute; top: 7px; left: 22%; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--danger);
+  box-shadow: 0 0 0 2px var(--surface);
+}

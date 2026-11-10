@@ -1,0 +1,126 @@
+/* =========================================================
+   variables.css — نظام التصميم | EduPro School ERP v3.0.0
+   الهوية: كحلي عميق #030b1a + أزرق #0091ea + سماوي #00d4ff + ذهبي #e6c766
+   خط Cairo محلي — يعمل دون إنترنت بالكامل
+   ========================================================= */
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('../assets/fonts/Cairo.ttf') format('truetype');
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- الألوان الأساسية ---------- */
+  --primary: #0091ea;
+  --primary-2: #0077c2;
+  --primary-3: #00d4ff;
+  --primary-soft: rgba(0, 145, 234, .12);
+  --accent: #e6c766;
+  --accent-soft: rgba(230, 199, 102, .16);
+  --blue: #00b4ff;
+  --gold: #e6c766;
+  --purple: #7c3aed;
+  --purple-soft: rgba(124, 58, 237, .13);
+  --teal: #0f766e;
+  --teal-soft: rgba(15, 118, 110, .12);
+
+  --success: #16a34a;  --success-soft: rgba(22, 163, 74, .14);
+  --danger:  #dc2626;  --danger-soft:  rgba(220, 38, 38, .14);
+  --warn:    #d97706;  --warn-soft:    rgba(217, 119, 6, .14);
+  --info:    #2563eb;  --info-soft:    rgba(37, 99, 235, .13);
+
+  /* ---------- ألوان المراحل الدراسية (قابلة للتخصيص من استوديو البطاقات) ---------- */
+  --stage-kg:      #ec4899;   /* رياض أطفال */
+  --stage-primary: #0091ea;   /* ابتدائي */
+  --stage-middle:  #16a34a;   /* إعدادي */
+  --stage-high:    #7c3aed;   /* ثانوي */
+
+  /* ---------- ألوان الفئات الوظيفية ---------- */
+  --role-student: #0091ea;
+  --role-teacher: #16a34a;
+  --role-staff:   #d97706;
+  --role-worker:  #64748b;
+
+  /* ---------- الخلفيات (الوضع الفاتح) ---------- */
+  --bg: #eef2f8;
+  --bg-2: #e2e9f2;
+  --surface: #ffffff;
+  --surface-2: #f6f9fd;
+  --surface-3: #eef4fb;
+  --text: #0c1a2c;
+  --text-2: #42556e;
+  --text-3: #7c8fa5;
+  --line: #dde6f0;
+  --line-2: #c9d7e8;
+
+  /* ---------- زجاجية Glassmorphism ---------- */
+  --glass-bg: rgba(255, 255, 255, .72);
+  --glass-bg-strong: rgba(255, 255, 255, .88);
+  --glass-line: rgba(255, 255, 255, .65);
+  --glass-shadow: 0 8px 32px rgba(3, 11, 26, .10);
+
+  /* ---------- التدرجات ---------- */
+  --grad-primary: linear-gradient(135deg, #0091ea 0%, #00d4ff 100%);
+  --grad-navy: linear-gradient(135deg, #030b1a 0%, #0a1c36 55%, #0091ea 130%);
+  --grad-gold: linear-gradient(135deg, #b8860b 0%, #e6c766 55%, #f7e7ae 100%);
+  --grad-danger: linear-gradient(135deg, #dc2626, #f87171);
+  --grad-success: linear-gradient(135deg, #16a34a, #4ade80);
+
+  /* ---------- الظلال ---------- */
+  --sh-1: 0 1px 3px rgba(3, 11, 26, .08);
+  --sh-2: 0 4px 14px rgba(3, 11, 26, .10);
+  --sh-3: 0 10px 34px rgba(3, 11, 26, .16);
+  --sh-glow: 0 0 0 3px rgba(0, 145, 234, .22);
+
+  /* ---------- المقاسات (تتحكم بها الإعدادات فورياً) ---------- */
+  --fs-base: 15px;
+  --fs-sm: 13px;
+  --fs-lg: 17px;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-lg: 20px;
+  --icon-size: 46px;
+  --topbar-h: 60px;
+  --bottomnav-h: 64px;
+  --sidebar-w: 288px;
+  --pad: 16px;
+
+  /* ---------- Z-Index ---------- */
+  --z-topbar: 60; --z-bottomnav: 60; --z-sidebar: 80;
+  --z-backdrop: 75; --z-modal: 100; --z-toast: 130; --z-splash: 200;
+}
+
+/* ---------- الوضع الليلي (يُفعّل بـ html[data-theme="dark"]) ---------- */
+[data-theme="dark"] {
+  --bg: #060d1d;
+  --bg-2: #030b1a;
+  --surface: #0c1830;
+  --surface-2: #101f3c;
+  --surface-3: #14274a;
+  --text: #eaf2fc;
+  --text-2: #a9bdd6;
+  --text-3: #6c82a0;
+  --line: #1b2d4e;
+  --line-2: #24395f;
+
+  --glass-bg: rgba(12, 24, 48, .66);
+  --glass-bg-strong: rgba(10, 20, 40, .88);
+  --glass-line: rgba(0, 180, 255, .18);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, .45);
+  --sh-1: 0 1px 3px rgba(0, 0, 0, .4);
+  --sh-2: 0 4px 14px rgba(0, 0, 0, .5);
+  --sh-3: 0 10px 34px rgba(0, 0, 0, .6);
+}
+
+/* ---------- ثيمات النظام (4 ثيمات — تُطبّق فورياً) ---------- */
+html[data-accent="emerald"] { --primary:#059669; --primary-2:#047857; --primary-3:#34d399; --primary-soft:rgba(5,150,105,.13); --grad-primary:linear-gradient(135deg,#059669,#34d399); --blue:#10b981; }
+html[data-accent="royal"]   { --primary:#7c3aed; --primary-2:#6d28d9; --primary-3:#a78bfa; --primary-soft:rgba(124,58,237,.13); --grad-primary:linear-gradient(135deg,#7c3aed,#a78bfa); --blue:#8b5cf6; }
+html[data-accent="rose"]    { --primary:#e11d48; --primary-2:#be123c; --primary-3:#fb7185; --primary-soft:rgba(225,29,72,.12); --grad-primary:linear-gradient(135deg,#e11d48,#fb7185); --blue:#f43f5e; }
+html[data-accent="amber"]   { --primary:#d97706; --primary-2:#b45309; --primary-3:#fbbf24; --primary-soft:rgba(217,119,6,.13); --grad-primary:linear-gradient(135deg,#d97706,#fbbf24); --blue:#f59e0b; }
+
+/* ---------- كثافة العرض (مريح/عادي/مضغوط) ---------- */
+html[data-density="compact"] { --pad: 11px; --radius: 11px; }
+html[data-density="cozy"]    { --pad: 21px; --radius: 18px; }
