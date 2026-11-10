@@ -241,10 +241,147 @@ public class Bridge {
     public boolean savePdfBase64(String base64, String name) {
         try {
             byte[] bytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
-            return saveToFolder(name, bytes, "application/pdf", true, DOC_FOLDER);
+            boolean ok = saveToFolder(name, bytes, "application/pdf", false, DOC_FOLDER);
+            if (ok) { toast("حُفظ PDF في التنزيلات: " + safeName(name)); openSavedPdf(name); }
+            else toast("تعذّر حفظ PDF");
+            return ok;
         } catch (Throwable t) {
             toast("فشل حفظ PDF: " + t.getMessage());
             return false;
+        }
+    }
+
+    /* فتح آخر PDF محفوظ بنفس الاسم في العارض (نفس تطبيق المحطة) */
+    private void openSavedPdf(String name) {
+        try {
+            Uri uri = findLatestDownload(safeName(name));
+            if (uri == null) return;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(uri, "application/pdf");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                act.startActivity(i);
+            } catch (Throwable e) {
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("application/pdf");
+                share.putExtra(Intent.EXTRA_STREAM, uri);
+                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                act.startActivity(Intent.createChooser(share, "مشاركة PDF"));
+            }
+        } catch (Throwable ignored) {}
+    }
+
+    private Uri findLatestDownload(String name) {
+        try {
+            Cursor c = act.getContentResolver().query(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    new String[]{MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DISPLAY_NAME},
+                    MediaStore.MediaColumns.RELATIVE_PATH + " LIKE ?",
+                    new String[]{"%Download%"}, MediaStore.Downloads.DATE_MODIFIED + " DESC");
+            if (c != null) {
+                String stem = name.replaceFirst("\\.[^.]+$", "");
+                while (c.moveToNext()) {
+                    String n = c.getString(1);
+                    if (name.equals(n) || (n != null && n.startsWith(stem))) {
+                        long id = c.getLong(0);
+                        c.close();
+                        return Uri.withAppendedPath(MediaStore.Downloads.EXTERNAL_CONTENT_URI, String.valueOf(id));
+                    }
+                }
+                c.close();
+            }
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    /* ═══════════ الحفظ عبر نظام اختيار المكان (SAF) — نفس تطبيق المحطة ═══════════ */
+
+    @JavascriptInterface
+    public boolean saveBackupWithPicker(String name, String content) {
+        pendingName = name; pendingText = content == null ? "" : content;
+        pendingBytes = null;
+        ui.post(() -> {
+            try {
+                Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType(mimeFor(name));
+                i.putExtra(Intent.EXTRA_TITLE, safeName(name));
+                act.startActivityForResult(i, MainActivity.REQ_SAF_TEXT);
+            } catch (Throwable t) {
+                saveFileDirect(name, pendingText);
+            }
+        });
+        return true;
+    }
+
+    @JavascriptInterface
+    public boolean saveBinaryWithPicker(String name, String base64) {
+        try {
+            pendingName = name;
+            pendingText = null;
+            pendingBytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
+            ui.post(() -> {
+                try {
+                    Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    i.setType(mimeFor(name));
+                    i.putExtra(Intent.EXTRA_TITLE, safeName(name));
+                    act.startActivityForResult(i, MainActivity.REQ_SAF_BIN);
+                } catch (Throwable t) {
+                    saveToFolder(name, pendingBytes, mimeFor(name), true, DOC_FOLDER);
+                }
+            });
+            return true;
+        } catch (Throwable t) {
+            toast("فشل تجهيز الملف: " + t.getMessage());
+            return false;
+        }
+    }
+
+    @JavascriptInterface
+    public boolean openFilePicker(String mime) {
+        final String type = (mime == null || mime.trim().isEmpty()) ? "*/*" : mime.trim();
+        ui.post(() -> {
+            try {
+                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType(type);
+                act.startActivityForResult(i, MainActivity.REQ_OPEN_FILE);
+            } catch (Throwable t) {
+                toast("تعذّر فتح منتقي الملفات");
+            }
+        });
+        return true;
+    }
+
+    private void deliverPickedFile(Uri uri) {
+        try {
+            String name = "backup.json";
+            Cursor c = act.getContentResolver().query(uri, null, null, null, null);
+            if (c != null) {
+                int i = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                if (c.moveToFirst() && i >= 0 && c.getString(i) != null) name = c.getString(i);
+                c.close();
+            }
+            java.io.InputStream is = act.getContentResolver().openInputStream(uri);
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[16384];
+            int n;
+            while ((n = is.read(buf)) > 0) bo.write(buf, 0, n);
+            is.close();
+            byte[] bytes = bo.toByteArray();
+            String b64 = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP);
+            String type = MainActivity.guessMime(name.toLowerCase());
+            String js = "(function(){try{" +
+                    "var b=atob('" + b64 + "');" +
+                    "var u=new Uint8Array(b.length);" +
+                    "for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);" +
+                    "var f=new File([u],'" + name.replace("'", "\\'") + "',{type:'" + type + "'});" +
+                    "if(window.__onAndroidFilePicked)window.__onAndroidFilePicked(f);" +
+                    "}catch(e){console.error('deliver failed',e)}})();";
+            ui.post(() -> act.web.evaluateJavascript(js, null));
+        } catch (Throwable t) {
+            toast("فشل قراءة الملف: " + t.getMessage());
         }
     }
 
@@ -634,5 +771,28 @@ public class Bridge {
         return "application/octet-stream";
     }
 
-    void onActivityResult(int requestCode, int resultCode, Intent data) { /* SAF غير مستخدم حالياً */ }
+    void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) {
+            if (requestCode == MainActivity.REQ_OPEN_FILE) toast("لم يتم اختيار ملف");
+            return;
+        }
+        Uri uri = data.getData();
+        try {
+            if (requestCode == MainActivity.REQ_SAF_TEXT) {
+                OutputStream os = act.getContentResolver().openOutputStream(uri);
+                os.write((pendingText == null ? "" : pendingText).getBytes(StandardCharsets.UTF_8));
+                os.flush(); os.close();
+                toast("حُفظ بنجاح: " + safeName(pendingName));
+            } else if (requestCode == MainActivity.REQ_SAF_BIN) {
+                OutputStream os = act.getContentResolver().openOutputStream(uri);
+                os.write(pendingBytes == null ? new byte[0] : pendingBytes);
+                os.flush(); os.close();
+                toast("حُفظ بنجاح: " + safeName(pendingName));
+            } else if (requestCode == MainActivity.REQ_OPEN_FILE) {
+                deliverPickedFile(uri);
+            }
+        } catch (Throwable t) {
+            toast("فشل كتابة الملف: " + t.getMessage());
+        }
+    }
 }

@@ -4,7 +4,7 @@
    ========================================================= */
 'use strict';
 
-const VERSION  = '3.1.0';
+const VERSION  = '3.1.1';
 const CACHE    = `edupro-v${VERSION}`;
 const RUNTIME  = `edupro-runtime-v${VERSION}`;
 

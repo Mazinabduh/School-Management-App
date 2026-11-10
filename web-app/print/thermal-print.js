@@ -54,6 +54,13 @@
         const img = canvas.toDataURL('image/jpeg', 0.92);
         const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: [w, Math.max(w, canvas.height * w / canvas.width) + 4] });
         pdf.addImage(img, 'JPEG', 1, 1, w - 2, canvas.height * (w - 2) / canvas.width);
+        /* أندرويد: حفظ عبر الجسر الأصلي — نفس تطبيق المحطة */
+        if (window.AndroidBridge && typeof window.AndroidBridge.savePdfBase64 === 'function') {
+          const b64 = pdf.output('datauristring').split(',')[1] || '';
+          window.AndroidBridge.savePdfBase64(b64, filename);
+          UI.toast('تم حفظ PDF بمقاس اللفة وفتحه ✓', 'success');
+          return true;
+        }
         pdf.save(filename);
         UI.toast('تم تنزيل PDF بمقاس اللفة ✓', 'success');
       } catch (e) {

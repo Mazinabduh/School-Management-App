@@ -6,7 +6,7 @@
 
 window.Config = {
   APP: 'EduPro School ERP',
-  VERSION: '3.1.0',
+  VERSION: '3.1.1',
   BUILD: '2026.11.11',
 
   /* ---------- التخزين ---------- */

@@ -1,8 +1,10 @@
 /* =========================================================
    reliable-print.js — محرك الطباعة الموثوق (نفس تطبيق المحطة v2026.15)
-   طباعة داخل iframe منفصل (srcdoc) — الناتج يحتوي محتوى الطباعة فقط
-   بلا أيقونات البرنامج العلوية أو السفلية، ولا صفحات بيضاء عند
-   تغيير الطابعة/PDF/المقاس
+   على أندرويد: منطقة #printZone داخل المستند الرئيسي + native-printing
+   لإخفاء واجهة البرنامج كاملة، ثم AndroidBridge.printPageWithTitle —
+   نظام الطباعة الأصلي (PrintManager) يطبع محتوى الطباعة فقط بلا أيقونات
+   التطبيق العلوية أو السفلية وبلا صفحات بيضاء.
+   في المتصفح: طباعة داخل iframe منفصل (srcdoc) كما في النسخة الويب.
    ========================================================= */
 'use strict';
 
@@ -11,6 +13,7 @@
   window.__ReliablePrintSchool = true;
 
   const FRAME_ID = 'rpReliablePrintFrame';
+  const ZONE_ID = 'printZone';
 
   function _log() {
     try { console.info.apply(console, ['[ReliablePrint]'].concat(Array.prototype.slice.call(arguments))); } catch (e) {}
@@ -18,6 +21,165 @@
   function _toast(msg, type) {
     try { if (typeof UI !== 'undefined' && UI.toast) { UI.toast(msg, type || 'info'); return; } } catch (e) {}
   }
+
+  /* ---------- هل نحن داخل تطبيق أندرويد؟ ---------- */
+  function nativeMode() {
+    try {
+      return typeof window !== 'undefined' && window.AndroidBridge &&
+        (typeof window.AndroidBridge.printPageWithTitle === 'function' || typeof window.AndroidBridge.printPage === 'function');
+    } catch (e) { return false; }
+  }
+
+  /* ═══════════ مسار أندرويد — نفس تطبيق المحطة حرفياً ═══════════ */
+
+  function nativePrintHTML(fullHTML, opts) {
+    opts = opts || {};
+    let zone = document.getElementById(ZONE_ID);
+    if (!zone) {
+      zone = document.createElement('div');
+      zone.id = ZONE_ID;
+      document.body.appendChild(zone);
+    }
+
+    const bridge = window.AndroidBridge;
+    const jobTitle = String(opts.title || 'طباعة');
+    const orientation = String(opts.orientation || '');
+    const root = document.documentElement;
+    const previousRootBackground = root.style.backgroundColor;
+    const previousBodyBackground = document.body.style.backgroundColor;
+    const previousBodyColor = document.body.style.color;
+    const previousBodyOverflow = document.body.style.overflow;
+
+    root.classList.add('native-printing');
+    document.body.classList.add('native-printing');
+    root.style.backgroundColor = '#ffffff';
+    document.body.style.backgroundColor = '#ffffff';
+    document.body.style.color = '#0a1628';
+    document.body.style.overflow = 'visible';
+
+    const cleanup = () => {
+      try {
+        if (window.__nativePrintCleanupTimer) {
+          clearTimeout(window.__nativePrintCleanupTimer);
+          window.__nativePrintCleanupTimer = null;
+        }
+        zone.style.display = 'none';
+        zone.style.position = '';
+        zone.style.height = '';
+        zone.style.maxHeight = '';
+        zone.style.overflow = '';
+        zone.style.backgroundColor = '';
+        zone.style.color = '';
+        zone.style.width = '';
+        zone.style.maxWidth = '';
+        zone.style.margin = '';
+        zone.style.padding = '';
+        zone.innerHTML = '';
+        zone.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('printing');
+        if (nativePrintStyle && nativePrintStyle.parentNode) {
+          nativePrintStyle.parentNode.removeChild(nativePrintStyle);
+          nativePrintStyle = null;
+        }
+        root.classList.remove('native-printing');
+        document.body.classList.remove('native-printing');
+        root.style.backgroundColor = previousRootBackground;
+        document.body.style.backgroundColor = previousBodyBackground;
+        document.body.style.color = previousBodyColor;
+        document.body.style.overflow = previousBodyOverflow;
+        if (window.__nativePrintCleanup === cleanup) window.__nativePrintCleanup = null;
+      } catch (e) { void 0; }
+    };
+    window.__eduProPrintCleanup = cleanup;
+    window.__nativePrintCleanup = cleanup;
+
+    /* مستند كامل؟ استخرج كل وسم <style> (الرأس + جسم) + محتوى الجسم فقط —
+       أنماط البرنامج الأساسية موجودة أصلاً في المستند الرئيسي */
+    let printMarkup = String(fullHTML || '');
+    if (/<(?:!doctype|html\b)/i.test(printMarkup) && typeof DOMParser !== 'undefined') {
+      try {
+        const parsed = new DOMParser().parseFromString(printMarkup, 'text/html');
+        const styles = Array.prototype.map.call(
+          parsed.querySelectorAll('style'),
+          (st) => st.outerHTML
+        ).join('');
+        printMarkup = styles + (parsed.body ? parsed.body.innerHTML : printMarkup);
+      } catch (e) { void 0; }
+    }
+
+    let nativePrintStyle = null;
+    zone.innerHTML = printMarkup;
+
+    nativePrintStyle = document.createElement('style');
+    nativePrintStyle.id = 'native-print-layout-fix';
+    nativePrintStyle.textContent = [
+      'html.native-printing, body.native-printing{background:#fff!important;color:#0a1628!important;margin:0!important;padding:0!important}',
+      'body.native-printing #printZone{display:block!important;position:static!important;width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;padding:0!important;background:#fff!important;color:#0a1628!important;overflow:visible!important}',
+      'body.native-printing #app,body.printing #app,body.native-printing #page-root,body.printing #page-root,body.native-printing #topbar,body.native-printing #sidebar,body.native-printing #sidebar-backdrop,body.native-printing #bottomnav,body.native-printing #toast-root,body.native-printing #modal-root{display:none!important}',
+      'body.native-printing #printZone .pp-doc,body.native-printing #printZone .pp-report,body.native-printing #printZone .printable,body.native-printing #printZone .print-page,body.native-printing #printZone .print-doc{width:100%!important;max-width:none!important;margin:0!important;background:#fff!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}',
+      'body.native-printing #printZone .pp-page{width:100%!important;max-width:none!important;background:#fff!important}',
+      '@media print{html.native-printing,body.native-printing{width:auto!important;min-height:0!important}body.native-printing #printZone{width:100%!important;height:auto!important;min-height:0!important}}'
+    ].join('');
+    zone.appendChild(nativePrintStyle);
+    zone.style.backgroundColor = '#ffffff';
+    zone.style.color = '#0a1628';
+    zone.style.width = '100%';
+    zone.style.maxWidth = 'none';
+    zone.style.margin = '0';
+    zone.style.padding = '0';
+
+    zone.style.display = 'block';
+    zone.style.position = 'static';
+    zone.style.height = 'auto';
+    zone.style.maxHeight = 'none';
+    zone.style.overflow = 'visible';
+    zone.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('printing');
+    try { window.scrollTo(0, 0); } catch (e) { void 0; }
+
+    /* انتظار الخطوط والصور ثم استدعاء الطباعة الأصلية (نفس المحطة) */
+    const waitFonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+    const images = Array.prototype.slice.call(zone.querySelectorAll('img'));
+    const waitImages = images.map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+        setTimeout(resolve, 2500);
+      });
+    });
+
+    return Promise.all([waitFonts].concat(waitImages)).then(() => {
+      return new Promise((r) => setTimeout(r, 250));
+    }).then(() => {
+      if (!bridge || typeof bridge.printPageWithTitle !== 'function') {
+        try {
+          if (bridge && typeof bridge.printPage === 'function') { bridge.printPage(); }
+          else { window.print(); }
+        } catch (e) { cleanup(); throw e; }
+        window.__nativePrintCleanupTimer = setTimeout(cleanup, 10 * 60 * 1000);
+        return true;
+      }
+      try {
+        if (orientation === 'landscape' || orientation === 'portrait') {
+          bridge.printPageWithTitle(jobTitle, orientation);
+        } else {
+          bridge.printPageWithTitle(jobTitle);
+        }
+      } catch (e) {
+        _log('native print failed', e);
+        cleanup();
+        throw e;
+      }
+      window.__nativePrintCleanupTimer = setTimeout(cleanup, 10 * 60 * 1000);
+      return true;
+    }).catch((e) => {
+      cleanup();
+      throw e;
+    });
+  }
+
+  /* ═══════════ مسار المتصفح — iframe srcdoc معزول ═══════════ */
 
   /* ---------- إزالة الإطار بعد الانتهاء ---------- */
   function removeFrame() {
@@ -54,7 +216,7 @@
   }
 
   /* ---------- الطباعة الفعلية عبر iframe srcdoc معزول ---------- */
-  function printHTML(fullHTML, opts) {
+  function printHTMLBrowser(fullHTML, opts) {
     opts = opts || {};
     removeFrame();
     let html = String(fullHTML || '');
@@ -128,7 +290,7 @@
     } catch (e) {}
   }
 
-  /* ---------- غلاف مستند طباعة كامل ---------- */
+  /* ---------- الغلاف الكامل لمقتطف HTML (متصفح) ---------- */
   function wrapBody(bodyHTML, title) {
     const isAndroid = typeof window !== 'undefined' && window.AndroidBridge;
     const fontBase = isAndroid ? 'file:///android_asset/www/fonts' : 'fonts';
@@ -158,6 +320,12 @@
       '</style></head><body>' + bodyHTML + '</body></html>';
   }
 
+  /* ---------- نقطة الدخول الموحدة ---------- */
+  function printHTML(fullHTML, opts) {
+    if (nativeMode()) return nativePrintHTML(fullHTML, opts);
+    return printHTMLBrowser(fullHTML, opts);
+  }
+
   /* ---------- هل المستند حراري؟ ---------- */
   function isThermalDoc(html) {
     return /@page[^}]*size\s*:\s*(58|80)\s*mm/i.test(String(html || '')) ||
@@ -178,12 +346,15 @@
 
   window.ReliablePrint = {
     printHTML,
+    nativePrintHTML,
+    printHTMLBrowser,
     wrapBody,
     ensureFullA4,
     isThermalDoc,
     removeFrame,
-    version: 'school-1.0'
+    nativeMode,
+    version: 'school-1.1'
   };
 
-  _log('محرك الطباعة الموثوق جاهز — الطباعة معزولة عن واجهة البرنامج');
+  _log('محرك الطباعة الموثوق جاهز — أندرويد: printZone أصلية، متصفح: iframe معزول');
 })();

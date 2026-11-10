@@ -82,3 +82,104 @@
   /* الألوان مطبوعة دائماً */
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
+
+/* =========================================================
+   الطباعة الأصلية على أندرويد — نفس تطبيق المحطة
+   printZone داخل المستند + native-printing لإخفاء واجهة البرنامج
+   ========================================================= */
+#printZone { display: none; }
+#printZone, #printZone * {
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  unicode-bidi: plaintext;
+}
+
+body.printing {
+  overflow: visible !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  background: #fff !important;
+}
+
+html.native-printing, body.native-printing {
+  background: #fff !important;
+  color: #0a1628 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.native-printing #printZone {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+  color: #0a1628 !important;
+  overflow: visible !important;
+}
+
+/* إخفاء واجهة البرنامج على الشاشة أثناء الطباعة — يظهر محتوى الطباعة وحده
+   (نفس body.printing #mainApp في تطبيق المحطة) */
+body.printing #app,
+body.native-printing #app,
+body.printing #page-root,
+body.native-printing #page-root,
+body.printing #topbar,
+body.native-printing #topbar,
+body.printing #sidebar,
+body.native-printing #sidebar,
+body.printing #sidebar-backdrop,
+body.native-printing #sidebar-backdrop,
+body.printing #bottomnav,
+body.native-printing #bottomnav,
+body.printing #toast-root,
+body.native-printing #toast-root,
+body.printing #modal-root,
+body.native-printing #modal-root {
+  display: none !important;
+}
+
+body.native-printing #printZone .print-doc,
+body.native-printing #printZone .pp-doc,
+body.native-printing #printZone .pd-page,
+body.native-printing #printZone .print-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+/* إخفاء كل واجهة البرنامج أثناء الطباعة الأصلية (الطباعة تُصيَّر عبر @media print أيضاً) */
+@media print {
+  #app, #topbar, #sidebar, #sidebar-backdrop, #bottomnav, #toast-root, #modal-root,
+  #btn-menu, .topbar-actions, .login-bg-container, .login-wrapper, #splash, #login-screen {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  body.printing #app { min-height: 0 !important; height: auto !important; }
+  #page-root { padding: 0 !important; margin: 0 !important; background: #fff !important; }
+  #printZone, #printZone * { visibility: visible !important; }
+  #printZone {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  .print-doc, .pp-doc, .pd-page, .print-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .print-doc table { width: 100% !important; }
+}

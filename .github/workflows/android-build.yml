@@ -49,7 +49,7 @@ jobs:
       - name: إعادة تسمية APK
         run: |
           mkdir -p output
-          cp android-app/app/build/outputs/apk/release/app-release.apk output/school-management-v1.0.apk
+          cp android-app/app/build/outputs/apk/release/app-release.apk output/school-management-v1.1.apk
           ls -la output/
 
       - name: رفع APK كمُخرج البناء
@@ -57,16 +57,27 @@ jobs:
         continue-on-error: true
         with:
           name: school-apk-${{ github.run_number }}
-          path: output/school-management-v1.0.apk
+          path: output/school-management-v1.1.apk
           if-no-files-found: error
 
       - name: إنشاء إصدار مع APK (كل دفعة)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0-build-${{ github.run_number }}
-          name: تطبيق ادارة المدرسة v1.0 — بناء ${{ github.run_number }}
+          tag_name: v1.1-build-${{ github.run_number }}
+          name: تطبيق ادارة المدرسة v1.1 — بناء ${{ github.run_number }}
           body: |
-            **تطبيق ادارة المدرسة v1.0** (versionCode 1) — تحويل كامل لتطبيق EduPro المدرسي بنفس نظام تطبيق المحطة
+            **تطبيق ادارة المدرسة v1.1** (versionCode 2) — إصلاح الطباعة والحفظ بنفس نظام تطبيق المحطة حرفياً
+
+🛠️ ما الجديد في v1.1:
+- **الطباعة تعمل الآن على أندرويد**: محتوى الطباعة يُعرض في منطقة printZone داخل التطبيق وتُطبع عبر نظام أندرويد (PrintManager) — الورقة تخرج بجدول الطباعة وحده بلا أيقونات البرنامج العلوية/السفلية وبلا صفحات بيضاء (نفس تطبيق المحطة حرفياً)
+- **عمودي/أفقي يُمرَّران لنظام الطباعة** + إعدادات الورقة والهوامش والخط تُطبَّق على الورقة
+- **الحفظ يعمل الآن على أندرويد**: كل التنزيلات (نسخة JSON، Excel xlsx، Word doc، CSV) تُحفظ في مجلد التنزيلات أو عبر مربع اختيار المكان — اعتراض كامل لتنزيلات blob داخل التطبيق (نفس تطبيق المحطة)
+- **PDF يُحفظ في التنزيلات ويُفتح مباشرة في العارض** بعد الحفظ
+- **الاستعادة عبر منتقي ملفات أندرويد** + إدخال الملف تلقائياً في شاشة الاستعادة
+- **عدد النسخ** يُضبط من نافذة طباعة النظام نفسها (كما في المحطة)
+- وضع المتصفح (نسخة الويب) يعمل كما هو عبر إطار معزول
+
+---
 
             🏢 هوية شركة YCMS:
             - أيقونة التطبيق بشعار YCMS الرسمي
@@ -100,4 +111,4 @@ jobs:
             📱 التثبيت: حمّل APK وثبّته — الحساب الافتراضي admin / admin123 (غيّره بعد أول دخول)
 
             جميع الحقوق محفوظة لشركة YCMS — برمجة وتطوير: مازن عبدالوهاب 774047989
-          files: output/school-management-v1.0.apk
+          files: output/school-management-v1.1.apk

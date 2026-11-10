@@ -190,9 +190,15 @@
     el.appendChild(wrap);
   }
 
-  /* ---------- طباعة مع عدد النسخ (كل نسخة مستند مستقل) ---------- */
+  /* ---------- طباعة مع عدد النسخ (كل نسخة مستند مستقل) ----------
+     على أندرويد: مهمة طباعة واحدة — عدّاد النسخ موجود في نافذة طباعة النظام
+     نفسها (نفس تطبيق المحطة). في المتصفح: تكرار المحاولة لكل نسخة. ---------- */
   async function printWithCopies(fullHTML, opts) {
     const ps = getPS();
+    const nativeCopies = typeof ReliablePrint !== 'undefined' && ReliablePrint.nativeMode && ReliablePrint.nativeMode();
+    if (nativeCopies) {
+      return ReliablePrint.printHTML(fullHTML, opts);
+    }
     const copies = Math.max(1, Math.min(20, parseInt(ps.copies, 10) || 1));
     for (let i = 0; i < copies; i++) {
       try { await ReliablePrint.printHTML(fullHTML, opts); } catch (e) { _log('copy ' + (i + 1) + ' failed', e); break; }

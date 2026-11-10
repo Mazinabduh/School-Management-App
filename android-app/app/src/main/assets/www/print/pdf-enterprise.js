@@ -53,6 +53,15 @@
           heightLeft -= ph;
         }
         const safe = String(filename).replace(/[/\\?%*:|"<>]/g, '-');
+        /* أندرويد: حفظ عبر الجسر الأصلي في التنزيلات ثم فتح العارض — نفس تطبيق المحطة */
+        if (window.AndroidBridge && typeof window.AndroidBridge.savePdfBase64 === 'function') {
+          const b64 = pdf.output('datauristring').split(',')[1] || '';
+          const ok = window.AndroidBridge.savePdfBase64(b64, safe);
+          if (ok) UI.toast('تم حفظ PDF وفتحه ✓', 'success');
+          else UI.toast('تم إنشاء PDF ✓', 'success');
+          Audit.log('تصدير', `تصدير PDF: ${safe}`);
+          return true;
+        }
         pdf.save(safe);
         UI.toast('تم إنشاء وتنزيل PDF ✓', 'success');
         Audit.log('تصدير', `تصدير PDF: ${safe}`);
@@ -75,6 +84,12 @@
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ orientation: wmm > hmm ? 'landscape' : 'portrait', unit: 'mm', format: [wmm, hmm] });
         pdf.addImage(img, 'PNG', 0, 0, wmm, hmm);
+        if (window.AndroidBridge && typeof window.AndroidBridge.savePdfBase64 === 'function') {
+          const b64 = pdf.output('datauristring').split(',')[1] || '';
+          window.AndroidBridge.savePdfBase64(b64, filename);
+          UI.toast('تم التصدير ✓', 'success');
+          return true;
+        }
         pdf.save(filename);
         UI.toast('تم التصدير ✓', 'success');
         return true;

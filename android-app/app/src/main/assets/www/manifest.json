@@ -4,7 +4,7 @@
   "description": "نظام إدارة مدرسة متكامل — طلاب، درجات، حسابات، باصات، رواتب، بطاقات وتقارير — جميع الحقوق محفوظة لشركة YCMS",
   "lang": "ar",
   "dir": "rtl",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
