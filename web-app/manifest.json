@@ -4,7 +4,7 @@
   "description": "EduPro — نظام إدارة مدرسة خاصة دولية متكامل يعمل دون إنترنت",
   "lang": "ar",
   "dir": "rtl",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

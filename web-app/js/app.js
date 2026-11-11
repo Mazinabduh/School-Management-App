@@ -223,6 +223,10 @@ function bindShell() {
     progress(35);
     await Store.init();
     progress(60);
+    /* ---------- نظام المحطة _splash بالنص: اسم المدرسة وشعارها يظهران
+       في شاشة البداية وشاشة الدخول فوراً من الإعدادات — قبل أي دخول ---------- */
+    applySplashBranding();
+    progress(75);
     bindShell();
     const restored = await AuthGuard.restore();
     progress(80);
@@ -235,6 +239,28 @@ function bindShell() {
       progress(100);
       initLoginExtras();
     }
+  }
+
+  /* ---------- هوية المدرسة في البداية — نفس نظام المحطة بالنص ----------
+     العنوان = اسم المدرسة من الإعدادات، الشعار = شعار المدرسة المحفوظ،
+     مع الهوية على شاشة الدخول — وتُحدَّث تلقائياً بعد تغيير الاسم. */
+  function applySplashBranding() {
+    try {
+      const s = Store.settings();
+      const logo = s.logo || 'assets/images/logo.png';
+      const name = s.schoolName || 'تطبيق ادارة المدرسة';
+      const title = document.getElementById('splash-title');
+      if (title) title.textContent = name;
+      const img = document.getElementById('splash-logo');
+      if (img) img.src = logo;
+      /* شاشة الدخول — نفس الوظيفة */
+      const limg = document.getElementById('login-logo');
+      if (limg) limg.src = logo;
+      const lname = document.getElementById('login-school-name');
+      if (lname) lname.textContent = name;
+      const lsub = document.getElementById('login-school-sub');
+      if (lsub && s.schoolNameEn) lsub.textContent = s.schoolNameEn;
+    } catch (e) { console.warn('splash branding:', e); }
   }
 
   /* ---------- تجهيزات شاشة الدخول ---------- */

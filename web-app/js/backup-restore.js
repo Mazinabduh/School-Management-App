@@ -417,12 +417,16 @@
       Actions.call('bak', 'ghSave', {});
       const r = await GitHubSync.pull();
       if (!r.ok) return UI.toast(r.msg, 'error');
-      if (!await UI.confirm({ title: 'استعادة من GitHub', msg: 'سيتم دمج النسخة السحابية مع البيانات الحالية. متابعة؟', okLabel: 'استعادة' })) return;
+      /* تحقق من صحة الملف قبل أي استعادة — نفس حارس «استعادة نسخة كاملة» */
+      if (!r.data || typeof r.data !== 'object' || !r.data._app || !r.data.settings) {
+        return UI.toast('الملف السحابي ليس نسخة EduPro كاملة — تأكد من المسار', 'error');
+      }
+      if (!await UI.confirm({ title: 'استعادة من GitHub', msg: `نسخة صادرة ${H.fmtDateTime(r.data._exported)}<br>سيتم استبدال البيانات الحالية بالنسخة السحابية. متابعة؟`, okLabel: 'استعادة' })) return;
       UI.loading(true, 'جارٍ الاستعادة…');
       await Store.import(r.data);
       UI.loading(false);
       Audit.log('نسخ', 'استعادة نسخة من GitHub');
-      UI.toast('تمت الاستعادة ✓', 'success');
+      UI.toast('تمت الاستعادة ✓ — سيتم تحديث الواجهة', 'success');
       setTimeout(() => location.reload(), 900);
     },
 

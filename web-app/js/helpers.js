@@ -139,16 +139,38 @@
     },
     unique(arr) { return [...new Set(arr)]; },
 
-    /* ---------- ملفات ---------- */
+    /* ---------- ملفات — نظام تطبيق المحطة exportFile بالنص ----------
+       النسخ الاحتياطية تُحفظ أولاً عبر الجسر الأصلي saveBackupAuto (مجلد التنزيلات)
+       والمستندات عبر saveDocumentAuto — فلا يظهر «فشل الحفظ» في WebView أبداً،
+       وعلى الويب العادي يعمل تنزيل Blob كما هو. */
     download(filename, content, mime = 'text/plain;charset=utf-8') {
-      const isObj = typeof content === 'object';
-      const blob = new Blob([isObj ? JSON.stringify(content, null, 1) : content], { type: mime });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+      const fname = filename || 'file.json';
+      const isBak = /backup|نسخة|احتياطي|إحتياطي|restore/i.test(String(fname));
+      const text = (typeof content === 'object' && content !== null) ? JSON.stringify(content, null, 1) : String(content == null ? '' : content);
+      /* 1) الجسر الأصلي — نفس المحطة: النسخ عبر saveBackupAuto والمستندات عبر saveDocumentAuto */
+      if (window.AndroidBridge && isBak && window.AndroidBridge.saveBackupAuto) try {
+        if (window.AndroidBridge.saveBackupAuto(fname, text)) return;
+      } catch (e) {}
+      if (window.AndroidBridge && !isBak && window.AndroidBridge.saveDocumentAuto) try {
+        if (window.AndroidBridge.saveDocumentAuto(fname, text)) return;
+      } catch (e) {}
+      if (window.AndroidBridge && window.AndroidBridge.saveBackupWithPicker) try {
+        window.AndroidBridge.saveBackupWithPicker(fname, text);
+        return;
+      } catch (e) {}
+      /* 2) الويب — Blob كما في المحطة */
+      try {
+        const blob = new Blob([text], { type: (mime || 'text/plain;charset=utf-8') });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+      } catch (e) {
+        console.error('download:', e);
+        try { UI.toast('تعذر الحفظ: ' + e.message, 'error'); } catch (e2) {}
+      }
     },
 
     /* ---------- QR ---------- */

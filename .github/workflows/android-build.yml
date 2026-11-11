@@ -54,7 +54,7 @@ jobs:
       - name: إعادة تسمية APK
         run: |
           mkdir -p output
-          cp android-app/app/build/outputs/apk/release/app-release.apk output/school-management-v1.2.apk
+          cp android-app/app/build/outputs/apk/release/app-release.apk output/school-management-v3.4.apk
           ls -la output/
 
       - name: رفع APK كمُخرج البناء
@@ -62,7 +62,7 @@ jobs:
         continue-on-error: true
         with:
           name: school-apk-${{ github.run_number }}
-          path: output/school-management-v1.2.apk
+          path: output/school-management-v3.4.apk
           if-no-files-found: error
 
       - name: إنشاء إصدار مع APK (كل دفعة)
@@ -93,4 +93,4 @@ jobs:
             بعد أول دخول: استخدم زر «توليد البيانات التجريبية» من صفحة النسخ الاحتياطي لتجربة كل الميزات، ثم «حذف البيانات التجريبية» واستعد نسختك الحقيقية.
 
             جميع الحقوق محفوظة لشركة YCMS — برمجة وتطوير: مازن عبدالوهاب 774047989 — إدارة محاسبية: صدام نجم الدين
-          files: output/school-management-v1.2.apk
+          files: output/school-management-v3.4.apk

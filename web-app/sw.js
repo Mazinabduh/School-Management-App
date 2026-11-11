@@ -4,7 +4,7 @@
    ========================================================= */
 'use strict';
 
-const VERSION  = '3.3.0';
+const VERSION  = '3.4.0';
 const CACHE    = `edupro-v${VERSION}`;
 const RUNTIME  = `edupro-runtime-v${VERSION}`;
 
@@ -28,14 +28,14 @@ const SHELL = [
   './css/variables.css', './css/splash.css', './css/login.css', './css/themes-intl.css',
   './css/academics.css', './css/grades-matrix.css', './css/certificates.css', './css/finance.css',
   './css/store-inventory.css', './css/bus-system.css', './css/hr-payroll.css', './css/id-cards.css',
-  './css/reports.css', './css/charts.css', './css/print.css',
+  './css/reports.css', './css/charts.css', './css/print.css', './css/print-pro.css',
   './css/station/station-bundle.css', './css/station/ui-nav-icons.css', './css/station/nav-pro.css',
   './css/station/theme-harmony.css', './css/station/app-pro-16.css', './css/station/app-pro-17.css',
   './css/station/app-pro-18.css', './css/twin-bridge.css',
   // print engines (نظام تطبيق المحطة)
   './print/reliable-print.js', './print/print-settings-pro.js',
   './print/print-settings-engine.js', './print/thermal-print.js', './print/thermal-receipt.js',
-  './print/report-intl.js', './print/id-card-printer.js', './print/pdf-enterprise.js',
+  './print/print-pro-v2026.js', './print/report-intl.js', './print/id-card-printer.js', './print/pdf-enterprise.js',
   './print/office-pro.js', './print/office-export.js',
   // core js (10)
   './js/config.js', './js/encryption.js', './js/database.js', './js/auth.js', './js/ui.js',
