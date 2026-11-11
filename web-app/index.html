@@ -6,16 +6,16 @@
 <meta name="theme-color" content="#030b1a">
 <meta name="description" content="EduPro — نظام إدارة مدرسة خاصة دولية متكامل يعمل دون إنترنت">
 <title>تطبيق ادارة المدرسة — EduPro</title>
-<link rel="manifest" href="manifest.json?v=3">
+<link rel="manifest" href="manifest.json?v=4">
 <link rel="icon" href="assets/icons/favicon.png">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- ═══════════ CSS (26 ملف — ترتيب إلزامي) ═══════════ -->
-<link rel="stylesheet" href="css/variables.css?v=3.1.1">
-<link rel="stylesheet" href="css/base.css?v=3.1.1">
+<!-- ═══════════ CSS (27 ملف — ترتيب إلزامي) ═══════════ -->
+<link rel="stylesheet" href="css/variables.css?v=3.2.0">
+<link rel="stylesheet" href="css/base.css?v=3.2.0">
 <link rel="stylesheet" href="css/splash.css?v=3.1.1">
 <link rel="stylesheet" href="css/login.css?v=3.1.1">
 <link rel="stylesheet" href="css/layout.css?v=3.1.1">
@@ -39,7 +39,8 @@
 <link rel="stylesheet" href="css/enhancements.css?v=3.1.1">
 <link rel="stylesheet" href="css/responsive.css?v=3.1.1">
 <link rel="stylesheet" href="css/themes-intl.css?v=3.1.1">
-<link rel="stylesheet" href="css/print.css?v=3.1.1">
+<link rel="stylesheet" href="css/print.css?v=3.2.0">
+<link rel="stylesheet" href="css/pro-shell.css?v=3.2.0">
 </head>
 
 <body>
@@ -48,10 +49,12 @@
   <div class="splash-inner">
     <img id="splash-logo" src="assets/images/logo.png" alt="الشعار">
     <h1 class="splash-title">تطبيق ادارة المدرسة <span>EduPro</span></h1>
-    <p class="splash-sub">نظام الإدارة المتكامل — الإصدار 3.1</p>
+    <p class="splash-sub">نظام الإدارة المتكامل — الإصدار 3.2</p>
     <div class="splash-bar"><i id="splash-bar"></i></div>
     <p class="splash-note">جارٍ تجهيز النظام…</p>
     <p class="splash-rights">جميع الحقوق محفوظة لشركة YCMS</p>
+    <p class="splash-dev">برمجة وتطوير: <b>مازن عبدالوهاب</b> — 774047989</p>
+    <p class="splash-acc">إدارة محاسبية: <b>صدام نجم الدين</b></p>
   </div>
 </div>
 
@@ -117,27 +120,44 @@
         </button>
       </form>
 
-      <div class="login-footer-info">النسخة <b id="login-version">3.1</b><span class="dot">•</span>جميع الحقوق محفوظة لشركة YCMS</div>
+      <div class="login-footer-info">النسخة <b id="login-version">3.2</b><span class="dot">•</span>جميع الحقوق محفوظة لشركة YCMS</div>
     </div>
-    <div class="login-credit">برمجة وتطوير: <b>مازن عبدالوهاب</b> — <a href="tel:774047989">774047989</a></div>
+    <div class="login-credit">برمجة وتطوير: <b>مازن عبدالوهاب</b> — <a href="tel:774047989">774047989</a><br><small>إدارة محاسبية: <b>صدام نجم الدين</b></small></div>
   </div>
 </div>
 
 <!-- ═══════════ هيكل التطبيق ═══════════ -->
 <div id="app" hidden>
   <header id="topbar">
-    <button id="btn-menu" class="icon-btn" aria-label="القائمة" data-action="shell:toggleSidebar">☰</button>
-    <div class="topbar-brand">
-      <img id="topbar-logo" src="assets/images/logo-128.png" alt="الشعار">
-      <div class="topbar-names">
-        <b id="topbar-school">المدرسة الدولية الخاصة</b>
-        <small id="topbar-page">لوحة التحكم</small>
+    <div class="topbar-bg-effect" aria-hidden="true"></div>
+    <div class="topbar-inner">
+      <div class="topbar-start">
+        <button id="btn-menu" class="topbar-btn menu-btn" aria-label="القائمة" data-action="shell:toggleSidebar">
+          <span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+        <div class="topbar-brand-mini">
+          <img id="topbar-logo" src="assets/images/logo-128.png" alt="الشعار">
+          <span class="topbar-school-name" id="topbar-school">المدرسة الدولية الخاصة</span>
+        </div>
       </div>
-    </div>
-    <div class="topbar-actions">
-      <button class="icon-btn" id="btn-print-settings" title="إعدادات الطباعة" data-action="shell:printSettings">🖨️</button>
-      <button class="icon-btn" id="btn-theme" title="الوضع الليلي" data-action="shell:toggleDark">🌙</button>
-      <button class="icon-btn" id="btn-user" title="الحساب" data-action="shell:userMenu">👤</button>
+      <div class="topbar-cylinder" id="topCylinder" aria-label="معلومات المدرسة">
+        <div class="cylinder-body">
+          <div class="cylinder-track" id="cylinderTrack"></div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btn-print-settings" title="إعدادات الطباعة" data-action="shell:printSettings" aria-label="إعدادات الطباعة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        </button>
+        <button class="topbar-btn" id="btn-theme" title="الوضع الليلي" data-action="shell:toggleDark" aria-label="الوضع الليلي">
+          <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="ico-sun" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button class="admin-avatar-btn" id="btn-user" data-action="shell:userMenu" aria-label="الحساب">
+          <span class="avatar-circle" id="topbar-avatar">م</span>
+          <span class="avatar-status-dot"></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -154,8 +174,12 @@
         <span class="avatar" id="sidebar-avatar">م</span>
         <div><b id="sidebar-username">—</b><small id="sidebar-role">—</small></div>
       </div>
-      <button class="btn btn-danger-soft btn-block" data-action="shell:logout">🚪 تسجيل الخروج</button>
-      <small class="sidebar-ver" id="sidebar-version">ادارة المدرسة v3.1 — YCMS</small>
+      <button class="btn btn-danger-soft btn-block" data-action="shell:logout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        تسجيل الخروج
+      </button>
+      <small class="sidebar-ver" id="sidebar-version">ادارة المدرسة v3.2 — YCMS</small>
+      <small class="sidebar-credits">برمجة وتطوير مازن عبدالوهاب<br>إدارة محاسبية صدام نجم الدين</small>
     </div>
   </aside>
 
@@ -170,62 +194,63 @@
 <iframe id="print-frame" title="طباعة" style="position:fixed;width:0;height:0;border:0;visibility:hidden"></iframe>
 
 <!-- ═══════════ المكتبات الخارجية (vendor — مرتبطة محلياً) ═══════════ -->
-<script src="vendor/html2canvas.min.js?v=3.1.1"></script>
-<script src="vendor/jspdf.umd.min.js?v=3.1.1"></script>
-<script src="vendor/qrcode-generator.js?v=3.1.1"></script>
-<script src="vendor/xlsx.full.min.js?v=3.1.1"></script>
-<script src="vendor/pdfmake.min.js?v=3.1.1"></script>
-<script src="vendor/pdfmake-rtl.js?v=3.1.1"></script>
-<script src="vendor/vfs_fonts.js?v=3.1.1"></script>
-<script src="vendor/zxing.min.js?v=3.1.1"></script>
-<script src="vendor/arabic-reshaper.js?v=3.1.1"></script>
+<script src="vendor/html2canvas.min.js?v=3.2.0"></script>
+<script src="vendor/jspdf.umd.min.js?v=3.2.0"></script>
+<script src="vendor/qrcode-generator.js?v=3.2.0"></script>
+<script src="vendor/xlsx.full.min.js?v=3.2.0"></script>
+<script src="vendor/pdfmake.min.js?v=3.2.0"></script>
+<script src="vendor/pdfmake-rtl.js?v=3.2.0"></script>
+<script src="vendor/vfs_fonts.js?v=3.2.0"></script>
+<script src="vendor/zxing.min.js?v=3.2.0"></script>
+<script src="vendor/arabic-reshaper.js?v=3.2.0"></script>
 
 <!-- ═══════════ محركات الطباعة (نظام تطبيق المحطة) ═══════════ -->
-<script src="print/reliable-print.js?v=3.1.1"></script>
-<script src="print/print-settings-pro.js?v=3.1.1"></script>
-<script src="print/print-settings-engine.js?v=3.1.1"></script>
-<script src="print/thermal-print.js?v=3.1.1"></script>
-<script src="print/thermal-receipt.js?v=3.1.1"></script>
-<script src="print/report-intl.js?v=3.1.1"></script>
-<script src="print/id-card-printer.js?v=3.1.1"></script>
-<script src="print/pdf-enterprise.js?v=3.1.1"></script>
-<script src="print/office-pro.js?v=3.1.1"></script>
-<script src="print/office-export.js?v=3.1.1"></script>
+<script src="print/reliable-print.js?v=3.2.0"></script>
+<script src="print/print-settings-pro.js?v=3.2.0"></script>
+<script src="print/print-settings-engine.js?v=3.2.0"></script>
+<script src="print/thermal-print.js?v=3.2.0"></script>
+<script src="print/thermal-receipt.js?v=3.2.0"></script>
+<script src="print/report-intl.js?v=3.2.0"></script>
+<script src="print/id-card-printer.js?v=3.2.0"></script>
+<script src="print/pdf-enterprise.js?v=3.2.0"></script>
+<script src="print/office-pro.js?v=3.2.0"></script>
+<script src="print/office-export.js?v=3.2.0"></script>
 
 <!-- ═══════════ النواة (Core) ═══════════ -->
-<script src="js/config.js?v=3.1.1"></script>
-<script src="js/encryption.js?v=3.1.1"></script>
-<script src="js/database.js?v=3.1.1"></script>
-<script src="js/auth.js?v=3.1.1"></script>
-<script src="js/ui.js?v=3.1.1"></script>
-<script src="js/permissions.js?v=3.1.1"></script>
-<script src="js/charts.js?v=3.1.1"></script>
-<script src="js/github.js?v=3.1.1"></script>
-<script src="js/navigation.js?v=3.1.1"></script>
-<script src="js/helpers.js?v=3.1.1"></script>
+<script src="js/config.js?v=3.2.0"></script>
+<script src="js/encryption.js?v=3.2.0"></script>
+<script src="js/database.js?v=3.2.0"></script>
+<script src="js/auth.js?v=3.2.0"></script>
+<script src="js/ui.js?v=3.2.0"></script>
+<script src="js/permissions.js?v=3.2.0"></script>
+<script src="js/charts.js?v=3.2.0"></script>
+<script src="js/github.js?v=3.2.0"></script>
+<script src="js/navigation.js?v=3.2.0"></script>
+<script src="js/helpers.js?v=3.2.0"></script>
 
 <!-- ═══════════ الوحدات (Pages) ═══════════ -->
-<script src="js/dashboard.js?v=3.1.1"></script>
-<script src="js/students.js?v=3.1.1"></script>
-<script src="js/stages-classes.js?v=3.1.1"></script>
-<script src="js/grades-engine.js?v=3.1.1"></script>
-<script src="js/results-certificates.js?v=3.1.1"></script>
-<script src="js/finance-budget.js?v=3.1.1"></script>
-<script src="js/installments.js?v=3.1.1"></script>
-<script src="js/store-books-uniform.js?v=3.1.1"></script>
-<script src="js/bus-management.js?v=3.1.1"></script>
-<script src="js/hr-employees.js?v=3.1.1"></script>
-<script src="js/payroll-engine.js?v=3.1.1"></script>
-<script src="js/id-card-studio.js?v=3.1.1"></script>
-<script src="js/communications.js?v=3.1.1"></script>
-<script src="js/reports-center.js?v=3.1.1"></script>
-<script src="js/settings-branding.js?v=3.1.1"></script>
-<script src="js/audit-log.js?v=3.1.1"></script>
-<script src="js/backup-restore.js?v=3.1.1"></script>
-<script src="js/professional-themes.js?v=3.1.1"></script>
+<script src="js/dashboard.js?v=3.2.0"></script>
+<script src="js/students.js?v=3.2.0"></script>
+<script src="js/stages-classes.js?v=3.2.0"></script>
+<script src="js/grades-engine.js?v=3.2.0"></script>
+<script src="js/results-certificates.js?v=3.2.0"></script>
+<script src="js/finance-budget.js?v=3.2.0"></script>
+<script src="js/installments.js?v=3.2.0"></script>
+<script src="js/store-books-uniform.js?v=3.2.0"></script>
+<script src="js/bus-management.js?v=3.2.0"></script>
+<script src="js/hr-employees.js?v=3.2.0"></script>
+<script src="js/payroll-engine.js?v=3.2.0"></script>
+<script src="js/id-card-studio.js?v=3.2.0"></script>
+<script src="js/communications.js?v=3.2.0"></script>
+<script src="js/reports-center.js?v=3.2.0"></script>
+<script src="js/settings-branding.js?v=3.2.0"></script>
+<script src="js/audit-log.js?v=3.2.0"></script>
+<script src="js/backup-restore.js?v=3.2.0"></script>
+<script src="js/demo-data.js?v=3.2.0"></script>
+<script src="js/professional-themes.js?v=3.2.0"></script>
 
 <!-- ═══════════ المحرك الرئيسي (الأخيراً) ═══════════ -->
-<script src="js/login-bg.js?v=3.1.1"></script>
-<script src="js/app.js?v=3.1.1"></script>
+<script src="js/login-bg.js?v=3.2.0"></script>
+<script src="js/app.js?v=3.2.0"></script>
 </body>
 </html>

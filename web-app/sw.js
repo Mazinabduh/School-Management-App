@@ -4,7 +4,7 @@
    ========================================================= */
 'use strict';
 
-const VERSION  = '3.1.1';
+const VERSION  = '3.2.0';
 const CACHE    = `edupro-v${VERSION}`;
 const RUNTIME  = `edupro-runtime-v${VERSION}`;
 
@@ -32,6 +32,7 @@ const SHELL = [
   './css/hr-payroll.css', './css/id-cards.css', './css/reports.css', './css/modals.css',
   './css/tables.css', './css/forms.css', './css/enhancements.css', './css/responsive.css',
   './css/themes-intl.css', './css/print.css',
+  './css/pro-shell.css',
   // print engines (نظام تطبيق المحطة)
   './print/reliable-print.js', './print/print-settings-pro.js',
   './print/print-settings-engine.js', './print/thermal-print.js', './print/thermal-receipt.js',
@@ -47,6 +48,7 @@ const SHELL = [
   './js/payroll-engine.js', './js/id-card-studio.js', './js/communications.js',
   './js/reports-center.js', './js/settings-branding.js', './js/audit-log.js',
   './js/backup-restore.js', './js/professional-themes.js',
+  './js/demo-data.js',
   // main engine (last)
   './js/login-bg.js',
   './js/app.js'

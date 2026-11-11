@@ -7,6 +7,18 @@
 (function () {
   const state = { stageId: '', classId: '', studentId: '', mode: 'individual' };
 
+  /* أنواع شهادة التقدير */
+  const HONOR_TYPES = [
+    { id: 'excellence', label: 'التميّز والتفوق الدراسي', desc: 'لأصحاب المعدلات العالية' },
+    { id: 'improve',    label: 'التميّز والتحصيل الدراسي', desc: 'شهادة تفوق عامة' },
+    { id: 'attendance', label: 'الانتظام وحسن الحضور', desc: 'للمنتظمين طوال العام' },
+    { id: 'behavior',   label: 'حسن السلوك والخُلق', desc: 'لأصحاب السلوك المثالي' },
+    { id: 'activity',   label: 'المشاركة في الأنشطة', desc: 'للمشاركين المتميزين' },
+    { id: 'effort',     label: 'الاجتهاد والكسب الجهد', desc: 'للطلاب المجتهدين' },
+    { id: 'custom',     label: 'شهادة مخصصة', desc: 'اكتب سبب التقدير بنفسك' }
+  ];
+  const honorState = { type: 'excellence', custom: '', date: '' };
+
   function subjects() { return Store.col('subjects'); }
   function classStudents(classId) { return Store.sortBy(Store.col('students').filter((s) => s.classId === classId && s.status !== 'withdrawn'), 'name'); }
   function gMax() { return Store.getSetting('gradeMax', 100); }
@@ -70,6 +82,7 @@
         <div class="tabs">
           <button class="tab ${state.mode === 'individual' ? 'active' : ''}" data-action="res:mode" data-m="individual">🎓 شهادة فردية</button>
           <button class="tab ${state.mode === 'group' ? 'active' : ''}" data-action="res:mode" data-m="group">📋 كشف جماعي للصف</button>
+          <button class="tab ${state.mode === 'honor' ? 'active' : ''}" data-action="res:mode" data-m="honor">🏆 شهادة تقدير</button>
         </div>
         <div class="card" style="margin-bottom:13px">
           <div class="gm-context">
@@ -77,9 +90,14 @@
               <select data-input="res:selStage">${stages.map((s) => `<option value="${s.id}" ${state.stageId === s.id ? 'selected' : ''}>${H.esc(s.name)}</option>`).join('')}</select></div>
             <div class="field"><label>الصف</label>
               <select data-input="res:selClass">${classes.map((c) => `<option value="${c.id}" ${state.classId === c.id ? 'selected' : ''}>${H.esc(c.name)}</option>`).join('')}</select></div>
-            ${state.mode === 'individual' ? `
+            ${state.mode === 'individual' || state.mode === 'honor' ? `
             <div class="field"><label>الطالب</label>
               <select data-input="res:selStudent">${sts.map((s) => `<option value="${s.id}" ${state.studentId === s.id ? 'selected' : ''}>${H.esc(s.name)} — ${H.esc(s.sid || '')}</option>`).join('')}</select></div>` : ''}
+            ${state.mode === 'honor' ? `
+            <div class="field"><label>نوع الشهادة</label>
+              <select data-input="res:honorType">${HONOR_TYPES.map((h) => `<option value="${h.id}" ${honorState.type === h.id ? 'selected' : ''}>${h.label}</option>`).join('')}</select></div>
+            ${honorState.type === 'custom' ? `<div class="field"><label>سبب التقدير (مخصص)</label><input data-input="res:honorCustom" value="${H.esc(honorState.custom)}" placeholder="مثال: المشاركة المتميزة في مسابقة القرآن الكريم"></div>` : ''}
+            <div class="field"><label>تاريخ الإصدار</label><input type="date" data-input="res:honorDate" value="${honorState.date || H.today()}"></div>` : ''}
           </div>
         </div>
         <div id="res-body"></div>
@@ -100,6 +118,15 @@
             <button class="btn btn-gold" data-action="res:pdfOne">📄 PDF</button>
           </div>
           <div class="cert-wrap">${html}</div>`;
+      } else if (state.mode === 'honor') {
+        if (!state.studentId) { el.innerHTML = UI.empty('👨‍🎓', 'لا يوجد طلاب في هذا الصف'); return; }
+        el.innerHTML = `
+          <div class="flex wrap gap-8 mb-16">
+            <button class="btn btn-primary" data-action="res:honorPrint">🖨️ طباعة شهادة التقدير</button>
+            <button class="btn btn-gold" data-action="res:honorPdf">📄 PDF</button>
+            <button class="btn btn-ghost" data-action="res:honorPrintAll">🏅 شهادة لكل الطلاب</button>
+          </div>
+          <div class="cert-wrap">${this.honorHTML(state.studentId)}</div>`;
       } else {
         el.innerHTML = `
           <div class="flex wrap gap-8 mb-16">
@@ -187,7 +214,87 @@
       </div>`;
     },
 
-    /* ---------- كشف جماعي ---------- */
+    /* ---------- شهادة تقدير (شهادة شكر فاخرة) ---------- */
+    honorText(sid) {
+      const h = HONOR_TYPES.find((x) => x.id === honorState.type) || HONOR_TYPES[0];
+      return honorState.type === 'custom' ? (honorState.custom || 'تقدير وجدل') : h.label;
+    },
+    honorHTML(sid) {
+      const s = Store.get('students', sid);
+      if (!s) return '';
+      const st = Store.settings();
+      const logo = st.logo || 'assets/images/logo.png';
+      const klass = (Store.get('classes', s.classId) || {}).name || '';
+      const stage = (Store.get('stages', s.stageId) || {}).name || '';
+      const reason = this.honorText(sid);
+      const results = studentResults(sid);
+      const o = overallOf(results);
+      const date = honorState.date || H.today();
+      const qr = H.qrcode(`HONOR|${s.sid || ''}|${s.name}|${reason}|${st.year || ''}`);
+      return `
+      <div class="honor-cert" dir="rtl">
+        <div class="hc-frame">
+          <div class="hc-corner tl"></div><div class="hc-corner tr"></div>
+          <div class="hc-corner bl"></div><div class="hc-corner br"></div>
+          <div class="hc-inner">
+            <div class="hc-head">
+              <img src="${logo}" alt="الشعار">
+              <div class="hc-republic">
+                <b>الجمهورية اليمنية</b>
+                <small>وزارة التربية والتعليم — مكتب التعليم</small>
+              </div>
+            </div>
+
+            <div class="hc-title-band">
+              <span class="hc-band-line"></span>
+              <b class="hc-title">شهادة تقدير وتميّز</b>
+              <small class="hc-title-sub">Certificate of Appreciation</small>
+              <span class="hc-band-line"></span>
+            </div>
+
+            <p class="hc-lead">تتقدم إدارة <b>${H.esc(st.schoolName || '')}</b> بالشكر والتقدير إلى الطالب</p>
+
+            <div class="hc-name">${H.esc(s.name)}</div>
+
+            <p class="hc-body">
+              والمرّتب في الصف <b>${H.esc(klass)}</b> — ${H.esc(stage)}
+              ${o.count ? ` بمعدل عام <b class="num">${o.pct}%</b>` : ''}
+              وللحصول على <b>${H.esc(reason)}</b>
+              خلال العام الدراسي <b>${H.esc(st.year || '')}</b>
+            </p>
+
+            <p class="hc-body hc-pray">متمّين على هذا الجهد الظاهر، متقدمين للجميع بمزيد من العز والنماء والتميّز،
+            ولكي يكون طالبنا هذا القدوة الحسنة لزملائه</p>
+
+            <div class="hc-meta">
+              <span>الرقم الأكاديمي: <b class="num">${H.esc(s.sid || '—')}</b></span>
+              <span>التاريخ: <b>${H.fmtDate(date)}</b></span>
+              <span>الترتيب في الصف: <b class="num">${ranking(state.classId)[sid] ? H.num(ranking(state.classId)[sid]) : '—'}</b></span>
+            </div>
+
+            <div class="hc-foot">
+              <div class="hc-sign">
+                <div class="hc-line"></div>
+                <small>${H.esc(st.issuedBy || 'مدير المدرسة')}</small>
+              </div>
+              <div class="hc-stamp">
+                <img src="${logo}" alt="">
+                <span>شعار المدرسة</span>
+              </div>
+              <div class="hc-sign">
+                <div class="hc-line"></div>
+                <small>ولي أمر الطالب</small>
+              </div>
+            </div>
+
+            <div class="hc-qr">
+              <img src="${qr}" alt="QR">
+              <span>امسح للتحقق — وثيقة صادرة إلكترونياً من نظام EduPro v${Config.VERSION}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    },
     groupTableHTML() {
       const sts = classStudents(state.classId);
       const subs = subjects();
@@ -266,7 +373,30 @@
     mode(ds) { state.mode = ds.m; P.render(document.getElementById('page-root')); },
     selStage(el, val) { state.stageId = val; state.classId = ''; state.studentId = ''; P.render(document.getElementById('page-root')); },
     selClass(el, val) { state.classId = val; state.studentId = ''; P.render(document.getElementById('page-root')); },
-    selStudent(el, val) { state.studentId = val; P.renderBody(); },
+    selStudent(el, val) { state.studentId = val; state.mode === 'honor' ? P.renderBody() : P.renderBody(); },
+    honorType(el, val) { honorState.type = val; P.render(document.getElementById('page-root')); },
+    honorCustom(el, val) { honorState.custom = val; const body = document.getElementById('res-body'); if (body) { const w = body.querySelector('.cert-wrap'); if (w) w.innerHTML = P.honorHTML(state.studentId); } },
+    honorDate(el, val) { honorState.date = val || H.today(); const body = document.getElementById('res-body'); if (body) { const w = body.querySelector('.cert-wrap'); if (w) w.innerHTML = P.honorHTML(state.studentId); } },
+
+    honorPrint() {
+      if (!state.studentId) return UI.toast('اختر الطالب أولاً', 'warn');
+      if (window.ReportIntl) ReportIntl.preview(P.honorHTML(state.studentId), { title: 'شهادة تقدير', orientation: 'portrait' });
+    },
+    honorPdf() {
+      const s = Store.get('students', state.studentId);
+      if (!s) return;
+      if (window.PDFEnterprise) PDFEnterprise.download(P.honorHTML(state.studentId), `شهادة-تقدير-${s.sid || s.name}.pdf`, 'portrait');
+    },
+    honorPrintAll() {
+      const sts = classStudents(state.classId);
+      if (!sts.length) return UI.toast('لا يوجد طلاب في الصف', 'warn');
+      UI.loading(true, 'جارٍ تجهيز شهادات التقدير…');
+      setTimeout(() => {
+        const html = sts.map((s) => `<div class="avoid-break">${P.honorHTML(s.id)}</div><div class="page-break"></div>`).join('');
+        UI.loading(false);
+        if (window.ReportIntl) ReportIntl.preview(html, { title: `شهادات تقدير ${sts.length} طالب`, orientation: 'portrait' });
+      }, 60);
+    },
 
     printOne() {
       if (window.ReportIntl) ReportIntl.preview(P.certHTML(state.studentId), { title: 'شهادة درجات', orientation: 'portrait' });

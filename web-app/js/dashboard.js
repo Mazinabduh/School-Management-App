@@ -1,5 +1,6 @@
 /* =========================================================
-   dashboard.js — لوحة التحكم الرئيسية
+   dashboard.js — لوحة التحكم الرئيسية — بنمط المحطة
+   بطاقات إحصاء 3D بأيقونات حقيقية + إجراءات سريعة + رسوم
    ========================================================= */
 'use strict';
 
@@ -25,6 +26,7 @@
             <button class="btn btn-primary btn-write" data-action="students:add">➕ تسجيل طالب</button>
             <button class="btn btn-gold" data-action="insts:receipt">🧾 سند قبض</button>
           `)}
+
           <div class="dash-hero shine">
             <h3>أهلاً بك، ${H.esc((AuthGuard.user || {}).name || '')} 👋</h3>
             <p>${H.esc(s.schoolName || '')} — ${H.esc(s.slogan || '')}</p>
@@ -36,10 +38,10 @@
           </div>
 
           <div class="grid grid-4 stagger" style="margin-bottom:14px">
-            ${this.stat('👨‍🎓', 'ic-blue', 'عدد الطلاب', H.num(students.length), 'طالب مسجل', 'students')}
-            ${this.stat('👥', 'ic-teal', 'الموظفون', H.num(staff.length), 'معلم وإداري وعامل', 'hr-employees')}
-            ${this.stat('🚌', 'ic-indigo', 'مشتركو الباص', H.num(busSubs), 'اشتراك نشط', 'bus-management')}
-            ${this.stat('⏳', 'ic-rose', 'متأخرات متبقية', H.money(due), 'أقساط لم تُسدد', 'installments')}
+            ${this.stat('nav-students', 'عدد الطلاب', H.num(students.length), 'طالب مسجل', 'students', '#38bdf8')}
+            ${this.stat('nav-employees', 'الموظفون', H.num(staff.length), 'معلم وإداري وعامل', 'hr-employees', '#34d399')}
+            ${this.stat('nav-bus', 'مشتركو الباص', H.num(busSubs), 'اشتراك نشط', 'bus-management', '#818cf8')}
+            ${this.stat('nav-installments', 'متأخرات متبقية', H.money(due), 'أقساط لم تُسدد', 'installments', '#f87171')}
           </div>
 
           <div class="finance-mini stagger" style="margin-bottom:14px">
@@ -58,14 +60,14 @@
           <div class="card" style="margin-bottom:14px">
             <div class="card-title">⚡ الإجراءات السريعة</div>
             <div class="quick-grid">
-              ${this.quick('👨‍🎓', 'ic-blue', 'طلاب جديد', 'students')}
-              ${this.quick('✍️', 'ic-purple', 'رصد درجات', 'grades-engine')}
-              ${this.quick('🧾', 'ic-gold', 'سند قبض', 'installments', true)}
-              ${this.quick('💰', 'ic-green', 'الميزانية', 'finance-budget')}
-              ${this.quick('🚌', 'ic-indigo', 'باصات', 'bus-management')}
-              ${this.quick('💵', 'ic-teal', 'رواتب', 'payroll-engine')}
-              ${this.quick('🪪', 'ic-purple', 'بطاقات', 'id-card-studio')}
-              ${this.quick('📊', 'ic-indigo', 'تقارير', 'reports-center')}
+              ${this.quick('nav-students', 'طلاب جديد', 'students')}
+              ${this.quick('nav-grades', 'رصد درجات', 'grades-engine')}
+              ${this.quick('nav-installments', 'سند قبض', 'installments', true)}
+              ${this.quick('nav-finance', 'الميزانية', 'finance-budget')}
+              ${this.quick('nav-bus', 'باصات', 'bus-management')}
+              ${this.quick('nav-payroll', 'رواتب', 'payroll-engine')}
+              ${this.quick('nav-cards', 'بطاقات', 'id-card-studio')}
+              ${this.quick('nav-reports', 'تقارير', 'reports-center')}
             </div>
           </div>
 
@@ -119,9 +121,10 @@
       }, { cutout: '62%' });
     },
 
-    stat(ico, color, label, value, sub, page) {
-      return `<div class="stat-card" data-action="nav:go" data-page="${page}">
-        ${UI.icon(ico, color)}
+    /* بطاقة إحصاء بنمط المحطة — أيقونة 3D حقيقية */
+    stat(icon, label, value, sub, page, color) {
+      return `<div class="stat-card" data-action="nav:go" data-page="${page}" style="--sc:${color || 'var(--primary)'}">
+        <span class="stat-ico"><img src="assets/icons/${icon}.png" alt="" loading="lazy"></span>
         <div class="st-info">
           <div class="st-label">${label}</div>
           <div class="st-value">${value}</div>
@@ -130,10 +133,10 @@
       </div>`;
     },
 
-    quick(ico, color, label, page, isAction) {
+    quick(icon, label, page, isAction) {
       const act = isAction ? `data-action="insts:receipt"` : `data-action="nav:go" data-page="${page}"`;
       return `<button class="quick-item" ${act}>
-        ${UI.icon(ico, color)}<span>${label}</span>
+        <img src="assets/icons/${icon}.png" alt="" loading="lazy"><span>${label}</span>
       </button>`;
     }
   };

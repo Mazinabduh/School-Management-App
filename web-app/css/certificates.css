@@ -61,3 +61,85 @@
   background: var(--c-soft, var(--primary-soft)); color: var(--c-head, var(--primary));
   font-weight: 900; font-size: 14px; gap: 10px; flex-wrap: wrap;
 }
+
+/* ═══════════ شهادة تقدير وتميّز — تصميم فاخر ═══════════ */
+.honor-cert { padding: 6px; }
+.hc-frame {
+  position: relative;
+  background: linear-gradient(160deg, #fffdf5 0%, #fff8e8 55%, #fdf3d9 100%);
+  border: 4px solid #b8860b;
+  border-radius: 10px;
+  padding: 7px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .12);
+}
+.hc-frame::before {
+  content: ''; position: absolute; inset: 7px;
+  border: 2px solid #d4af37;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.hc-inner { padding: 18px 26px 14px; position: relative; }
+.hc-corner {
+  position: absolute; width: 34px; height: 34px; z-index: 2;
+  border-color: #8a6a1c; border-style: solid; border-width: 0;
+}
+.hc-corner.tl { top: 10px; right: 10px; border-width: 4px 4px 0 0; border-radius: 0 14px 0 0; }
+.hc-corner.tr { top: 10px; left: 10px; border-width: 4px 0 0 4px; border-radius: 14px 0 0 0; }
+.hc-corner.bl { bottom: 10px; right: 10px; border-width: 0 4px 4px 0; border-radius: 0 0 14px 0; }
+.hc-corner.br { bottom: 10px; left: 10px; border-width: 0 0 4px 4px; border-radius: 0 0 0 14px; }
+
+.hc-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+.hc-head > img { width: 64px; height: 64px; object-fit: contain; }
+.hc-republic { flex: 1; text-align: center; color: #3c3222; }
+.hc-republic b { font-size: 14px; display: block; }
+.hc-republic small { font-size: 10px; color: #6b5d3d; }
+
+.hc-title-band { display: flex; align-items: center; gap: 12px; margin: 14px 0 4px; }
+.hc-band-line { flex: 1; height: 2px; background: linear-gradient(90deg, transparent, #d4af37, transparent); }
+.hc-title {
+  font-size: 25px; font-weight: 900; color: #7a5a0e;
+  text-shadow: 0 1px 0 #fff;
+  letter-spacing: 1px;
+}
+.hc-title-sub { display: block; text-align: center; font-size: 10.5px; color: #a08a52; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
+
+.hc-lead { text-align: center; font-size: 14px; color: #3c3222; margin: 14px 0 4px; font-weight: 700; }
+.hc-name {
+  text-align: center;
+  font-size: 30px; font-weight: 900; color: #083b66;
+  padding: 6px 18px;
+  border-bottom: 3px double #d4af37;
+  max-width: 78%; margin: 4px auto 12px;
+}
+.hc-body { text-align: center; font-size: 14.5px; line-height: 2; color: #37311f; margin: 4px auto; max-width: 92%; }
+.hc-body b { color: #7a5a0e; }
+.hc-pray { font-size: 12.5px; color: #6b5d3d; }
+
+.hc-meta {
+  display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;
+  margin: 16px auto 6px; font-size: 12px; color: #4a4128; font-weight: 700;
+}
+.hc-meta b { color: #083b66; }
+
+.hc-foot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 26px; gap: 10px; }
+.hc-sign { text-align: center; min-width: 140px; }
+.hc-line { width: 150px; border-top: 2px dotted #8a6a1c; margin: 34px auto 5px; }
+.hc-sign small { font-size: 11px; color: #3c3222; font-weight: 800; }
+.hc-stamp {
+  width: 92px; height: 92px; border-radius: 50%;
+  border: 2px dashed #b8860b;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: .85; background: radial-gradient(circle, rgba(212,175,55,.14), transparent 70%);
+}
+.hc-stamp img { width: 56px; height: 56px; object-fit: contain; }
+.hc-stamp span { font-size: 8.5px; color: #8a6a1c; font-weight: 800; }
+
+.hc-qr { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 9.5px; color: #6b5d3d; }
+.hc-qr img { width: 54px; height: 54px; }
+.hc-qr span { max-width: 200px; }
+
+/* عند الطباعة: شهادة واحدة لكل صفحة */
+@media print {
+  .honor-cert { page-break-inside: avoid; }
+  .honor-cert .hc-frame { border-color: #b8860b !important; }
+}

@@ -60,6 +60,14 @@ Actions.register('shell', {
     const u = Store.getSetting('themeUI', Config.THEME_DEFAULTS);
     ThemeApply.save({ dark: !u.dark });
     UI.toast(!u.dark ? '🌙 تم تفعيل الوضع الليلي' : '☀️ تم تفعيل الوضع النهاري', 'success', 1800);
+    /* تحديث أيقونة الزر (شمس/قمر) بنمط المحطة */
+    const btn = document.getElementById('btn-theme');
+    if (btn) {
+      const moon = btn.querySelector('.ico-moon'), sun = btn.querySelector('.ico-sun');
+      if (moon && sun) { moon.style.display = !u.dark ? 'none' : ''; sun.style.display = !u.dark ? '' : 'none'; }
+    }
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = !u.dark ? '#030b1a' : '#0091ea';
   },
   printSettings() {
     Router.go('settings-branding');
@@ -71,19 +79,19 @@ Actions.register('shell', {
     const pick = await UI.sheet({
       title: `${u.name} — ${AuthGuard.roleLabel(u.role)}`,
       items: [
-        { ico: '⚙️', label: 'الإعدادات والهوية', sub: 'بيانات المدرسة والمظهر', color: 'ic-slate', id: 'set' },
-        { ico: '🎨', label: 'ثيمات المستندات الدولية', sub: '4 قوالب للكشوفات والشهادات', color: 'ic-purple', id: 'themes' },
-        { ico: '☁️', label: 'النسخ الاحتياطي', sub: 'تصدير/استعادة/GitHub', color: 'ic-blue', id: 'bak' },
-        { ico: 'ℹ️', label: 'حول البرنامج', sub: 'YCMS — حول النظام والمطور', color: 'ic-gold', id: 'about' },
-        { ico: '🔑', label: 'تغيير كلمة المرور', color: 'ic-gold', id: 'pw' },
-        { ico: '🚪', label: 'تسجيل الخروج', color: 'ic-rose', id: 'out' }
+        { ico: 'nav-settings', label: 'الإعدادات والهوية', sub: 'بيانات المدرسة والمظهر' },
+        { ico: 'nav-themes', label: 'ثيمات المستندات الدولية', sub: '4 قوالب للكشوفات والشهادات' },
+        { ico: 'nav-backup', label: 'النسخ الاحتياطي', sub: 'تصدير/استعادة/GitHub/بيانات تجريبية' },
+        { ico: 'nav-about', label: 'حول البرنامج', sub: 'YCMS — حول النظام والمطور' },
+        { ico: 'nav-password', label: 'تغيير كلمة المرور' },
+        { ico: 'nav-logout', label: 'تسجيل الخروج' }
       ]
     });
     if (!pick) return;
-    if (pick.id === 'set') Router.go('settings-branding');
-    if (pick.id === 'themes') { Router.go('settings-branding'); setTimeout(() => Actions.call('set', 'tab', { t: 'print' }), 80); }
-    if (pick.id === 'bak') Router.go('backup-restore');
-    if (pick.id === 'about') {
+    if (pick.label === 'الإعدادات والهوية') Router.go('settings-branding');
+    if (pick.label === 'ثيمات المستندات الدولية') { Router.go('settings-branding'); setTimeout(() => Actions.call('set', 'tab', { t: 'print' }), 80); }
+    if (pick.label === 'النسخ الاحتياطي') Router.go('backup-restore');
+    if (pick.label === 'حول البرنامج') {
       UI.modal({
         title: 'ℹ️ حول البرنامج',
         body: `
@@ -92,16 +100,17 @@ Actions.register('shell', {
             <h3 style="margin:10px 0 4px;font-size:17px">${H.esc(Store.getSetting('schoolName') || 'تطبيق ادارة المدرسة')}</h3>
             <div style="font-size:12.5px;color:var(--text-3);margin-bottom:14px">نظام EduPro الإداري الأكاديمي — الإصدار ${Config.VERSION} (بناء ${Config.BUILD})</div>
             <div style="background:linear-gradient(135deg,rgba(0,180,255,.08),rgba(0,230,118,.05));border:1px solid rgba(0,180,255,.2);border-radius:14px;padding:14px 12px;margin-bottom:10px">
-              <div style="font-weight:900;font-size:13.5px;margin-bottom:6px">جميع الحقوق محفوظة لشركة YCMS</div>
-              <div style="font-size:12.5px;color:var(--text-2)">برمجة وتطوير: <b>مازن عبدالوهاب</b></div>
-              <a href="tel:774047989" style="display:inline-block;margin-top:8px;background:rgba(0,180,255,.14);color:var(--primary);font-weight:800;padding:8px 18px;border-radius:10px;text-decoration:none;font-size:13px">📞 774047989</a>
+              <div style="font-weight:900;font-size:14px;margin-bottom:8px">جميع الحقوق محفوظة لشركة YCMS</div>
+              <div style="font-size:13px;color:var(--text-2);font-weight:800">برمجة وتطوير: <b>مازن عبدالوهاب</b></div>
+              <div style="font-size:13px;color:var(--text-2);font-weight:800;margin-top:4px">إدارة محاسبية: <b>صدام نجم الدين</b></div>
+              <a href="tel:774047989" style="display:inline-block;margin-top:10px;background:rgba(0,180,255,.14);color:var(--primary);font-weight:800;padding:8px 18px;border-radius:10px;text-decoration:none;font-size:13px">📞 774047989</a>
             </div>
             <small style="color:var(--text-3);font-size:11px">يعمل دون إنترنت — البيانات محفوظة في جهازك ومشفرة</small>
           </div>`,
         foot: [{ label: 'إغلاق', cls: 'btn-ghost', onClick: (h) => h.close() }]
       });
     }
-    if (pick.id === 'pw') {
+    if (pick.label === 'تغيير كلمة المرور') {
       const d = await UI.form('🔑 تغيير كلمة المرور', [
         { name: 'old', label: 'الحالية', type: 'password', req: true },
         { name: 'new', label: 'الجديدة (6+ أحرف)', type: 'password', req: true }
@@ -111,7 +120,7 @@ Actions.register('shell', {
         UI.toast(r.ok ? 'تم التغيير ✓' : r.msg, r.ok ? 'success' : 'error');
       }
     }
-    if (pick.id === 'out') {
+    if (pick.label === 'تسجيل الخروج') {
       if (await UI.confirm({ title: 'تسجيل الخروج', msg: 'البيانات محفوظة في جهازك ولن تُفقد. تسجيل الخروج يلغي «تذكرني» وسيُطلب الدخول مرة أخرى. متابعة؟', okLabel: 'خروج', danger: true })) {
         Store.flush();
         AuthGuard.logout();

@@ -1,53 +1,54 @@
 /* =========================================================
-   navigation.js — نظام التنقل السريع (SPA Router)
-   يبني القائمة الجانبية والشريط السفلي من سجل الصفحات Pages
-   ويطبّق الصلاحيات — مع دعم الهاش (#students)
+   navigation.js — نظام التنقل السريع (SPA Router) — بنمط المحطة
+   القائمة الجانبية والشريط السفلي بأيقونات 3D حقيقية (PNG)
+   + أسطوانة الأخبار في الشريط العلوي + دعم الهاش (#students)
    ========================================================= */
 'use strict';
 
 (function () {
-  /* ---------- خريطة التنقل ---------- */
+  /* ---------- خريطة التنقل — icon = ملف PNG ثلاثي الأبعاد ---------- */
   const NAV = [
     { label: 'الرئيسية', items: [
-      { id: 'dashboard', ico: '🏠', label: 'لوحة التحكم', color: 'ic-blue' }
+      { id: 'dashboard', icon: 'nav-home', label: 'لوحة التحكم' }
     ]},
     { label: 'شؤون الطلاب', items: [
-      { id: 'students', ico: '👨‍🎓', label: 'الطلاب والتسجيل', color: 'ic-blue' },
-      { id: 'stages-classes', ico: '🏫', label: 'المراحل والصفوف', color: 'ic-teal' }
+      { id: 'students', icon: 'nav-students', label: 'الطلاب والتسجيل' },
+      { id: 'stages-classes', icon: 'nav-stages', label: 'المراحل والصفوف' }
     ]},
     { label: 'الشؤون الأكاديمية', items: [
-      { id: 'grades-engine', ico: '✍️', label: 'رصد الدرجات', color: 'ic-purple' },
-      { id: 'results-certificates', ico: '🏅', label: 'النتائج والشهادات', color: 'ic-gold' }
+      { id: 'grades-engine', icon: 'nav-grades', label: 'رصد الدرجات' },
+      { id: 'results-certificates', icon: 'nav-results', label: 'النتائج والشهادات' }
     ]},
     { label: 'الحسابات والمخزون', items: [
-      { id: 'finance-budget', ico: '💰', label: 'الميزانية العامة', color: 'ic-green' },
-      { id: 'installments', ico: '🧾', label: 'الأقساط والفواتير', color: 'ic-blue' },
-      { id: 'store-books-uniform', ico: '👕', label: 'الزي والكتب', color: 'ic-orange' },
-      { id: 'bus-management', ico: '🚌', label: 'اشتراكات الباص', color: 'ic-indigo' }
+      { id: 'finance-budget', icon: 'nav-finance', label: 'الميزانية العامة' },
+      { id: 'installments', icon: 'nav-installments', label: 'الأقساط والفواتير' },
+      { id: 'store-books-uniform', icon: 'nav-store', label: 'الزي والكتب' },
+      { id: 'bus-management', icon: 'nav-bus', label: 'اشتراكات الباص' }
     ]},
     { label: 'الموظفون', items: [
-      { id: 'hr-employees', ico: '👥', label: 'شؤون الموظفين', color: 'ic-teal' },
-      { id: 'payroll-engine', ico: '💵', label: 'الرواتب والمستحقات', color: 'ic-green' }
+      { id: 'hr-employees', icon: 'nav-employees', label: 'شؤون الموظفين' },
+      { id: 'payroll-engine', icon: 'nav-payroll', label: 'الرواتب والمستحقات' }
     ]},
     { label: 'أدوات إدارية', items: [
-      { id: 'id-card-studio', ico: '🪪', label: 'استوديو البطاقات', color: 'ic-purple' },
-      { id: 'communications', ico: '📣', label: 'تواصل أولياء الأمور', color: 'ic-rose' },
-      { id: 'reports-center', ico: '📊', label: 'مركز التقارير', color: 'ic-indigo' }
+      { id: 'id-card-studio', icon: 'nav-cards', label: 'استوديو البطاقات' },
+      { id: 'communications', icon: 'nav-communications', label: 'تواصل أولياء الأمور' },
+      { id: 'reports-center', icon: 'nav-reports', label: 'مركز التقارير' }
     ]},
     { label: 'النظام', items: [
-      { id: 'settings-branding', ico: '⚙️', label: 'الإعدادات والهوية', color: 'ic-slate' },
-      { id: 'backup-restore', ico: '☁️', label: 'النسخ الاحتياطي', color: 'ic-blue' },
-      { id: 'audit-log', ico: '🛡️', label: 'سجل الحركات', color: 'ic-slate' }
+      { id: 'settings-branding', icon: 'nav-settings', label: 'الإعدادات والهوية' },
+      { id: 'backup-restore', icon: 'nav-backup', label: 'النسخ الاحتياطي' },
+      { id: 'audit-log', icon: 'nav-audit', label: 'سجل الحركات' }
     ]}
   ];
 
   const BOTTOM = ['dashboard', 'students', 'grades-engine', 'installments'];
 
+  const ico = (name, cls) => `<img class="nav-icon-3d" src="assets/icons/${name}.png" alt="" loading="lazy">`;
+
   const Router = {
     NAV, BOTTOM,
     current: null,
 
-    /* كل الصفحات المسموحة للدور الحالي */
     allowedItems() {
       const out = [];
       for (const g of NAV) for (const it of g.items) if (RBAC.can(it.id)) out.push(it);
@@ -61,7 +62,7 @@
 
     /* ---------- بناء الهيكل ---------- */
     buildShell() {
-      /* القائمة الجانبية */
+      /* القائمة الجانبية — بنمط المحطة */
       const nav = document.getElementById('sidebar-nav');
       const allowed = new Set(this.allowedItems().map((i) => i.id));
       nav.innerHTML = NAV.map((g) => {
@@ -69,7 +70,7 @@
         if (!items.length) return '';
         return `<div class="nav-group-label">${g.label}</div>` + items.map((i) => `
           <button class="nav-item" data-page="${i.id}" data-action="nav:go">
-            <span class="ni-ico icon3d ${i.color}">${i.ico}</span>
+            <span class="ni-ico">${ico(i.icon)}</span>
             <span class="ni-label">${i.label}</span>
           </button>`).join('');
       }).join('');
@@ -79,11 +80,33 @@
       const bottomItems = BOTTOM.filter((id) => allowed.has(id)).map((id) => this.findItem(id));
       bn.innerHTML = bottomItems.map((i) => `
         <button class="bottomnav-item" data-page="${i.id}" data-action="nav:go">
-          <span class="bn-ico">${i.ico}</span><span>${i.label.split(' ')[0]}</span>
+          <span class="bn-ico">${ico(i.icon)}</span><span>${i.label.split(' ')[0]}</span>
         </button>`).join('') + `
         <button class="bottomnav-item" id="btn-more-sheet" data-action="nav:more">
-          <span class="bn-ico">⋯</span><span>المزيد</span>
+          <span class="bn-ico">${ico('nav-more')}</span><span>المزيد</span>
         </button>`;
+
+      this.buildTicker();
+    },
+
+    /* ---------- أسطوانة الأخبار (المحطة) ---------- */
+    buildTicker() {
+      const track = document.getElementById('cylinderTrack');
+      if (!track) return;
+      const s = Store.settings();
+      const due = H.sum(Store.col('feeplans'), (p) => H.sum((p.items || []).filter((i) => !i.paid), (i) => i.amount));
+      const items = [
+        { t: `🏫 ${s.schoolName || 'المدرسة الدولية الخاصة'}` },
+        { t: `👨‍🎓 الطلاب: <b>${H.num(Store.count('students'))}</b>` },
+        { t: `👥 الموظفون: <b>${H.num(Store.count('employees'))}</b>` },
+        { t: `⏳ المتأخرات: <b>${H.money(due)}</b>` },
+        { t: `🗓️ العام الدراسي: <b>${H.esc(s.year || '')}</b>` },
+        { t: `📅 ${H.arDate(Date.now())}` },
+        { t: `🚌 مشتركو الباص: <b>${H.num(Store.count('busSubs', (b) => b.status === 'active'))}</b>` },
+        { t: `🎓 جميع الحقوق محفوظة لشركة <b>YCMS</b>` }
+      ];
+      const one = items.map((x) => `<span class="tk">${x.t}</span><span class="tk-sep">◆</span>`).join('');
+      track.innerHTML = one + one; /* نسختان للحلقة المستمرة */
     },
 
     /* ---------- التنقل ---------- */
@@ -108,9 +131,7 @@
       this.current = id;
       ChartsEngine.destroyAll();
       const root = document.getElementById('page-root');
-      root.innerHTML = '<div style="padding:60px" class="text-center"><div class="spinner"></div></div>';
       try {
-        root.innerHTML = '';
         page.render(root);
       } catch (err) {
         console.error('[Router] خطأ في عرض', id, err);
@@ -120,10 +141,11 @@
       /* تمييز العناصر النشطة */
       document.querySelectorAll('#sidebar-nav .nav-item').forEach((n) => n.classList.toggle('active', n.dataset.page === id));
       document.querySelectorAll('#bottomnav .bottomnav-item').forEach((n) => n.classList.toggle('active', n.dataset.page === id));
-      /* عنوان الشريط العلوي */
-      const it = this.findItem(id);
-      document.getElementById('topbar-page').textContent = it ? it.label : '';
-      document.title = `${it ? it.label : ''} — ${(Store.getSetting('schoolName')) || 'EduPro'}`;
+      const mb = document.getElementById('btn-menu');
+      if (mb) mb.classList.remove('open');
+      /* أسطوانة الأخبار تتحدث مع كل صفحة */
+      this.buildTicker();
+      document.title = `${item ? item.label : ''} — ${(Store.getSetting('schoolName')) || 'EduPro'}`;
       this.closeSidebar();
       try { history.replaceState(null, '', '#' + id); } catch (e) {}
       root.scrollTop = 0;
@@ -133,11 +155,11 @@
 
     refresh() { if (this.current) this.go(this.current); },
 
-    /* ---------- قائمة "المزيد" ---------- */
+    /* ---------- قائمة "المزيد" — بنمط المحطة بأيقونات 3D ---------- */
     async more() {
       const bottomSet = new Set(BOTTOM);
       const items = this.allowedItems().filter((i) => !bottomSet.has(i.id))
-        .map((i) => ({ ico: i.ico, label: i.label, sub: '', color: i.color, id: i.id }));
+        .map((i) => ({ ico: i.icon, label: i.label, sub: '', id: i.id }));
       if (!items.length) return;
       const picked = await UI.sheet({ title: 'كل الأقسام', items });
       if (picked && picked.id) this.go(picked.id);
@@ -147,13 +169,17 @@
     toggleSidebar() {
       const sb = document.getElementById('sidebar');
       const bd = document.getElementById('sidebar-backdrop');
+      const mb = document.getElementById('btn-menu');
       sb.classList.toggle('open');
       bd.classList.toggle('show', sb.classList.contains('open'));
+      if (mb) mb.classList.toggle('open', sb.classList.contains('open'));
     },
     closeSidebar() {
       if (window.innerWidth >= 1024) return;
       document.getElementById('sidebar').classList.remove('open');
       document.getElementById('sidebar-backdrop').classList.remove('show');
+      const mb = document.getElementById('btn-menu');
+      if (mb) mb.classList.remove('open');
     },
 
     /* ---------- تحديث بيانات الهوية في الواجهة ---------- */
@@ -171,6 +197,9 @@
       });
       const yr = document.getElementById('sidebar-year');
       if (yr) yr.textContent = s.year || '';
+      /* حرف الأفاتار */
+      const av = document.getElementById('topbar-avatar');
+      if (av && window.AuthGuard && AuthGuard.user) av.textContent = H.initials(AuthGuard.user.name);
     }
   };
 

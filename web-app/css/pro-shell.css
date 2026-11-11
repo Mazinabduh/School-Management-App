@@ -1,0 +1,441 @@
+/* =========================================================
+   pro-shell.css — غلاف النظام بأسلوب تطبيق المحطة (v3.2)
+   شريط علوي زجاجي بأسطوانة أخبار + قائمة جانبية بأيقونات 3D
+   + شريط سفلي مستدير + إصلاح تداخل المحتوى مع الأيقونات السفلية
+   يُحمَّل أخيراً — يعلو على sidebar.css و layout.css
+   ========================================================= */
+
+/* ═══════════ 1) إصلاح التداخل: المحتوى لا يمر تحت الشريط السفلي ═══════════ */
+#page-root {
+  padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px) + 12px);
+}
+@media (min-width: 1024px) {
+  #page-root { padding-bottom: 24px; }
+}
+.page { padding: 14px var(--pad) 8px; }
+.page > *:last-child { margin-bottom: 0; }
+
+/* ═══════════ 2) الشريط العلوي — زجاجي بزوايا سفلية مستديرة (المحطة) ═══════════ */
+#topbar {
+  position: fixed; top: 0; left: 4px; right: 4px;
+  height: var(--topbar-h);
+  z-index: var(--z-topbar);
+  display: flex; align-items: center;
+  padding: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: transparent;
+  border: 0;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+.topbar-bg-effect {
+  position: absolute; inset: 0;
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(24px) saturate(1.8);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0 0 22px 22px;
+  box-shadow: var(--sh-2);
+}
+[data-theme="dark"] .topbar-bg-effect {
+  background: linear-gradient(135deg, rgba(3,11,26,.88) 0%, rgba(7,20,40,.88) 100%);
+  border-bottom: 1px solid rgba(0,180,255,.18);
+}
+.topbar-inner {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; height: 100%; padding: 0 12px; gap: 8px;
+}
+.topbar-start { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+.topbar-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-2); flex-shrink: 0;
+  background: var(--surface-3); border: 1px solid var(--line);
+  cursor: pointer; transition: all .22s; padding: 0;
+}
+[data-theme="dark"] .topbar-btn { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.07); }
+.topbar-btn:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); transform: translateY(-1px) scale(1.04); }
+.topbar-btn:active { transform: scale(.92); }
+.topbar-btn svg { width: 19px; height: 19px; }
+
+/* الهامبرغر — ثلاثة خطوط متحركة */
+.hamburger { display: flex; flex-direction: column; gap: 4.5px; width: 19px; }
+.hamburger i {
+  display: block; height: 2.5px; border-radius: 2px;
+  background: var(--text-2); transition: all .28s;
+}
+.menu-btn.open .hamburger i:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.menu-btn.open .hamburger i:nth-child(2) { opacity: 0; }
+.menu-btn.open .hamburger i:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* الشعار المصغر + اسم المدرسة */
+.topbar-brand-mini { display: flex; align-items: center; gap: 9px; min-width: 0; }
+#topbar-logo {
+  width: 34px; height: 34px; border-radius: 50%; object-fit: contain; flex-shrink: 0;
+  border: 2px solid var(--line-2);
+  box-shadow: 0 0 14px rgba(0, 180, 255, .18);
+  background: var(--surface-2);
+}
+[data-theme="dark"] #topbar-logo { border-color: rgba(0,180,255,.4); background: linear-gradient(145deg,#1e3a5f,#0a1628); }
+.topbar-school-name {
+  font-size: 14px; font-weight: 800; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* على الهواتف: الشعار + الأسطوانة فقط (كالمحطة) */
+@media (max-width: 520px) {
+  .topbar-school-name { display: none; }
+  .topbar-cylinder { max-width: 52vw; }
+}
+.topbar-page-name { font-size: 11px; color: var(--text-3); font-weight: 700; }
+
+/* ── أسطوانة الأخبار المتحركة (المحطة) ── */
+.topbar-cylinder {
+  flex: 1; min-width: 60px; max-width: 44vw;
+  display: flex; align-items: center; justify-content: center;
+  height: 34px; overflow: hidden;
+}
+.cylinder-body {
+  width: 100%; height: 100%; overflow: hidden;
+  border-radius: 17px;
+  background: var(--primary-soft);
+  border: 1px solid var(--line-2);
+  display: flex; align-items: center;
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+[data-theme="dark"] .cylinder-body {
+  background: rgba(0,180,255,.08);
+  border-color: rgba(0,180,255,.22);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.25);
+}
+.cylinder-track {
+  display: inline-flex; align-items: center; gap: 22px;
+  width: max-content; min-width: 200%;
+  direction: rtl; animation: schoolTicker 22s linear infinite;
+  will-change: transform; padding: 0 10px;
+}
+.cylinder-track:hover { animation-play-state: paused; }
+.cylinder-track .tk {
+  font-size: 12px; font-weight: 700; color: var(--text-2);
+  white-space: nowrap; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+}
+.cylinder-track .tk b { color: var(--primary); font-weight: 900; }
+[data-theme="dark"] .cylinder-track .tk { color: #cfe3fa; }
+[data-theme="dark"] .cylinder-track .tk b { color: #00d4ff; }
+.cylinder-track .tk-sep { color: var(--primary-3); font-size: 11px; filter: drop-shadow(0 0 6px rgba(0,212,255,.8)); flex: 0 0 auto; }
+@keyframes schoolTicker {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* أزرار النهاية + الأفاتار */
+.topbar-actions { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.admin-avatar-btn {
+  position: relative; width: 38px; height: 38px; border-radius: 50%;
+  background: none; border: 0; cursor: pointer; padding: 0; flex-shrink: 0;
+}
+.avatar-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--grad-primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 15px;
+  box-shadow: 0 3px 10px rgba(0, 145, 234, .4), inset 0 1px 0 rgba(255,255,255,.3);
+  border: 2px solid rgba(255,255,255,.35);
+}
+[data-theme="dark"] .avatar-circle { border-color: rgba(0,212,255,.5); }
+.avatar-status-dot {
+  position: absolute; bottom: 1px; left: 1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #22c55e; border: 2px solid var(--bg-2);
+  box-shadow: 0 0 6px rgba(34,197,94,.7);
+}
+
+/* ═══════════ 3) القائمة الجانبية — نمط المحطة ═══════════ */
+#sidebar {
+  width: var(--sidebar-w);
+  max-width: 85vw;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, .4);
+}
+[data-theme="dark"] #sidebar {
+  background: linear-gradient(180deg, rgba(7,20,40,.94) 0%, rgba(3,11,26,.96) 100%) !important;
+  border-left: 1px solid rgba(0,180,255,.14);
+}
+.sidebar-head {
+  padding: 16px 14px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(135deg, var(--primary-soft), transparent);
+}
+[data-theme="dark"] .sidebar-head { background: linear-gradient(135deg, rgba(0,180,255,.08), rgba(0,255,136,.04)); border-color: rgba(0,180,255,.14); }
+.sidebar-head img {
+  width: 48px; height: 48px; object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid var(--line-2);
+  box-shadow: 0 0 18px rgba(0, 180, 255, .25), inset 0 2px 4px rgba(255,255,255,.1);
+  background: var(--surface-2); padding: 4px;
+}
+[data-theme="dark"] .sidebar-head img {
+  border-color: rgba(0,180,255,.4);
+  background: linear-gradient(145deg, #1e3a5f, #0a1628);
+}
+.sidebar-head b { font-size: 15px; font-weight: 800; letter-spacing: .3px; }
+.sidebar-head small { font-size: 11px; color: var(--primary); font-weight: 700; }
+.sidebar-close {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--surface-3); border: 1px solid var(--line);
+  color: var(--text-3); font-size: 14px;
+  margin-right: auto;
+}
+.sidebar-close:hover { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
+
+#sidebar-nav { padding: 10px 8px 14px; overscroll-behavior: contain; }
+#sidebar-nav::-webkit-scrollbar { width: 5px; }
+#sidebar-nav::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 3px; }
+
+.nav-group-label {
+  font-size: 10px; font-weight: 800; letter-spacing: .6px;
+  color: var(--text-3); margin: 13px 10px 6px;
+  display: flex; align-items: center; gap: 7px;
+}
+.nav-group-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 13px;
+  width: 100%; padding: 9px 11px; margin: 3px 0;
+  border-radius: 12px; color: var(--text-2);
+  font-size: 13.5px; font-weight: 700; text-align: right;
+  transition: all .2s; position: relative;
+  background: transparent; border: none; cursor: pointer;
+  overflow: hidden;
+}
+.nav-item::before {
+  content: ''; position: absolute; right: 0; top: 50%;
+  width: 3px; height: 0; border-radius: 4px 0 0 4px;
+  background: var(--grad-primary);
+  transform: translateY(-50%);
+  transition: height .28s;
+}
+.nav-item:hover { background: var(--primary-soft); color: var(--text); transform: translateX(-3px); }
+.nav-item:hover::before { height: 58%; }
+.nav-item:active { transform: scale(.97); }
+.nav-item.active {
+  background: linear-gradient(135deg, var(--primary-soft), transparent 130%);
+  color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+[data-theme="dark"] .nav-item.active {
+  color: #00d4ff;
+  background: linear-gradient(135deg, rgba(0,180,255,.16), rgba(0,180,255,.04));
+  box-shadow: inset 0 0 0 1px rgba(0,180,255,.25);
+}
+.nav-item.active::before { height: 62%; box-shadow: 0 0 12px var(--primary); }
+
+/* أيقونة 3D حقيقية — صورة PNG بنمط المحطة */
+.nav-item .ni-ico, .sheet-item .si-ico {
+  width: 40px; height: 40px; min-width: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative;
+  background: transparent; border: none;
+  overflow: visible;
+}
+.nav-item .ni-ico img, .sheet-item .si-ico img, .bn-ico img {
+  width: 38px; height: 38px; object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .28));
+  transition: transform .28s cubic-bezier(.34, 1.56, .64, 1);
+}
+.nav-item:hover .ni-ico img { transform: scale(1.12) rotate(-3deg); }
+.nav-item.active .ni-ico img { transform: scale(1.06); filter: drop-shadow(0 0 9px var(--primary)); }
+.nav-item .ni-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-item .ni-badge {
+  margin-right: auto;
+  min-width: 27px; height: 22px; padding: 0 8px;
+  background: var(--grad-primary); color: #fff;
+  font-size: 10.5px; font-weight: 800; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 145, 234, .4);
+}
+.nav-item .ni-badge.danger { background: var(--grad-danger); box-shadow: 0 2px 6px rgba(220,38,38,.4); }
+
+.sidebar-foot { padding: 12px 12px 10px; border-top: 1px solid var(--line); background: rgba(0,0,0,.03); }
+[data-theme="dark"] .sidebar-foot { background: rgba(0,0,0,.18); border-color: rgba(0,180,255,.12); }
+.sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.sidebar-user b { font-size: 13.5px; }
+.sidebar-user small { color: var(--text-3); font-size: 11px; }
+.sidebar-ver { display: block; text-align: center; margin-top: 8px; color: var(--text-3); font-size: 10px; }
+.sidebar-credits {
+  display: block; text-align: center; margin-top: 3px;
+  color: var(--text-3); font-size: 9.5px; line-height: 1.7; opacity: .85;
+}
+
+/* ═══════════ 4) الشريط السفلي — مستدير بأسلوب المحطة ═══════════ */
+#bottomnav {
+  position: fixed; bottom: 0; left: 4px; right: 4px;
+  height: calc(var(--bottomnav-h) + env(safe-area-inset-bottom, 0px));
+  padding: 0 2px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex; align-items: stretch; justify-content: space-around;
+  z-index: var(--z-bottomnav);
+  background: transparent; border: 0;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+#bottomnav::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(24px) saturate(1.8);
+  border-top: 1px solid var(--line);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, .14);
+}
+[data-theme="dark"] #bottomnav::before {
+  background: linear-gradient(0deg, rgba(3,11,26,.95) 0%, rgba(7,20,40,.88) 100%);
+  border-top-color: rgba(0,180,255,.18);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, .4);
+}
+.bottomnav-item {
+  position: relative; z-index: 2;
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  padding: 6px 2px; min-width: 48px;
+  color: var(--text-3); font-size: 9.5px; font-weight: 700;
+  cursor: pointer; background: none; border: 0;
+  transition: all .25s;
+  white-space: nowrap;
+}
+.bottomnav-item .bn-ico img { width: 27px; height: 27px; transition: transform .28s cubic-bezier(.34,1.56,.64,1); }
+.bottomnav-item.active { color: var(--primary); }
+.bottomnav-item.active .bn-ico img {
+  transform: translateY(-3px) scale(1.16);
+  filter: drop-shadow(0 0 8px var(--primary));
+}
+.bottomnav-item.active::after {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 50%; max-width: 30px; height: 3px;
+  background: var(--grad-primary); border-radius: 0 0 4px 4px;
+  box-shadow: 0 0 10px var(--primary);
+}
+.bottomnav-item:active { transform: scale(.9); }
+
+/* ═══════════ 5) رأس الصفحة — أيقونة 3D بنمط المحطة ═══════════ */
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.page-head .ph-title { display: flex; align-items: center; gap: 12px; }
+.page-head .ph-ico { width: 44px; height: 44px; min-width: 44px; display: inline-flex; }
+.page-head .ph-ico img {
+  width: 44px; height: 44px; object-fit: contain;
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, .28));
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+.page-head:hover .ph-ico img { transform: scale(1.08) rotate(-4deg); }
+.page-head h2 {
+  font-size: 19px; font-weight: 900; margin: 0; line-height: 1.3;
+  background: linear-gradient(135deg, var(--text), var(--primary));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+[data-theme="dark"] .page-head h2 { background: linear-gradient(135deg, #f5f9ff, #00d4ff); -webkit-background-clip: text; background-clip: text; }
+.page-head .muted { font-size: 12px; margin-top: 2px; }
+
+/* ═══════════ 6) بطاقات الإحصاء السريع — stat-3d بنمط المحطة ═══════════ */
+.stat-card {
+  position: relative; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px; padding: 15px 14px;
+  box-shadow: var(--sh-2);
+  transition: all .3s;
+  cursor: pointer;
+  transform-style: preserve-3d;
+}
+[data-theme="dark"] .stat-card {
+  background: linear-gradient(135deg, #0f1f3a, #0a1628);
+  border-color: rgba(255, 255, 255, .06);
+}
+.stat-card .stat-ico { display: block; margin-bottom: 8px; }
+.stat-card .stat-ico img {
+  width: 40px; height: 40px; object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .3));
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.stat-card:hover .stat-ico img { transform: scale(1.14) rotate(-5deg); }
+.stat-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: var(--sc, var(--primary)); opacity: .5;
+}
+.stat-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 42%, rgba(255,255,255,.07) 50%, transparent 58%);
+  transform: translateX(-130%);
+  transition: transform .8s;
+  pointer-events: none;
+}
+.stat-card:hover::after { transform: translateX(130%); }
+.stat-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--sh-3); }
+.stat-card .icon3d { margin-bottom: 8px; }
+.stat-card .st-value {
+  font-size: 23px; font-weight: 900; line-height: 1.2;
+  letter-spacing: .2px;
+}
+.stat-card .st-label { font-size: 12px; font-weight: 800; color: var(--text-2); }
+.stat-card .st-sub { font-size: 10.5px; }
+
+/* ═══════════ 7) الإجراءات السريعة — quick-3d بنمط المحطة ═══════════ */
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 420px) { .quick-grid { grid-template-columns: repeat(3, 1fr); } }
+.quick-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 13px 6px 10px; border-radius: 14px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  cursor: pointer; transition: all .28s; position: relative; overflow: hidden;
+}
+[data-theme="dark"] .quick-item { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
+.quick-item::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,.08) 50%, transparent 60%);
+  transform: translateX(-120%); transition: transform .6s; pointer-events: none;
+}
+.quick-item:hover::before { transform: translateX(120%); }
+.quick-item:hover { transform: translateY(-3px) scale(1.02); border-color: var(--primary); box-shadow: var(--sh-2); }
+.quick-item:active { transform: scale(.94); }
+.quick-item img { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,.25)); transition: transform .3s; }
+.quick-item:hover img { transform: scale(1.12) rotate(-4deg); }
+.quick-item span { font-size: 11px; font-weight: 800; color: var(--text-2); text-align: center; }
+[data-theme="dark"] .quick-item span { color: #dbe7f7; }
+
+/* ═══════════ 8) قائمة الخيارات السفلية (Sheet) — أيقونات PNG ═══════════ */
+.sheet-item {
+  display: flex; align-items: center; gap: 13px;
+  width: 100%; padding: 9px 11px; margin: 3px 0;
+  border-radius: 12px; color: var(--text-2);
+  font-size: 13.5px; font-weight: 700; text-align: right;
+  background: transparent; border: none; cursor: pointer;
+  transition: all .18s;
+}
+.sheet-item:hover { background: var(--primary-soft); color: var(--text); }
+.sheet-item .si-ico img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 3px 5px rgba(0,0,0,.25)); }
+.sheet-item .si-arrow { margin-right: auto; color: var(--text-3); font-size: 15px; }
+
+/* ═══════════ 9) توقيعات البداية ═══════════ */
+.splash-dev, .splash-acc {
+  font-size: 11.5px; margin: 2px 0; color: #9fb8d8; font-weight: 600;
+}
+.splash-dev b { color: #7fd8ff; }
+.splash-acc { margin-top: 0; opacity: .9; }
+.splash-acc b { color: #ffd54f; }
+
+/* ═══════════ 10) بطاقات الواجهة زجاجية (dark) ═══════════ */
+[data-theme="dark"] .card {
+  background: rgba(12, 24, 48, .92);
+  border-color: rgba(255, 255, 255, .06);
+}
+[data-theme="dark"] .card-title { color: #f2f7ff; }
+
+/* ═══════════ 11) الوضع الفاتح: الشعار المصغر بإطار فاتح ═══════════ */
+@media (min-width: 1024px) {
+  #topbar { left: 0; right: var(--sidebar-w); }
+  #bottomnav { display: none; }
+}
