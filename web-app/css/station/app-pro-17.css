@@ -1,0 +1,292 @@
+/* =============================================================================
+   app-pro-v2026.17.css — الحزمة البصرية v2026.17
+   -----------------------------------------------------------------------------
+   1) قوائم ثلاثية الأبعاد حقيقية (رف مكتب بارز بجدران وحواف إضاءة) — علوية/
+      سفلية/جانبية — مشتقة بالكامل من متغيرات الثيم فتتكيف مع كل وضع:
+      ليلي / نهاري / AMOLED أسود نقي / الفصول الأربعة.
+   2) إلغاء قاعدة @page الثابتة القديمة (أُعيدت إعدادات الطباعة للمستخدم).
+   3) الأيقونات PNG شفافة الآن بلا مربعات — ظلال بارزة نظيفة.
+   ========================================================================== */
+
+/* ================= 0) متغيرات العمق ثلاثي الأبعاد لكل ثيم ================= */
+:root, [data-theme="dark"] {
+    --3d-face-a: #16386b;
+    --3d-face-b: #071730;
+    --3d-side-a: #0a2246;
+    --3d-side-b: #040d1e;
+    --3d-hi: rgba(255, 255, 255, .22);
+    --3d-hi2: rgba(255, 255, 255, .09);
+    --3d-lo: rgba(0, 0, 0, .55);
+    --3d-shadow: 0 14px 34px rgba(0, 0, 0, .55), 0 3px 8px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .16);
+    --3d-tile: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .03) 46%, rgba(0, 0, 0, .16));
+    --3d-press: inset 0 3px 8px rgba(0, 0, 0, .5), inset 0 -1px 0 rgba(255, 255, 255, .08);
+}
+[data-theme="amoled"] {
+    --3d-face-a: #161616;
+    --3d-face-b: #000000;
+    --3d-side-a: #0c0c0c;
+    --3d-side-b: #000000;
+    --3d-hi: rgba(255, 255, 255, .20);
+    --3d-hi2: rgba(255, 255, 255, .08);
+    --3d-lo: rgba(0, 0, 0, .92);
+    --3d-shadow: 0 14px 34px rgba(0, 0, 0, .9), 0 3px 8px rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .13);
+    --3d-tile: linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 46%, rgba(0, 0, 0, .35));
+    --3d-press: inset 0 3px 8px rgba(0, 0, 0, .85), inset 0 -1px 0 rgba(255, 255, 255, .05);
+}
+[data-theme="light"] {
+    --3d-face-a: #ffffff;
+    --3d-face-b: #dbe4f0;
+    --3d-side-a: #c3d0e2;
+    --3d-side-b: #9fb2ca;
+    --3d-hi: rgba(255, 255, 255, 1);
+    --3d-hi2: rgba(255, 255, 255, .7);
+    --3d-lo: rgba(20, 40, 70, .22);
+    --3d-shadow: 0 12px 28px rgba(30, 50, 80, .22), 0 3px 8px rgba(30, 50, 80, .14), inset 0 1px 0 #ffffff;
+    --3d-tile: linear-gradient(180deg, #ffffff, #f4f8fc 50%, #e3ebf5);
+    --3d-press: inset 0 3px 7px rgba(20, 40, 70, .22), inset 0 -1px 0 #fff;
+}
+[data-theme="spring"], [data-theme="summer"], [data-theme="autumn"], [data-theme="winter"] {
+    --3d-face-a: rgba(255, 255, 255, .16);
+    --3d-face-b: rgba(0, 0, 0, .22);
+    --3d-side-a: rgba(0, 0, 0, .16);
+    --3d-side-b: rgba(0, 0, 0, .30);
+    --3d-hi: rgba(255, 255, 255, .30);
+    --3d-hi2: rgba(255, 255, 255, .10);
+    --3d-lo: rgba(0, 0, 0, .40);
+    --3d-shadow: 0 14px 32px rgba(0, 0, 0, .5), 0 3px 8px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .22);
+    --3d-tile: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .04) 46%, rgba(0, 0, 0, .18));
+    --3d-press: inset 0 3px 8px rgba(0, 0, 0, .45), inset 0 -1px 0 rgba(255, 255, 255, .1);
+}
+
+/* ================= 1) الشريط العلوي — رف مكتبة بارز ================= */
+.top-bar {
+    box-shadow: var(--3d-shadow) !important;
+    border-bottom: 1px solid var(--3d-lo) !important;
+    position: relative;
+    z-index: calc(var(--z-top, 900));
+}
+/* وجه الرف: إضاءة علوية + ظل سفلي متدرج (إحساس السماكة) */
+.top-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        var(--3d-hi) 0px, var(--3d-hi2) 2px, transparent 9px,
+        transparent calc(100% - 10px), var(--3d-lo) 100%);
+    pointer-events: none;
+    z-index: 0;
+    border-radius: inherit;
+}
+/* جدار سفلي بارز أسفل الرف */
+.top-bar::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -5px;
+    height: 5px;
+    background: linear-gradient(180deg, var(--3d-side-a), var(--3d-side-b));
+    border-radius: 0 0 8px 8px;
+    pointer-events: none;
+    z-index: 0;
+}
+.topbar-inner, .topbar-bg-effect { position: relative; z-index: 1; }
+
+/* أزرار الشريط العلوي: مفاتيح بارزة تُضغط فعلياً */
+.topbar-btn {
+    background: var(--3d-tile) !important;
+    border: 1px solid var(--3d-hi2) !important;
+    box-shadow: 0 4px 10px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+    border-radius: 12px !important;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.topbar-btn:active {
+    transform: translateY(2px);
+    box-shadow: var(--3d-press) !important;
+}
+.admin-avatar-btn .avatar-circle {
+    box-shadow: 0 4px 10px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+    border: 1px solid var(--3d-hi2) !important;
+}
+
+/* أسطوانة الأخبار: محفورة داخل الرف */
+.cylinder-body {
+    border-top: 1px solid var(--3d-hi2) !important;
+    border-bottom: 1px solid var(--3d-lo) !important;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, .3), inset 0 -1px 0 var(--3d-hi2) !important;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .16), rgba(255, 255, 255, .02) 32%, rgba(0, 0, 0, .2)) !important;
+    border-radius: 10px !important;
+}
+
+/* ================= 2) الشريط السفلي — قاعدة عائمة بارزة ================= */
+.bottom-bar-bg {
+    box-shadow: 0 -14px 32px rgba(0, 0, 0, .5), inset 0 1px 0 var(--3d-hi), inset 0 -3px 9px var(--3d-lo) !important;
+    border-top: 1px solid var(--3d-hi2) !important;
+}
+/* جدار جانبي يسار/يمين لإحساس الرف */
+.bottom-bar::before, .bottom-bar::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 10%;
+    bottom: 0;
+    width: 11px;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(90deg, var(--3d-side-a), var(--3d-side-b));
+    border-radius: 0 22px 0 0;
+}
+.bottom-bar::after {
+    right: auto;
+    left: 0;
+    background: linear-gradient(270deg, var(--3d-side-a), var(--3d-side-b));
+    border-radius: 22px 0 0 0;
+}
+.bottom-tab { border-radius: 14px !important; transition: transform .15s ease, color .2s ease; }
+.bottom-tab-icon {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .45));
+    transition: transform .15s ease, filter .15s ease;
+}
+.bottom-tab:hover .bottom-tab-icon { transform: translateY(-2px) scale(1.07); }
+.bottom-tab:active .bottom-tab-icon { transform: translateY(1px) scale(.94); filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .5)); }
+.bottom-tab.active {
+    background: var(--3d-tile) !important;
+    box-shadow: 0 5px 13px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+}
+.bottom-tab.active .bottom-tab-icon {
+    transform: translateY(-3px) scale(1.12);
+    filter: drop-shadow(0 7px 11px rgba(0, 140, 255, .38));
+}
+
+/* ================= 3) القائمة الجانبية — لوحة عمق بأزرار بارزة ================= */
+.sidebar {
+    box-shadow: -16px 0 44px rgba(0, 0, 0, .45), inset 1px 0 0 var(--3d-hi2) !important;
+    border-left: 1px solid var(--3d-lo) !important;
+}
+.sidebar-link {
+    border-radius: 12px;
+    transition: transform .14s ease, background .2s ease, box-shadow .14s ease;
+}
+.sidebar-link:hover { transform: translateX(-2px); }
+.sidebar-link.active {
+    background: var(--3d-tile) !important;
+    box-shadow: 0 4px 11px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+}
+/* الأيقونات PNG الشفافة: ظل نظيف بلا مربعات */
+.nav-icon-3d {
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .42));
+    transition: transform .16s ease, filter .16s ease;
+}
+.sidebar-link:hover .nav-icon-3d,
+.np-group-head:hover .nav-icon-3d {
+    transform: translateY(-1px) scale(1.08);
+    filter: drop-shadow(0 6px 9px rgba(0, 0, 0, .5));
+}
+/* رؤوس المجموعات: أزرار رف بارزة */
+.np-group-head {
+    border-radius: 12px !important;
+    background: var(--3d-tile) !important;
+    border: 1px solid var(--3d-hi2) !important;
+    box-shadow: 0 3px 8px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+    margin: 4px 8px !important;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.np-group-head:active { transform: translateY(1px); box-shadow: var(--3d-press) !important; }
+.np-group-chip {
+    box-shadow: 0 3px 9px var(--3d-lo), inset 0 1px 0 rgba(255, 255, 255, .4) !important;
+    border-radius: 10px !important;
+}
+
+/* ================= 4) اتجاه أسطوانة الأخبار (يمين ← شمال) ================= */
+.topbar-cylinder, .cylinder-body { direction: ltr; }
+.cylinder-track { direction: rtl; }
+@keyframes cylinderTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ================= 5) لوحة التحكم المنظمة (كما في v2026.16) ================= */
+#page-home .home-sec { margin: 18px 0 6px; display: flex; align-items: center; gap: 10px; }
+#page-home .home-sec-ico {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    background: var(--3d-tile);
+    border: 1px solid var(--3d-hi2);
+    box-shadow: 0 3px 8px var(--3d-lo), inset 0 1px 0 var(--3d-hi);
+    flex: 0 0 auto;
+}
+#page-home .home-sec-title { font-size: 15.5px; font-weight: 900; color: var(--text-1); }
+#page-home .home-sec-line { flex: 1; height: 1px; background: linear-gradient(270deg, var(--border-2), transparent); }
+#page-home .home-sec-wrap { display: grid; gap: 14px; }
+#page-home .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+#page-home .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 14px; }
+#page-home .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (min-width: 1024px) {
+    #page-home .home-sec-wrap.dash-overview { grid-template-columns: 1fr; }
+    #page-home .quick-grid { grid-template-columns: repeat(6, 1fr); }
+}
+@media (max-width: 720px) {
+    #page-home .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    #page-home .quick-grid { grid-template-columns: repeat(3, 1fr); gap: 9px; padding: 10px; }
+    #page-home .charts-grid { grid-template-columns: 1fr; }
+    #page-home .home-sec { margin: 14px 0 4px; }
+}
+.stat-3d {
+    box-shadow: 0 6px 18px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+    border: 1px solid var(--3d-hi2) !important;
+}
+.quick-3d {
+    box-shadow: 0 4px 12px var(--3d-lo), inset 0 1px 0 var(--3d-hi) !important;
+    border: 1px solid var(--3d-hi2) !important;
+    transition: transform .13s ease, box-shadow .13s ease;
+}
+.quick-3d:active { transform: translateY(2px); box-shadow: var(--3d-press) !important; }
+
+/* ================= 6) تطبيق الثيم على كامل النظام ================= */
+[data-theme="amoled"] body,
+[data-theme="amoled"] .main-area,
+[data-theme="amoled"] .page { background: #000000 !important; }
+[data-theme="amoled"] .card-3d,
+[data-theme="amoled"] .modal-container,
+[data-theme="amoled"] .admin-dropdown,
+[data-theme="amoled"] .notif-panel,
+[data-theme="amoled"] .form-inp, [data-theme="amoled"] .form-select, [data-theme="amoled"] .form-textarea,
+[data-theme="amoled"] .data-tbl th,
+[data-theme="amoled"] .tbl-wrap,
+[data-theme="amoled"] .login-card,
+[data-theme="amoled"] .dash-results-card,
+[data-theme="amoled"] .dash-list-card { background-color: #060606 !important; }
+[data-theme="amoled"] .data-tbl td { background-color: #040404 !important; }
+[data-theme="amoled"] .data-tbl tbody tr:nth-child(even) td { background-color: #0a0a0a !important; }
+[data-theme="amoled"] .topbar-cylinder,
+[data-theme="amoled"] .cylinder-body { background: #000 !important; }
+[data-theme="amoled"] .mode-btn,
+[data-theme="amoled"] .np-search-wrap input,
+[data-theme="amoled"] .sidebar { background-color: #050505 !important; }
+
+[data-theme="dark"] body,
+[data-theme="dark"] .main-area,
+[data-theme="dark"] .page { background: var(--bg-1) !important; }
+[data-theme="dark"] .topbar-cylinder,
+[data-theme="dark"] .cylinder-body { background: rgba(7, 20, 40, .6) !important; }
+
+[data-theme="light"] body,
+[data-theme="light"] .main-area,
+[data-theme="light"] .page { background: var(--bg-1) !important; }
+[data-theme="light"] .topbar-cylinder,
+[data-theme="light"] .cylinder-body { background: rgba(255, 255, 255, .65) !important; }
+[data-theme="light"] .cylinder-seg { color: #243447 !important; text-shadow: none !important; }
+[data-theme="light"] .cylinder-seg b { color: #b8860b !important; }
+
+[data-theme="amoled"] .login-bg-container { background: #000 !important; }
+[data-theme="dark"] .login-bg-container { background: var(--bg-1) !important; }
+
+/* ================= 7) أيقونات العناوين والبطاقات ================= */
+.title-icon-3d {
+    box-shadow: 0 4px 10px var(--3d-lo), inset 0 1px 0 rgba(255, 255, 255, .35) !important;
+    border: 1px solid var(--3d-hi2) !important;
+}
+.card-3d { border: 1px solid var(--border) !important; }
+
+/* ================= 8) الأيقونات PNG الشفافة — إظهار نظيف بلا مربعات =================
+   لا خلفيات ولا إطارات حول <img> للأيقونات في كل القوائم */
+img.nav-icon-3d { background: transparent !important; border: none !important; outline: none !important; }
+.sidebar-icon-3d { background: transparent !important; box-shadow: none !important; }
+.quick-3d-icon { background: transparent !important; }
+.bottom-tab-icon img { background: transparent !important; }

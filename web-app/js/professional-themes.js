@@ -61,9 +61,31 @@
       </div>`;
     },
 
-    /* غلاف مستند قياسي */
+    /* غلاف مستند قياسي — يدعم ألوان المستخدم من إعدادات الطباعة (نمط المحطة) */
     wrap(docTitle, innerHTML, docNo = '') {
       const theme = this.current() === 'purple' ? 'purple' : this.current();
+      /* ألوان مخصصة من إعدادات الطباعة (psp) — تتغلب على ألوان القالب */
+      let colorsCSS = '';
+      try {
+        const c = (window.PrintSettingsPro && PrintSettingsPro.getPS().intlColors) || {};
+        const has = Object.keys(c).some((k) => c[k]);
+        if (has) {
+          const vars = [
+            ['--uc-head', c.headerBg], ['--uc-accent', c.accentColor], ['--uc-border', c.borderColor],
+            ['--uc-even', c.rowEvenBg], ['--uc-body', c.bodyColor], ['--uc-body2', c.bodyColor]
+          ].filter(([, v]) => v).map(([k, v]) => `${k}:${v}`).join(';');
+          colorsCSS = `<style>.print-doc.user-colors{${vars}}</style>`;
+          return `
+          <div class="print-doc intl-doc doc-theme-${theme} user-colors">
+            ${colorsCSS}
+            <div class="pd-page">
+              ${this.headerHTML(docTitle, docNo)}
+              ${innerHTML}
+              ${this.footerHTML()}
+            </div>
+          </div>`;
+        }
+      } catch (e) {}
       return `
       <div class="print-doc intl-doc doc-theme-${theme}">
         <div class="pd-page">

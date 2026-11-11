@@ -2,63 +2,101 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#030b1a">
-<meta name="description" content="EduPro — نظام إدارة مدرسة خاصة دولية متكامل يعمل دون إنترنت">
-<title>تطبيق ادارة المدرسة — EduPro</title>
-<link rel="manifest" href="manifest.json?v=4">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="تطبيق ادارة المدرسة — EduPro — النظام الإداري والأكاديمي المتكامل والآمن للمدرسة الخاصة الدولية">
+<meta name="application-name" content="تطبيق ادارة المدرسة">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ادارة المدرسة">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="referrer" content="no-referrer">
+<style>
+  @font-face {
+    font-family: 'Cairo';
+    font-style: normal;
+    font-weight: 200 1000;
+    font-display: swap;
+    src: url('fonts/Cairo-Regular.ttf') format('truetype');
+  }
+  body, input, button, select, textarea {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif !important;
+  }
+</style>
+
+<link rel="manifest" href="manifest.json?v=5">
 <link rel="icon" href="assets/icons/favicon.png">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- ═══════════ CSS (27 ملف — ترتيب إلزامي) ═══════════ -->
-<link rel="stylesheet" href="css/variables.css?v=3.2.0">
-<link rel="stylesheet" href="css/base.css?v=3.2.0">
-<link rel="stylesheet" href="css/splash.css?v=3.1.1">
-<link rel="stylesheet" href="css/login.css?v=3.1.1">
-<link rel="stylesheet" href="css/layout.css?v=3.1.1">
-<link rel="stylesheet" href="css/sidebar.css?v=3.1.1">
-<link rel="stylesheet" href="css/icons3d.css?v=3.1.1">
-<link rel="stylesheet" href="css/dashboard.css?v=3.1.1">
-<link rel="stylesheet" href="css/charts.css?v=3.1.1">
-<link rel="stylesheet" href="css/students.css?v=3.1.1">
-<link rel="stylesheet" href="css/academics.css?v=3.1.1">
-<link rel="stylesheet" href="css/grades-matrix.css?v=3.1.1">
-<link rel="stylesheet" href="css/certificates.css?v=3.1.1">
-<link rel="stylesheet" href="css/finance.css?v=3.1.1">
-<link rel="stylesheet" href="css/store-inventory.css?v=3.1.1">
-<link rel="stylesheet" href="css/bus-system.css?v=3.1.1">
-<link rel="stylesheet" href="css/hr-payroll.css?v=3.1.1">
-<link rel="stylesheet" href="css/id-cards.css?v=3.1.1">
-<link rel="stylesheet" href="css/reports.css?v=3.1.1">
-<link rel="stylesheet" href="css/modals.css?v=3.1.1">
-<link rel="stylesheet" href="css/tables.css?v=3.1.1">
-<link rel="stylesheet" href="css/forms.css?v=3.1.1">
-<link rel="stylesheet" href="css/enhancements.css?v=3.1.1">
-<link rel="stylesheet" href="css/responsive.css?v=3.1.1">
-<link rel="stylesheet" href="css/themes-intl.css?v=3.1.1">
-<link rel="stylesheet" href="css/print.css?v=3.2.0">
-<link rel="stylesheet" href="css/pro-shell.css?v=3.2.0">
+<meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self' data: blob:;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: blob:;
+        font-src 'self' data:;
+        connect-src 'self' https://api.github.com;
+        frame-src 'self' blob: data:;
+        base-uri 'self';
+        form-action 'self'">
+
+<!-- ════════════════════════════════════════════════════════════════
+     CSS — ترتيب إلزامي:
+     1) أساس المدرسة (خط + شاشة دخول/بداية + وحدات المدرسة الخاصة)
+     2) حزمة تطبيق المحطة الكاملة (station-bundle) — الهوية البصرية المطابقة
+     3) محركات القوائم الثلاثة + الثيمات + الانسجام (ui-nav / nav-pro / harmony / pro16-17-18)
+     4) جسر التوائم (twin-bridge) — يوحّد عناصر المدرسة مع المحطة (يُحمَّل أخيراً)
+     ════════════════════════════════════════════════════════════════ -->
+<link rel="stylesheet" href="css/variables.css?v=3.3.0">
+<link rel="stylesheet" href="css/login.css?v=3.3.0">
+<link rel="stylesheet" href="css/splash.css?v=3.3.0">
+
+<link rel="stylesheet" href="css/academics.css?v=3.3.0">
+<link rel="stylesheet" href="css/grades-matrix.css?v=3.3.0">
+<link rel="stylesheet" href="css/certificates.css?v=3.3.0">
+<link rel="stylesheet" href="css/finance.css?v=3.3.0">
+<link rel="stylesheet" href="css/store-inventory.css?v=3.3.0">
+<link rel="stylesheet" href="css/bus-system.css?v=3.3.0">
+<link rel="stylesheet" href="css/hr-payroll.css?v=3.3.0">
+<link rel="stylesheet" href="css/id-cards.css?v=3.3.0">
+<link rel="stylesheet" href="css/themes-intl.css?v=3.3.0">
+<link rel="stylesheet" href="css/reports.css?v=3.3.0">
+<link rel="stylesheet" href="css/charts.css?v=3.3.0">
+
+<!-- الحزمة المطابقة لتطبيق المحطة -->
+<link rel="stylesheet" href="css/station/station-bundle.css?v=3.3.0">
+<link rel="stylesheet" href="css/station/ui-nav-icons.css?v=3.3.0">
+<link rel="stylesheet" href="css/station/nav-pro.css?v=3.3.0">
+<link rel="stylesheet" href="css/station/theme-harmony.css?v=3.3.0">
+<link rel="stylesheet" href="css/station/app-pro-16.css?v=3.3.0">
+<link rel="stylesheet" href="css/station/app-pro-17.css?v=3.3.0">
+<link rel="stylesheet" href="css/station/app-pro-18.css?v=3.3.0">
+
+<!-- جسر توحيد عناصر وحدات المدرسة مع هوية المحطة -->
+<link rel="stylesheet" href="css/twin-bridge.css?v=3.3.0">
+
+<!-- طباعة المدرسة (تُحمَّل بعد الحزمة حتى تسود على الطباعة) -->
+<link rel="stylesheet" href="css/print.css?v=3.3.0">
 </head>
 
 <body>
-<!-- ═══════════ شاشة البداية ═══════════ -->
+<!-- ═══════════ شاشة البداية (Native — مدرسة) ═══════════ -->
 <div id="splash" role="status" aria-label="جارٍ التحميل">
   <div class="splash-inner">
     <img id="splash-logo" src="assets/images/logo.png" alt="الشعار">
     <h1 class="splash-title">تطبيق ادارة المدرسة <span>EduPro</span></h1>
-    <p class="splash-sub">نظام الإدارة المتكامل — الإصدار 3.2</p>
+    <p class="splash-sub">نظام الإدارة المتكامل — الإصدار 3.3</p>
     <div class="splash-bar"><i id="splash-bar"></i></div>
     <p class="splash-note">جارٍ تجهيز النظام…</p>
     <p class="splash-rights">جميع الحقوق محفوظة لشركة YCMS</p>
-    <p class="splash-dev">برمجة وتطوير: <b>مازن عبدالوهاب</b> — 774047989</p>
+    <p class="splash-dev">برمجة وتطوير: <b>مازن عبدالوهاب</b></p>
     <p class="splash-acc">إدارة محاسبية: <b>صدام نجم الدين</b></p>
   </div>
 </div>
 
-<!-- ═══════════ شاشة الدخول — بنمط تطبيق المحطة (native) ═══════════ -->
+<!-- ═══════════ شاشة الدخول — native ═══════════ -->
 <div id="login-screen" hidden>
   <div class="login-bg-container" aria-hidden="true">
     <canvas id="loginBgCanvas"></canvas>
@@ -120,72 +158,163 @@
         </button>
       </form>
 
-      <div class="login-footer-info">النسخة <b id="login-version">3.2</b><span class="dot">•</span>جميع الحقوق محفوظة لشركة YCMS</div>
+      <div class="login-footer-info">النسخة <b id="login-version">3.3</b><span class="dot">•</span>جميع الحقوق محفوظة لشركة YCMS</div>
     </div>
     <div class="login-credit">برمجة وتطوير: <b>مازن عبدالوهاب</b> — <a href="tel:774047989">774047989</a><br><small>إدارة محاسبية: <b>صدام نجم الدين</b></small></div>
   </div>
 </div>
 
-<!-- ═══════════ هيكل التطبيق ═══════════ -->
-<div id="app" hidden>
-  <header id="topbar">
-    <div class="topbar-bg-effect" aria-hidden="true"></div>
-    <div class="topbar-inner">
-      <div class="topbar-start">
-        <button id="btn-menu" class="topbar-btn menu-btn" aria-label="القائمة" data-action="shell:toggleSidebar">
-          <span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span>
-        </button>
-        <div class="topbar-brand-mini">
-          <img id="topbar-logo" src="assets/images/logo-128.png" alt="الشعار">
-          <span class="topbar-school-name" id="topbar-school">المدرسة الدولية الخاصة</span>
+<!-- ═══════════ التطبيق — نفس هيكل تطبيق المحطة بالضبط ═══════════ -->
+<div id="mainApp" style="display:none">
+
+    <header class="top-bar" id="topBar">
+        <div class="topbar-bg-effect"></div>
+        <div class="topbar-inner">
+            <div class="topbar-start">
+                <button class="topbar-btn menu-btn" id="menuBtn" aria-label="فتح القائمة الجانبية">
+                    <div class="hamburger" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </div>
+                </button>
+                <div class="topbar-brand-mini" id="topBrandMini">
+                    <img id="topLogoMiniImg" src="assets/images/logo-128.png" alt="شعار المدرسة">
+                </div>
+            </div>
+
+            <div class="topbar-cylinder" id="topCylinder" aria-label="بيانات المدرسة">
+                <div class="cylinder-body">
+                    <div class="cylinder-track" id="cylinderTrack"></div>
+                </div>
+            </div>
+            <div class="topbar-end">
+                <button class="topbar-btn notif-btn" id="notifBtn" aria-label="الإشعارات" style="position:relative">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notif-badge" id="notifBadge">0</span>
+                </button>
+
+                <button class="admin-avatar-btn" id="adminAvatarBtn" aria-label="قائمة المستخدم">
+                    <div class="avatar-circle" id="avatarCircle">
+                        <img id="avatarImg" style="display:none" alt="الصورة الشخصية">
+                        <span id="avatarLetter">م</span>
+                    </div>
+                    <div class="avatar-status-dot"></div>
+                </button>
+            </div>
         </div>
-      </div>
-      <div class="topbar-cylinder" id="topCylinder" aria-label="معلومات المدرسة">
-        <div class="cylinder-body">
-          <div class="cylinder-track" id="cylinderTrack"></div>
+    </header>
+
+    <div class="admin-dropdown" id="adminDropdown" role="menu" aria-label="قائمة المستخدم">
+        <div class="dropdown-user-info">
+            <div class="dropdown-avatar">
+                <img id="dropAvatarImg" style="display:none" alt="الصورة الشخصية">
+                <span id="dropAvatarLetter">م</span>
+            </div>
+            <div>
+                <div class="dropdown-name" id="dropName">مدير النظام</div>
+                <div class="dropdown-role" id="dropRole">مدير النظام</div>
+            </div>
         </div>
-      </div>
-      <div class="topbar-actions">
-        <button class="topbar-btn" id="btn-print-settings" title="إعدادات الطباعة" data-action="shell:printSettings" aria-label="إعدادات الطباعة">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item" data-action="shell:goSettings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            الإعدادات
         </button>
-        <button class="topbar-btn" id="btn-theme" title="الوضع الليلي" data-action="shell:toggleDark" aria-label="الوضع الليلي">
-          <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg class="ico-sun" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <button class="dropdown-item" data-action="shell:goThemes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                <circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/>
+                <circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/>
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+            </svg>
+            الثيمات والمظهر
         </button>
-        <button class="admin-avatar-btn" id="btn-user" data-action="shell:userMenu" aria-label="الحساب">
-          <span class="avatar-circle" id="topbar-avatar">م</span>
-          <span class="avatar-status-dot"></span>
+        <button class="dropdown-item" data-action="shell:goBackup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/>
+            </svg>
+            النسخ الاحتياطي
         </button>
-      </div>
+        <button class="dropdown-item" data-action="shell:about">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            حول البرنامج
+        </button>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item danger" data-action="shell:logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            تسجيل الخروج
+        </button>
     </div>
-  </header>
 
-  <div id="sidebar-backdrop" data-action="shell:closeSidebar"></div>
-  <aside id="sidebar" aria-label="القائمة الجانبية">
-    <div class="sidebar-head">
-      <img id="sidebar-logo" src="assets/images/logo.png" alt="الشعار">
-      <div><b id="sidebar-school">المدرسة الدولية</b><small id="sidebar-year">2025 / 2026</small></div>
-      <button class="icon-btn sidebar-close" data-action="shell:closeSidebar">✕</button>
+    <div class="notif-panel" id="notifPanel" aria-label="لوحة الإشعارات">
+        <div class="notif-panel-head">
+            <h3>الإشعارات</h3>
+            <button class="notif-clear" id="notifClear">مسح الكل</button>
+        </div>
+        <div class="notif-panel-body" id="notifList">
+            <div class="notif-empty">
+                <div class="notif-empty-icon">🔔</div>
+                <p>لا توجد إشعارات</p>
+            </div>
+        </div>
     </div>
-    <nav id="sidebar-nav"><!-- تُبنى من navigation.js --></nav>
-    <div class="sidebar-foot">
-      <div class="sidebar-user">
-        <span class="avatar" id="sidebar-avatar">م</span>
-        <div><b id="sidebar-username">—</b><small id="sidebar-role">—</small></div>
-      </div>
-      <button class="btn btn-danger-soft btn-block" data-action="shell:logout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        تسجيل الخروج
-      </button>
-      <small class="sidebar-ver" id="sidebar-version">ادارة المدرسة v3.2 — YCMS</small>
-      <small class="sidebar-credits">برمجة وتطوير مازن عبدالوهاب<br>إدارة محاسبية صدام نجم الدين</small>
-    </div>
-  </aside>
 
-  <main id="page-root" tabindex="-1"><!-- تُعرض الصفحات هنا --></main>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-  <nav id="bottomnav" aria-label="التنقل السريع"><!-- تُبنى من navigation.js --></nav>
+    <aside class="sidebar" id="sidebar" aria-label="القائمة الجانبية">
+        <div class="sidebar-head">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo" id="sidebarLogo">
+                    <img id="sidebarLogoImg" src="assets/images/logo.png" alt="شعار المدرسة">
+                </div>
+                <div>
+                    <div class="sidebar-brand-name" id="sidebarSchoolName">المدرسة الدولية</div>
+                    <div class="sidebar-brand-sub" id="sidebarSchoolSub">تطبيق ادارة المدرسة</div>
+                </div>
+            </div>
+
+            <button class="sidebar-close" id="sidebarClose" aria-label="إغلاق القائمة الجانبية">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="sidebar-menu" id="sidebarMenu"><!-- تُبنى من navigation.js بنمط المحطة --></nav>
+
+        <div class="sidebar-foot">
+            <div class="sidebar-user">
+                <span class="avatar" id="sidebar-avatar">م</span>
+                <div><b id="sidebar-username">—</b><small id="sidebar-role">—</small></div>
+            </div>
+            <button class="btn btn-danger-soft btn-block" data-action="shell:logoutBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                تسجيل الخروج
+            </button>
+            <small class="sidebar-foot-ver" id="sidebar-version">ادارة المدرسة v3.3 — YCMS</small>
+            <small class="sidebar-foot-ver">برمجة وتطوير مازن عبدالوهاب<br>إدارة محاسبية صدام نجم الدين</small>
+        </div>
+    </aside>
+
+    <main class="main-area" id="mainArea">
+        <div id="page-root" tabindex="-1"><!-- تُعرض الصفحات هنا --></div>
+    </main>
+
+    <nav class="bottom-bar" id="bottomBar" aria-label="التنقل السريع">
+        <div class="bottom-bar-bg"></div>
+        <!-- تُبنى التبويبات من navigation.js بنمط المحطة -->
+    </nav>
 </div>
 
 <!-- ═══════════ جذور مشتركة ═══════════ -->
@@ -193,64 +322,69 @@
 <div id="toast-root" aria-live="polite"></div>
 <iframe id="print-frame" title="طباعة" style="position:fixed;width:0;height:0;border:0;visibility:hidden"></iframe>
 
-<!-- ═══════════ المكتبات الخارجية (vendor — مرتبطة محلياً) ═══════════ -->
-<script src="vendor/html2canvas.min.js?v=3.2.0"></script>
-<script src="vendor/jspdf.umd.min.js?v=3.2.0"></script>
-<script src="vendor/qrcode-generator.js?v=3.2.0"></script>
-<script src="vendor/xlsx.full.min.js?v=3.2.0"></script>
-<script src="vendor/pdfmake.min.js?v=3.2.0"></script>
-<script src="vendor/pdfmake-rtl.js?v=3.2.0"></script>
-<script src="vendor/vfs_fonts.js?v=3.2.0"></script>
-<script src="vendor/zxing.min.js?v=3.2.0"></script>
-<script src="vendor/arabic-reshaper.js?v=3.2.0"></script>
+<!-- ═══════════ المكتبات الخارجية ═══════════ -->
+<script src="vendor/html2canvas.min.js?v=3.3.0"></script>
+<script src="vendor/jspdf.umd.min.js?v=3.3.0"></script>
+<script src="vendor/qrcode-generator.js?v=3.3.0"></script>
+<script src="vendor/xlsx.full.min.js?v=3.3.0"></script>
+<script src="vendor/pdfmake.min.js?v=3.3.0"></script>
+<script src="vendor/pdfmake-rtl.js?v=3.3.0"></script>
+<script src="vendor/vfs_fonts.js?v=3.3.0"></script>
+<script src="vendor/zxing.min.js?v=3.3.0"></script>
+<script src="vendor/arabic-reshaper.js?v=3.3.0"></script>
 
 <!-- ═══════════ محركات الطباعة (نظام تطبيق المحطة) ═══════════ -->
-<script src="print/reliable-print.js?v=3.2.0"></script>
-<script src="print/print-settings-pro.js?v=3.2.0"></script>
-<script src="print/print-settings-engine.js?v=3.2.0"></script>
-<script src="print/thermal-print.js?v=3.2.0"></script>
-<script src="print/thermal-receipt.js?v=3.2.0"></script>
-<script src="print/report-intl.js?v=3.2.0"></script>
-<script src="print/id-card-printer.js?v=3.2.0"></script>
-<script src="print/pdf-enterprise.js?v=3.2.0"></script>
-<script src="print/office-pro.js?v=3.2.0"></script>
-<script src="print/office-export.js?v=3.2.0"></script>
+<script src="print/reliable-print.js?v=3.3.0"></script>
+<script src="print/print-settings-pro.js?v=3.3.0"></script>
+<script src="print/print-settings-engine.js?v=3.3.0"></script>
+<script src="print/thermal-print.js?v=3.3.0"></script>
+<script src="print/thermal-receipt.js?v=3.3.0"></script>
+<script src="print/report-intl.js?v=3.3.0"></script>
+<script src="print/id-card-printer.js?v=3.3.0"></script>
+<script src="print/pdf-enterprise.js?v=3.3.0"></script>
+<script src="print/office-pro.js?v=3.3.0"></script>
+<script src="print/office-export.js?v=3.3.0"></script>
 
 <!-- ═══════════ النواة (Core) ═══════════ -->
-<script src="js/config.js?v=3.2.0"></script>
-<script src="js/encryption.js?v=3.2.0"></script>
-<script src="js/database.js?v=3.2.0"></script>
-<script src="js/auth.js?v=3.2.0"></script>
-<script src="js/ui.js?v=3.2.0"></script>
-<script src="js/permissions.js?v=3.2.0"></script>
-<script src="js/charts.js?v=3.2.0"></script>
-<script src="js/github.js?v=3.2.0"></script>
-<script src="js/navigation.js?v=3.2.0"></script>
-<script src="js/helpers.js?v=3.2.0"></script>
+<script src="js/config.js?v=3.3.0"></script>
+<script src="js/encryption.js?v=3.3.0"></script>
+<script src="js/database.js?v=3.3.0"></script>
+<script src="js/auth.js?v=3.3.0"></script>
+<script src="js/ui.js?v=3.3.0"></script>
+<script src="js/permissions.js?v=3.3.0"></script>
+<script src="js/charts.js?v=3.3.0"></script>
+<script src="js/github.js?v=3.3.0"></script>
+<script src="js/helpers.js?v=3.3.0"></script>
 
 <!-- ═══════════ الوحدات (Pages) ═══════════ -->
-<script src="js/dashboard.js?v=3.2.0"></script>
-<script src="js/students.js?v=3.2.0"></script>
-<script src="js/stages-classes.js?v=3.2.0"></script>
-<script src="js/grades-engine.js?v=3.2.0"></script>
-<script src="js/results-certificates.js?v=3.2.0"></script>
-<script src="js/finance-budget.js?v=3.2.0"></script>
-<script src="js/installments.js?v=3.2.0"></script>
-<script src="js/store-books-uniform.js?v=3.2.0"></script>
-<script src="js/bus-management.js?v=3.2.0"></script>
-<script src="js/hr-employees.js?v=3.2.0"></script>
-<script src="js/payroll-engine.js?v=3.2.0"></script>
-<script src="js/id-card-studio.js?v=3.2.0"></script>
-<script src="js/communications.js?v=3.2.0"></script>
-<script src="js/reports-center.js?v=3.2.0"></script>
-<script src="js/settings-branding.js?v=3.2.0"></script>
-<script src="js/audit-log.js?v=3.2.0"></script>
-<script src="js/backup-restore.js?v=3.2.0"></script>
-<script src="js/demo-data.js?v=3.2.0"></script>
-<script src="js/professional-themes.js?v=3.2.0"></script>
+<script src="js/dashboard.js?v=3.3.0"></script>
+<script src="js/students.js?v=3.3.0"></script>
+<script src="js/stages-classes.js?v=3.3.0"></script>
+<script src="js/grades-engine.js?v=3.3.0"></script>
+<script src="js/results-certificates.js?v=3.3.0"></script>
+<script src="js/finance-budget.js?v=3.3.0"></script>
+<script src="js/installments.js?v=3.3.0"></script>
+<script src="js/store-books-uniform.js?v=3.3.0"></script>
+<script src="js/bus-management.js?v=3.3.0"></script>
+<script src="js/hr-employees.js?v=3.3.0"></script>
+<script src="js/payroll-engine.js?v=3.3.0"></script>
+<script src="js/id-card-studio.js?v=3.3.0"></script>
+<script src="js/communications.js?v=3.3.0"></script>
+<script src="js/reports-center.js?v=3.3.0"></script>
+<script src="js/settings-branding.js?v=3.3.0"></script>
+<script src="js/audit-log.js?v=3.3.0"></script>
+<script src="js/backup-restore.js?v=3.3.0"></script>
+<script src="js/demo-data.js?v=3.3.0"></script>
+<script src="js/professional-themes.js?v=3.3.0"></script>
+<script src="js/print-settings-page.js?v=3.3.0"></script>
 
-<!-- ═══════════ المحرك الرئيسي (الأخيراً) ═══════════ -->
-<script src="js/login-bg.js?v=3.2.0"></script>
-<script src="js/app.js?v=3.2.0"></script>
+<!-- ═══════════ محركات المحطة (الأسطوانة + الثيمات المطابقة) ═══════════ -->
+<script src="js/station-cylinder.js?v=3.3.0"></script>
+<script src="js/station-themes.js?v=3.3.0"></script>
+
+<!-- ═══════════ التنقل والمحرك الرئيسي (الأخيراً) ═══════════ -->
+<script src="js/navigation.js?v=3.3.0"></script>
+<script src="js/login-bg.js?v=3.3.0"></script>
+<script src="js/app.js?v=3.3.0"></script>
 </body>
 </html>

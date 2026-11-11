@@ -21,7 +21,10 @@
       const v = parseFloat(n) || 0;
       return v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: 2 });
     },
-    money(n) { return H.num(n) + ' ' + ((window.Store && Store.ready) ? Store.getSetting('currency', 'ريال') : 'ريال'); },
+    money(n, compact) {
+      if (compact) return H.num(Math.round(parseFloat(n) || 0));
+      return H.num(n) + ' ' + ((window.Store && Store.ready) ? Store.getSetting('currency', 'ريال') : 'ريال');
+    },
     moneyPlain(n) { return H.num(n); },
     pct(part, total) { return total > 0 ? Math.round((part / total) * 1000) / 10 : 0; },
     sum(arr, f) { return (arr || []).reduce((a, x) => a + (parseFloat(f ? f(x) : x) || 0), 0); },

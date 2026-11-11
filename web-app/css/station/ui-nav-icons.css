@@ -1,0 +1,169 @@
+/* ============================================================
+   ui-nav-icons-v2026.9.css — أيقونات PNG ثلاثية الأبعاد
+   + القوائم الزجاجية الشفافة + أحجام القوائم القابلة للضبط
+   (تُطبَّق عبر متغيرات من صفحة الثيمات)
+   ============================================================ */
+
+/* ---------- أيقونات القوائم (PNG 3D) ---------- */
+.sidebar-icon-3d img.nav-icon-3d{
+    width:100%;height:100%;
+    object-fit:contain;
+    position:relative;z-index:2;
+    display:block;
+}
+.sidebar-icon-3d{
+    overflow:visible;
+    background:transparent !important;
+    box-shadow:none;
+}
+.sidebar-icon-3d::before{display:none}
+.sidebar-icon-3d::after{display:none}
+.sidebar-icon-3d img.nav-icon-3d{
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,.35));
+    transition:transform var(--trans-2);
+}
+.sidebar-link:hover .sidebar-icon-3d img.nav-icon-3d{
+    transform:scale(1.1);
+}
+.sidebar-link.active .sidebar-icon-3d img.nav-icon-3d{
+    transform:scale(1.05);
+}
+
+.bottom-tab-icon img.nav-icon-3d{
+    width:calc(var(--bottom-icon,28px) + 10px);
+    height:calc(var(--bottom-icon,28px) + 10px);
+    object-fit:contain;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));
+    transition:transform var(--trans-2);
+}
+.bottom-tab.active .bottom-tab-icon img.nav-icon-3d{
+    transform:scale(1.14) translateY(-2px);
+}
+
+.quick-3d-icon img.nav-icon-3d{
+    width:72%;height:72%;
+    object-fit:contain;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.3));
+}
+
+/* ---------- القوائم الزجاجية الشفافة ----------
+   الشفافية تُضبط من متغير --glass-alpha، والضبابية من --glass-blur */
+.topbar-bg-effect{
+    -webkit-backdrop-filter:blur(var(--glass-blur,24px)) saturate(1.8);
+    backdrop-filter:blur(var(--glass-blur,24px)) saturate(1.8);
+}
+.bottom-bar-bg{
+    -webkit-backdrop-filter:blur(var(--glass-blur,24px)) saturate(1.8);
+    backdrop-filter:blur(var(--glass-blur,24px)) saturate(1.8);
+}
+.sidebar{
+    -webkit-backdrop-filter:blur(var(--glass-blur,20px)) saturate(1.5);
+    backdrop-filter:blur(var(--glass-blur,20px)) saturate(1.5);
+}
+.top-bar,.bottom-bar{
+    background-color:transparent !important;
+}
+
+/* ---------- أحجام القوائم ----------
+   تُضبط من صفحة الثيمات: ارتفاع العلوي/السفلي وعرض الجانبي */
+.sidebar{
+    width:var(--sidebar-w,290px);
+}
+
+/* ---------- أسطوانة الإعلانات (Marquee) في القائمة العلوية ---------- */
+.topbar-start{flex:0 0 auto !important}
+.topbar-cylinder{
+    flex:1;min-width:0;
+    display:flex;align-items:center;justify-content:center;
+    height:100%;
+    margin:0 12px;
+    position:relative;z-index:2;
+}
+.cylinder-body{
+    /* v2026.9: الطول والارتفاع قابلان للضبط من إعدادات الثيم */
+    width:var(--cyl-width,100%);
+    max-width:100%;
+    height:var(--cyl-height,74%);
+    margin:0 auto;
+    border-radius:999px;
+    overflow:hidden;
+    position:relative;
+    display:flex;align-items:center;
+    /* مثل تيكر اسم المحطة القديم: الحاوية LTR والمسار RTL */
+    direction:ltr;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,.03) 20%, rgba(255,255,255,0) 42%, rgba(0,0,0,.18) 76%, rgba(0,0,0,.40) 100%),
+        linear-gradient(180deg, var(--cyl-c1,#12315f) 0%, var(--cyl-c2,#144272) 55%, var(--cyl-c3,#0a2647) 100%);
+    border:1px solid var(--cyl-border, rgba(201,162,39,.45));
+    box-shadow:
+        inset 0 2px 3px rgba(255,255,255,.28),
+        inset 0 -5px 10px rgba(0,0,0,.35),
+        0 5px 16px rgba(0,0,0,.4);
+}
+.cylinder-body::before{
+    content:'';position:absolute;top:7%;left:2%;right:2%;height:36%;
+    border-radius:999px;
+    background:linear-gradient(180deg, rgba(255,255,255,.32), transparent);
+    pointer-events:none;z-index:1;
+}
+/*
+   المسار: نفس تقنية التيكر القديم (topbarNewsTicker) تماماً:
+   مسار RTL + نسخ متطابقة + translateX(0 → -50%) = شريط متصل بلا قفزة،
+   النص يدخل من اليمين ويخرج من اليسار وتدخل النسخة التالية من اليمين.
+*/
+.cylinder-track{
+    display:inline-flex;align-items:center;gap:0;
+    width:max-content;
+    direction:rtl;
+    animation:cylinderTicker 26s linear infinite;
+    will-change:transform;
+}
+/* إعادة تفعيل الحركة رغم perf-boost (مثل ui-motion للقديم) */
+.cylinder-track{
+    animation-duration:26s!important;
+    animation-iteration-count:infinite!important;
+    -webkit-animation-duration:26s!important;
+    -webkit-animation-iteration-count:infinite!important;
+}
+@keyframes cylinderTicker{
+    0%{transform:translateX(0)}
+    100%{transform:translateX(-50%)}
+}
+.cylinder-body:hover .cylinder-track,
+.cylinder-track.paused{
+    animation-play-state:paused;
+}
+.cylinder-seg{
+    display:inline-flex;align-items:center;gap:12px;
+    /* النص داخل كل وحدة يبدأ من اليمين */
+    direction:rtl;
+    text-align:right;
+    flex:0 0 auto;
+    padding:0 14px;
+    font-weight:800;
+    /* v2026.9: حجم الخط قابل للضبط من إعدادات الثيم */
+    font-size:var(--cyl-font,12.5px);
+    color:var(--cyl-text, #ffffff);
+    text-shadow:0 1px 3px rgba(0,0,0,.45);
+    white-space:nowrap;
+}
+.cylinder-seg .sep{color:var(--cyl-accent, #E6C766);font-size:11px;filter:drop-shadow(0 0 5px rgba(230,199,102,.75))}
+.cylinder-seg b{color:var(--cyl-accent, #E6C766);font-weight:900}
+@media(max-width:520px){
+    .topbar-cylinder{margin:0 8px}
+    .cylinder-seg{font-size:var(--cyl-font,11px);gap:9px}
+}
+
+/* ---------- ملء عرض الشاشة على الكمبيوتر ---------- */
+@media(min-width:1100px){
+    .main-area{
+        max-width:none !important;
+        left:0 !important;right:0 !important;
+        transform:none !important;
+        padding-left:36px;padding-right:36px;
+    }
+    .top-bar{left:0;right:0;border-radius:0}
+    .topbar-bg-effect{border-radius:0}
+    .bottom-bar{left:0;right:0;border-radius:0}
+    .bottom-bar-bg{border-radius:0}
+}

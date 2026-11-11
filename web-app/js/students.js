@@ -102,6 +102,8 @@
       const plan = Store.find('feeplans', (p) => p.studentId === s.id);
       const due = plan ? H.sum((plan.items || []).filter((i) => !i.paid), (i) => i.amount) : 0;
       const cls = isActive ? 'active-s' : 'disconnected-s';
+      /* سطر معلومات قصير — بطاقة مستطيلة متناسبة مثل تطبيق المحطة تماماً */
+      const meter = `🆔 ${H.esc(s.sid || '—')} • ${H.esc(this.className(s.classId) !== '—' ? this.className(s.classId) : this.stageName(s.stageId))}`;
       return `
       <div class="sub-card ${cls}" id="stuc-${s.id}">
         <div class="sub-card-header" data-action="students:toggle" data-id="${s.id}">
@@ -111,12 +113,11 @@
             </div>
             <div style="min-width:0;flex:1">
               <div class="sub-card-name">${H.esc(s.name)}</div>
-              <div class="sub-card-meter">🆔 الرقم: <b>${H.esc(s.sid || '—')}</b> • 🏫 ${H.esc(this.stageName(s.stageId))} — ${H.esc(this.className(s.classId))}</div>
+              <div class="sub-card-meter">${meter}</div>
             </div>
           </div>
           <div class="sub-card-right">
-            ${this.statusBadge(s)}
-            ${due > 0 ? `<span class="sub-badge has-arrears">⚠ متأخر ${H.money(due, true)}</span>` : ''}
+            ${due > 0 ? `<span class="sub-badge has-arrears">⚠ ${H.money(due, true)}</span>` : this.statusBadge(s)}
             <div class="sub-toggle-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
         </div>

@@ -183,3 +183,23 @@ body.native-printing #printZone .print-page {
   }
   .print-doc table { width: 100% !important; }
 }
+
+/* ---------- عناصر نموذج المعاينة (صفحة إعدادات الطباعة) ---------- */
+.print-doc .pd-table { margin-bottom: 10px; }
+.print-doc .pd-table tfoot td { background: #e8eff9; font-weight: 800; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.print-doc .pd-sign {
+  display: flex; justify-content: space-between; gap: 12px; margin-top: 26px;
+  font-size: 11px; color: #345; flex-wrap: wrap;
+}
+.print-doc .pd-sign span { border-top: 1.5px solid #789; padding-top: 5px; min-width: 130px; text-align: center; }
+
+/* ألوان المستخدم من إعدادات الطباعة (تتغلب على ثيم القالب عند وجودها) */
+.print-doc.user-colors .pd-head { border-bottom-color: var(--uc-head, #0b3d91); }
+.print-doc.user-colors .pd-head b { color: var(--uc-head, #0b3d91); }
+.print-doc.user-colors .pd-doc-title { color: var(--uc-head, #0b3d91); }
+.print-doc.user-colors table th { background: var(--uc-accent, #e8eff9) !important; }
+.print-doc.user-colors th, .print-doc.user-colors td { border-color: var(--uc-border, #9db1c9); }
+.print-doc.user-colors tr:nth-child(even) td { background: var(--uc-even, #f5f8fc); }
+.print-doc.user-colors tbody td { color: var(--uc-body, #111); }
+.print-doc.user-colors .pd-foot { border-top-color: var(--uc-border, #9db1c9); color: var(--uc-body2, #556); }
+.print-doc.user-colors .pd-sign span { border-top-color: var(--uc-border, #789); color: var(--uc-body2, #345); }

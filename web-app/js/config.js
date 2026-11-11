@@ -6,15 +6,15 @@
 
 window.Config = {
   APP: 'EduPro School ERP',
-  VERSION: '3.2.0',
+  VERSION: '3.3.0',
   BUILD: '2026.11.12',
 
-  /* ---------- التخزين ---------- */
-  PREFIX: 'EP_',                 // بادئة مفاتيح localStorage
-  SESSION_KEY: 'EP_SESSION',
+  /* ---------- التخزين (مستقل تماماً — لا يتعارض مع أي تطبيق آخر أو قديم) ---------- */
+  PREFIX: 'EDU33_',              // بادئة مفاتيح localStorage الخاصة بهذا التطبيق فقط
+  SESSION_KEY: 'EDU33_SESSION',
   SESSION_DAYS: 30,
-  REMEMBER_KEY: 'EP_remember_user',       // «تذكرني» — اسم المستخدم المحفوظ
-  SESSION_MIRROR_KEY: 'EP_session_mirror', // مرآة الجلسة في SharedPreferences الأصلية
+  REMEMBER_KEY: 'EDU33_remember_user',       // «تذكرني» — اسم المستخدم المحفوظ
+  SESSION_MIRROR_KEY: 'EDU33_session_mirror', // مرآة الجلسة في SharedPreferences الأصلية
 
   /* ---------- المجموعات (قاعدة البيانات) ---------- */
   COLS: [
@@ -148,6 +148,18 @@ window.Config = {
     { id: 'amber',   label: 'عنبري ذهبي',  dot: '#d97706' }
   ],
 
-  /* متغيرات الثيم الحيّة (تُطبَّق فورياً) — نمط المحطة: الوضع الليلي افتراضي */
-  THEME_DEFAULTS: { accent: 'blue', dark: true, fontSize: 15, iconSize: 46, topbarH: 58, bottomnavH: 62, sidebarW: 288, density: 'normal' }
+  /* متغيرات الثيم الحيّة القديمة (توافق فقط) */
+  THEME_DEFAULTS: { accent: 'blue', dark: true, fontSize: 15, iconSize: 46, topbarH: 58, bottomnavH: 62, sidebarW: 288, density: 'normal' },
+
+  /* ثيم المحطة الافتراضي (يُبذر في settings.theme عند أول تشغيل) */
+  THEME_DEFAULTS_STATION: {
+    mode: 'dark', preset: 'dark',
+    topBarColor: '', topBarTextColor: '', topBarFontSize: 14, topBarIconSize: 22,
+    bottomBarColor: '', bottomBarTextColor: '', bottomBarFontSize: 10, bottomBarIconSize: 28,
+    sidebarColor: '', sidebarTextColor: '', sidebarFontSize: 14, sidebarIconSize: 22,
+    mainBgColor: '', contentIconSize: 32,
+    topbarHeight: 58, bottombarHeight: 68, sidebarWidth: 290,
+    glassEnabled: true, glassOpacity: .85, glassBlur: 24,
+    cylinderSpeed: 26, appFontSize: 1
+  }
 };

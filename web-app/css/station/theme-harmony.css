@@ -1,0 +1,111 @@
+/* ============================================================================
+   theme-harmony-v2026.15.css — انسجام القوائم والخطوط مع الثيم المختار
+   -----------------------------------------------------------------------------
+   الهدف: كل عناصر القوائم (الجانبية/العليا/السفلية + المجموعات + البحث +
+   الأدوات) تتبع متغيرات الثيم الحالي — ليلي/نهاري/AMOLED/ربيع/صيف/خريف/شتاء —
+   بدل الألوان الداكنة الثابتة التي كانت تظهر "متنافرة" في الوضع النهاري.
+   القاعدة: خلفيات من --glass-bg-light/--bg-input، حدود من --border،
+   نصوص من --side-text/--text-1..3. مع قيم احتياطية آمنة لكل وضع.
+   ========================================================================== */
+
+/* ==================== 1) رأس الشريط الجانبي ==================== */
+.sidebar-logo{
+    background:linear-gradient(145deg,#1e88e5,#0d47a1) !important;
+    box-shadow:0 4px 12px rgba(13,71,161,.35),inset 0 1px 0 rgba(255,255,255,.35) !important;
+}
+.sidebar-brand-sub{color:var(--blue,#00b4ff) !important;opacity:.95}
+.sidebar-close{
+    background:var(--glass-bg-light,rgba(0,0,0,.04)) !important;
+    border-color:var(--border,rgba(0,0,0,.1)) !important;
+    color:var(--text-2,#64748b) !important;
+}
+.sidebar-foot{
+    background:var(--glass-bg-light,rgba(0,0,0,.03)) !important;
+    border-top-color:var(--border,rgba(0,0,0,.08)) !important;
+}
+.sidebar-head{
+    background:linear-gradient(135deg,rgba(0,180,255,.09),rgba(0,255,136,.05)) !important;
+}
+
+/* ==================== 2) مجموعات التنقل (nav-pro) ==================== */
+.np-group-head{
+    background:var(--glass-bg-light,rgba(0,0,0,.04)) !important;
+    border-color:var(--border,rgba(0,0,0,.09)) !important;
+}
+.np-group-head:hover{
+    background:rgba(0,180,255,.09) !important;
+    border-color:rgba(0,180,255,.28) !important;
+}
+.np-group-head.collapsed{
+    background:var(--glass-bg-light,rgba(0,0,0,.03)) !important;
+}
+.np-group-count{
+    background:var(--bg-3,rgba(0,0,0,.08)) !important;
+    color:var(--side-text,#64748b) !important;
+}
+.np-search-wrap{border-bottom-color:var(--border,rgba(0,0,0,.08)) !important}
+.np-search-wrap input{
+    background:var(--bg-input,#f1f5f9) !important;
+    border-color:var(--border-2,rgba(0,0,0,.12)) !important;
+    color:var(--text-1,#0f172a) !important;
+}
+.np-search-wrap input:focus{
+    border-color:rgba(0,180,255,.55) !important;
+    box-shadow:0 0 0 3px rgba(0,180,255,.14) !important;
+}
+.np-search-wrap input::placeholder{color:var(--text-3,#94a3b8) !important}
+.np-no-results{color:var(--text-3,#94a3b8) !important}
+
+/* ==================== 3) الوضع المضغوط ==================== */
+body.np-compact .np-group-head::after{background:var(--border,rgba(0,0,0,.08)) !important}
+body.np-compact .sidebar-link:hover::after{
+    background:var(--bg-card,#ffffff) !important;
+    color:var(--text-1,#0f172a) !important;
+    border-color:rgba(0,180,255,.35) !important;
+    box-shadow:0 6px 18px rgba(0,0,0,.25) !important;
+}
+
+/* ==================== 4) تلميحات وشارات عامة في الدرج ==================== */
+.sidebar-count{
+    color:#fff !important; /* الشارة الزرقاء تبقى مقروءة في كل الثيمات */
+}
+
+/* ==================== 5) الشريط السفلي الهاتفي ==================== */
+.bottom-tab.np-more-tab .bottom-tab-icon{
+    background:linear-gradient(145deg,#00d4ff,#1565c0);
+    box-shadow:0 4px 14px rgba(21,101,192,.45),0 0 0 4px var(--bg-1,#030b1a) !important;
+}
+
+/* ==================== 6) لمسات فصول السنة (إن لم تعرّفها الثيمات) ==================== */
+[data-theme="light"] .np-group-head{background:rgba(15,23,42,.035) !important}
+[data-theme="spring"] .np-group-head{background:rgba(22,101,52,.06) !important}
+[data-theme="summer"] .np-group-head{background:rgba(180,83,9,.06) !important}
+[data-theme="autumn"] .np-group-head{background:rgba(251,191,36,.07) !important}
+[data-theme="winter"] .np-group-head{background:rgba(96,165,250,.08) !important}
+
+[data-theme="light"] .sidebar-head{background:linear-gradient(135deg,rgba(21,101,192,.08),rgba(0,180,255,.05)) !important}
+[data-theme="spring"] .sidebar-head{background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(22,163,74,.05)) !important}
+[data-theme="summer"] .sidebar-head{background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(217,119,6,.06)) !important}
+[data-theme="autumn"] .sidebar-head{background:linear-gradient(135deg,rgba(217,119,6,.14),rgba(180,83,9,.08)) !important}
+[data-theme="winter"] .sidebar-head{background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(14,116,144,.07)) !important}
+
+/* ==================== 7) الطباعة A4 الكاملة ==================== */
+/* داخل التطبيق (printZone) وخارجه: المحتوى يملأ عرض الورقة ضمن هوامش موحدة */
+@media print{
+    #printZone{
+        width:100% !important;
+        max-width:100% !important;
+        margin:0 !important;
+        padding:0 !important;
+        background:#fff !important;
+    }
+    .pp-doc,.pp-report,.ent-doc,.print-page,.inv-doc,.pro-invoice-preview{
+        width:100% !important;
+        max-width:100% !important;
+        margin:0 auto !important;
+        box-shadow:none !important;
+        border-radius:0 !important;
+    }
+    .pp-table,.print-tbl,.ent-tbl,.inv-sub-table,.inv-meter-table,
+    .inv-charges-table,.data-tbl{width:100% !important}
+}

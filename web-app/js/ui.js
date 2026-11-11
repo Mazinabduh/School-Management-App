@@ -262,7 +262,7 @@ window.Actions = {
       '📣': 'nav-communications', '📊': 'nav-reports', '⚙️': 'nav-settings',
       '☁️': 'nav-backup', '🛡️': 'nav-audit', '🎓': 'nav-students', '🏆': 'nav-certificate',
       '🧪': 'nav-demo', '🎨': 'nav-themes', '🔑': 'nav-password', '👤': 'nav-user',
-      'ℹ️': 'nav-about', '🚪': 'nav-logout', '💾': 'nav-backup'
+      'ℹ️': 'nav-about', '🚪': 'nav-logout', '💾': 'nav-backup', '🖨️': 'nav-print', '📁': 'nav-backup'
     },
     pageHead(title, actionsHTML = '', sub = '') {
       /* استخراج الرمز الأول من العنوان وتحويله لأيقونة 3D بنمط المحطة */
@@ -273,11 +273,12 @@ window.Actions = {
         title = title.slice(m[0].length).trim();
       }
       return `<div class="page-head">
-        <div class="ph-title">
-          ${ico ? `<span class="ph-ico"><img src="assets/icons/${ico}.png" alt="" loading="lazy"></span>` : ''}
-          <div><h2>${title}</h2>${sub ? `<div class="muted">${sub}</div>` : ''}</div>
-        </div>
-        <div class="actions">${actionsHTML}</div>
+        <h2 class="page-title-3d">
+          ${ico ? `<span class="title-icon-3d ti-blue"><img class="nav-icon-3d" src="assets/icons/${ico}.png" alt="" loading="lazy" style="width:60%;height:60%;object-fit:contain"></span>` : ''}
+          <span>${title}</span>
+        </h2>
+        ${sub ? `<div class="page-date">${sub}</div>` : ''}
+        ${actionsHTML ? `<div class="actions">${actionsHTML}</div>` : ''}
       </div>`;
     },
     icon(ico, color = 'ic-blue', size = '') {
