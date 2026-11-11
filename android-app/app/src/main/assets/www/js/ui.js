@@ -204,21 +204,28 @@ window.Actions = {
       return out;
     },
 
-    /* ---------- ورقة سفلية (قائمة خيارات) ---------- */
+    /* ---------- ورقة سفلية (قائمة خيارات) — أيقونات 3D بنمط المحطة ---------- */
     sheet({ title = 'خيارات', items = [] }) {
       return new Promise((res) => {
         const back = document.createElement('div');
         back.className = 'modal-backdrop';
+        const itemHTML = (it, i) => {
+          const isPng = typeof it.ico === 'string' && it.ico.startsWith('nav-');
+          const icoInner = isPng
+            ? `<span class="si-ico"><img src="assets/icons/${it.ico}.png" alt="" loading="lazy"></span>`
+            : `<span class="si-ico"><span class="icon3d ${it.color || 'ic-blue'}">${it.ico || '•'}</span></span>`;
+          return `
+            <button class="sheet-item" data-i="${i}" style="width:100%">
+              ${icoInner}
+              <span class="ni-label"><b style="font-size:13.5px">${it.label}</b>${it.sub ? `<br><small class="muted">${it.sub}</small>` : ''}</span>
+              <span class="si-arrow">◂</span>
+            </button>`;
+        };
         back.innerHTML = `
           <div class="modal" style="border-radius:22px 22px 0 0">
             <div class="modal-head"><h3>${title}</h3><button class="icon-btn" data-x aria-label="إغلاق">✕</button></div>
             <div class="modal-body" style="padding:8px">
-              ${items.map((it, i) => `
-                <button class="nav-item" data-i="${i}" style="width:100%">
-                  <span class="ni-ico ${it.color || ''}">${it.ico || '•'}</span>
-                  <span class="ni-label"><b style="font-size:13.5px">${it.label}</b>${it.sub ? `<br><small class="muted">${it.sub}</small>` : ''}</span>
-                  <span>◂</span>
-                </button>`).join('')}
+              ${items.map(itemHTML).join('')}
             </div>
           </div>`;
         const done = (v) => { back.remove(); res(v); };
@@ -247,9 +254,29 @@ window.Actions = {
     },
 
     /* ---------- عناصر HTML مساعدة ---------- */
+    /* خريطة الرموز → أيقونات 3D حقيقية (بنمط المحطة) */
+    ICO_MAP: {
+      '🏠': 'nav-home', '👨‍🎓': 'nav-students', '🏫': 'nav-stages', '✍️': 'nav-grades',
+      '🏅': 'nav-results', '💰': 'nav-finance', '🧾': 'nav-installments', '👕': 'nav-store',
+      '🚌': 'nav-bus', '👥': 'nav-employees', '💵': 'nav-payroll', '🪪': 'nav-cards',
+      '📣': 'nav-communications', '📊': 'nav-reports', '⚙️': 'nav-settings',
+      '☁️': 'nav-backup', '🛡️': 'nav-audit', '🎓': 'nav-students', '🏆': 'nav-certificate',
+      '🧪': 'nav-demo', '🎨': 'nav-themes', '🔑': 'nav-password', '👤': 'nav-user',
+      'ℹ️': 'nav-about', '🚪': 'nav-logout', '💾': 'nav-backup'
+    },
     pageHead(title, actionsHTML = '', sub = '') {
+      /* استخراج الرمز الأول من العنوان وتحويله لأيقونة 3D بنمط المحطة */
+      let ico = '';
+      const m = title.match(/^(\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]|\uD83D[\uDE80-\uDEFF]|\uD83E[\uDD00-\uDDFF]|[\u2600-\u27BF]|[\u2B00-\u2BFF]\uFE0F?|⚠️|ℹ️|✅|⛔)/);
+      if (m) {
+        ico = this.ICO_MAP[m[0]] || '';
+        title = title.slice(m[0].length).trim();
+      }
       return `<div class="page-head">
-        <div><h2>${title}</h2>${sub ? `<div class="muted">${sub}</div>` : ''}</div>
+        <div class="ph-title">
+          ${ico ? `<span class="ph-ico"><img src="assets/icons/${ico}.png" alt="" loading="lazy"></span>` : ''}
+          <div><h2>${title}</h2>${sub ? `<div class="muted">${sub}</div>` : ''}</div>
+        </div>
         <div class="actions">${actionsHTML}</div>
       </div>`;
     },

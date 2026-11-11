@@ -10,6 +10,7 @@
     render(root) {
       const s = Store.settings();
       const info = Store.sizeInfo();
+      const demo = window.DemoData ? DemoData.counts() : { total: 0, counts: {} };
       root.innerHTML = `<div class="page">
         ${UI.pageHead('☁️ النسخ الاحتياطي والاستعادة')}
 
@@ -38,6 +39,22 @@
               <button class="btn btn-soft" data-action="bak:ghPull">⬇️ تنزيل واستعادة</button>
             </div>
           </div>
+        </div>
+
+        <div class="card mb-16" style="border-color:var(--warn)">
+          <div class="card-title" style="color:var(--warn)">🧪 البيانات التجريبية</div>
+          <p class="muted mb-8">توليد مجموعة كاملة بضغطة واحدة: <b>500 طالب</b> و<b>60 موظفاً</b> و<b>باصات</b> و<b>درجات</b> و<b>أقساط وتحصيل</b> و<b>زي وكتب</b> و<b>رواتب</b> و<b>تعميمات</b> و<b>حركات مالية</b> — لاختبار كل أجزاء البرنامج بأرقام حقيقية.</p>
+          ${demo.total ? `<div class="flex gap-8 wrap mb-8" style="flex-wrap:wrap">
+            <span class="badge badge-info">👨‍🎓 طلاب: ${H.num(demo.counts.students)}</span>
+            <span class="badge badge-success">👥 موظفون: ${H.num(demo.counts.employees)}</span>
+            <span class="badge badge-warn">✍️ سجلات درجات: ${H.num(demo.counts.grades)}</span>
+            <span class="badge badge-gold">💰 حركات مالية: ${H.num(demo.counts.transactions)}</span>
+          </div>` : ''}
+          <div class="flex gap-8 wrap">
+            <button class="btn btn-primary btn-write" data-action="demo:gen">🧪 توليد البيانات التجريبية (500 طالب + 60 موظف)</button>
+            <button class="btn btn-danger-soft" data-action="demo:clear">🗑 حذف البيانات التجريبية${demo.total ? ` (${H.num(demo.total)})` : ''}</button>
+          </div>
+          <small class="muted" style="display:block;margin-top:8px">تُوسم كل السجلات التجريبية بعلامة خاصة — الحذف ينزعها فقط ولا يمسّ بياناتك الحقيقية أبداً.</small>
         </div>
 
         <div class="card mb-16">

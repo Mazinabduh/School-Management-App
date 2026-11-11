@@ -44,9 +44,11 @@
     return parts(state.term).reduce((a, p) => a + (parseFloat(e[p.k]) || 0), 0);
   }
 
+  /* حفظ مؤجل آمن — يلتقط سجل الشّعبة/المادة وقت الإدخال لا وقت التنفيذ
+   (كان سبباً في اختلاط الدرجات بين المواد عند التبديل السريع) */
+  let _pendingSave = null;
   const saveDebounced = H.debounce(() => {
-    const rec = Store.get('grades', recId());
-    if (rec) { Store.put('grades', rec); }
+    if (_pendingSave) { Store.put('grades', _pendingSave); }
   }, 600);
 
   const P = {
@@ -138,10 +140,11 @@
       sts.forEach((s) => {
         const total = entryTotal(rec, s.id);
         const has = parts(state.term).some((p) => { const v = entryOf(rec, s.id)[p.k]; return v !== undefined && v !== ''; });
-        if (has) entered++;
+        if (!has) return; /* غير المرسد لا يدخل في المتوسط */
+        entered++;
         const pct = H.pct(total, mx);
         sumPct += pct;
-        if (has) { if (H.passed(pct)) pass++; else fail++; }
+        if (H.passed(pct)) pass++; else fail++;
       });
       const avg = entered ? Math.round((sumPct / entered) * 10) / 10 : 0;
       return `
@@ -167,6 +170,7 @@
         const rec = record();
         rec.entries[sid] = rec.entries[sid] || {};
         if (v === '') delete rec.entries[sid][k]; else rec.entries[sid][k] = v;
+        _pendingSave = rec; /* نفس السجل الذي عدّلته — لا تخلط مع التبديل */
         inp.classList.toggle('over', false);
         inp.classList.toggle('filled', v !== '');
         /* تحديث الصف */
@@ -217,7 +221,7 @@
     selStage(el, val) { state.stageId = val; state.classId = ''; P.render(document.getElementById('page-root')); },
     selClass(el, val) { state.classId = val; P.render(document.getElementById('page-root')); },
     selSubject(el, val) { state.subjectId = val; P.render(document.getElementById('page-root')); },
-    term(ds) { state.term = ds.t; P.render(document.getElementById('page-root')); },
+    term(ds) { state.term = ds.t; _pendingSave = null; P.render(document.getElementById('page-root')); },
 
     print() { if (window.ReportIntl) ReportIntl.preview(ReportIntl.gradeSheetHTML(P.sheetData()), { title: 'كشف الدرجات', orientation: 'portrait' }); },
     pdf() { if (window.PDFEnterprise) PDFEnterprise.download(ReportIntl.gradeSheetHTML(P.sheetData()), `كشف-درجات-${P.sheetData().klass}.pdf`, 'portrait'); },

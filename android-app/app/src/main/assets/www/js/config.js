@@ -6,8 +6,8 @@
 
 window.Config = {
   APP: 'EduPro School ERP',
-  VERSION: '3.1.1',
-  BUILD: '2026.11.11',
+  VERSION: '3.2.0',
+  BUILD: '2026.11.12',
 
   /* ---------- التخزين ---------- */
   PREFIX: 'EP_',                 // بادئة مفاتيح localStorage
@@ -148,6 +148,6 @@ window.Config = {
     { id: 'amber',   label: 'عنبري ذهبي',  dot: '#d97706' }
   ],
 
-  /* متغيرات الثيم الحيّة (تُطبَّق فورياً) */
-  THEME_DEFAULTS: { accent: 'blue', dark: false, fontSize: 15, iconSize: 46, topbarH: 60, bottomnavH: 64, sidebarW: 288, density: 'normal' }
+  /* متغيرات الثيم الحيّة (تُطبَّق فورياً) — نمط المحطة: الوضع الليلي افتراضي */
+  THEME_DEFAULTS: { accent: 'blue', dark: true, fontSize: 15, iconSize: 46, topbarH: 58, bottomnavH: 62, sidebarW: 288, density: 'normal' }
 };
