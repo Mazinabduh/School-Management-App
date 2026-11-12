@@ -629,7 +629,7 @@ public class SplashActivity extends Activity {
             p.setColor(Color.WHITE);
             p.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
             p.setTextAlign(Paint.Align.CENTER);
-            drawFittedText(c, schoolName, cx, cy + unit * 24.5f, unit * 8.0f, p);
+            drawFittedText(cv, schoolName, cx, cy + unit * 24.5f, unit * 8.0f, p);
 
             p.setColor(Color.parseColor("#8DA4BF"));
             p.setTextSize(unit * 3.2f);
