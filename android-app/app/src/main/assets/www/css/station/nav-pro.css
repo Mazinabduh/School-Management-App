@@ -1,0 +1,194 @@
+/* ============================================================================
+   nav-pro-v2026.14.css — نظام التنقل الاحترافي الموحد (كمبيوتر + هاتف)
+   محطة الخبجي الكهربائية — v2026.14
+   ----------------------------------------------------------------------------
+   سطح المكتب (>=1024px): شريط جانبي ثابت دائم + إخفاء الشريط السفلي
+   + وضع مضغوط (أيقونات فقط) بزر الهامبرغر.
+   الهاتف (<1024px): شريط سفلي ذكي (4 تبويبات + المزيد) + درج مجموعات قابل
+   للطي مع بحث فوري.
+   ========================================================================== */
+
+/* ==================== 1) هيكل المجموعات (مشترك) ==================== */
+.np-group-head{
+    display:flex;align-items:center;gap:8px;
+    width:100%;
+    padding:9px 10px 9px 8px;margin:6px 0 2px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.05);
+    border-radius:12px;
+    cursor:pointer;user-select:none;-webkit-user-select:none;
+    transition:background .18s ease,border-color .18s ease;
+    text-align:right;
+}
+.np-group-head:hover{background:rgba(0,180,255,.07);border-color:rgba(0,180,255,.18)}
+.np-group-chip{
+    width:26px;height:26px;min-width:26px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.25);
+    flex-shrink:0;
+}
+.np-group-chip svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.np-group-title{
+    flex:1;
+    font-size:11.5px;font-weight:800;letter-spacing:.2px;
+    color:var(--side-text,#8da4bf);
+}
+.np-group-arrow{
+    font-size:9px;color:var(--side-text,#8da4bf);opacity:.8;
+    transition:transform .2s ease;flex-shrink:0;
+}
+.np-group-head.collapsed .np-group-arrow{transform:rotate(-90deg)}
+.np-group-count{
+    min-width:20px;height:17px;padding:0 6px;border-radius:9px;
+    background:rgba(255,255,255,.08);
+    color:var(--side-text,#8da4bf);
+    font-size:10px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+}
+.np-group-body{overflow:hidden}
+.np-group-body.collapsed{display:none}
+.np-group-body .sidebar-link{padding-right:16px}
+.np-empty-group{display:none !important}
+
+/* ==================== 2) البحث داخل الدرج ==================== */
+.np-search-wrap{
+    position:relative;flex-shrink:0;
+    padding:10px 12px 6px;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+.np-search-wrap input{
+    width:100%;
+    padding:9px 34px 9px 12px;
+    font-size:13px;font-weight:600;font-family:inherit;
+    border-radius:11px;
+    border:1.5px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.04);
+    color:var(--text-1,#fff);
+    outline:none;
+    transition:border-color .2s ease,box-shadow .2s ease;
+}
+.np-search-wrap input:focus{
+    border-color:rgba(0,180,255,.5);
+    box-shadow:0 0 0 3px rgba(0,180,255,.12);
+}
+.np-search-wrap input::placeholder{color:var(--text-3,#4a6580);font-weight:500}
+.np-search-ico{
+    position:absolute;right:22px;top:50%;transform:translateY(calc(-50% + 2px));
+    font-size:14px;opacity:.55;pointer-events:none;
+}
+.np-no-results{
+    display:none;
+    padding:18px 12px;text-align:center;
+    font-size:12px;color:var(--text-3,#4a6580);
+}
+
+/* ==================== 3) تبويب «المزيد» في الشريط السفلي ==================== */
+.bottom-tab.np-more-tab .bottom-tab-icon{
+    width:34px;height:34px;margin-top:-14px;
+    border-radius:50%;
+    background:linear-gradient(145deg,#00d4ff,#0091ea);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:17px;font-weight:900;line-height:1;
+    box-shadow:0 4px 14px rgba(0,144,234,.5),0 0 0 4px var(--bg-1,#030b1a);
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.bottom-tab.np-more-tab:active .bottom-tab-icon{transform:scale(.88)}
+.bottom-tab.np-more-tab span{color:var(--bottom-text)}
+
+/* ==================== 4) سطح المكتب: شريط جانبي دائم ==================== */
+@media (min-width:1024px){
+
+    /* الشريط الجانبي يصبح ثابتاً دائماً أسفل الشريط العلوي */
+    .sidebar{
+        top:calc(var(--topbar-h,58px) + 6px) !important;
+        height:calc(100dvh - var(--topbar-h,58px) - 12px) !important;
+        transform:none !important;
+        -webkit-transform:none !important;
+        transition:width .22s ease !important;
+        border-radius:18px 0 0 18px;
+        box-shadow:none;
+        border-left:1px solid var(--border,rgba(255,255,255,.08));
+        border-top:1px solid var(--border,rgba(255,255,255,.08));
+        z-index:850 !important;
+        pointer-events:auto !important;
+        width:var(--sidebar-w,290px);
+        right:6px;
+        overflow:visible;
+    }
+    .sidebar-close{display:none !important}
+    .sidebar-backdrop{display:none !important}
+
+    /* المحتوى يُزاح لليسار ليتسع للشريط */
+    .main-area{
+        margin-right:calc(var(--sidebar-w,290px) + 12px) !important;
+        padding-bottom:26px !important;
+    }
+
+    /* إخفاء الشريط السفلي على الكمبيوتر */
+    .bottom-bar{display:none !important}
+
+    /* الهامبرغر يصبح زر طي/توسيع */
+    .menu-btn .hamburger span{transition:all .2s ease}
+
+    /* ---------- الوضع المضغوط (أيقونات فقط) ---------- */
+    body.np-compact .sidebar{width:78px}
+    body.np-compact .main-area{
+        margin-right:calc(78px + 12px) !important;
+    }
+    body.np-compact .sidebar-brand-name,
+    body.np-compact .sidebar-brand-sub{display:none}
+    body.np-compact .sidebar-head{justify-content:center;padding:14px 8px}
+    body.np-compact .sidebar-link{justify-content:center;padding:11px 6px;gap:0}
+    body.np-compact .sidebar-link > span:not(.sidebar-count){display:none}
+    body.np-compact .sidebar-count{
+        position:absolute;top:4px;left:6px;margin:0;
+        min-width:20px;height:18px;padding:0 5px;font-size:10px;
+    }
+    body.np-compact .np-group-title,
+    body.np-compact .np-group-count,
+    body.np-compact .np-group-arrow{display:none}
+    body.np-compact .np-group-head{
+        justify-content:center;padding:8px 4px;
+        background:transparent;border-color:transparent;
+        margin-bottom:4px;cursor:default;
+    }
+    body.np-compact .np-group-head::after{
+        content:'';position:absolute;right:12px;left:12px;bottom:0;
+        height:1px;background:rgba(255,255,255,.07);
+    }
+    body.np-compact .np-group-body{display:block !important}
+    body.np-compact .np-search-wrap{display:none}
+    body.np-compact .sidebar-foot{display:none}
+
+    /* تلميح اسم الصفحة في الوضع المضغوط */
+    body.np-compact .sidebar-link{position:relative}
+    body.np-compact .sidebar-link:hover::after{
+        content:attr(data-title);
+        position:absolute;
+        left:calc(100% + 10px);top:50%;transform:translateY(-50%);
+        background:#0a1628;color:#e8f0fe;
+        padding:6px 12px;border-radius:8px;
+        font-size:12px;font-weight:700;white-space:nowrap;
+        border:1px solid rgba(0,180,255,.3);
+        box-shadow:0 6px 18px rgba(0,0,0,.45);
+        z-index:1200;pointer-events:none;
+    }
+}
+
+/* أثناء فتح الدرج على الهاتف لا تغيير — السلوك الأصلي يعمل */
+
+/* ==================== 5) تحسينات الهاتف الصغير ==================== */
+@media (max-width:1023px){
+    .np-search-wrap{display:block}
+    .sidebar-menu{padding-top:0}
+}
+
+@media (max-width:380px){
+    .np-group-title{font-size:10.5px}
+    .bottom-tab span{font-size:9px}
+}
+
+/* ==================== 6) وضع الحركة المخفّضة ==================== */
+@media (prefers-reduced-motion:reduce){
+    .np-group-arrow,.np-group-head,.bottom-tab.np-more-tab .bottom-tab-icon{transition:none !important}
+}

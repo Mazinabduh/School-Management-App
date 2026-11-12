@@ -46,9 +46,9 @@
         <div class="tabs">
           <button class="tab ${tab === 'branding' ? 'active' : ''}" data-action="set:tab" data-t="branding">🏫 هوية المدرسة</button>
           <button class="tab ${tab === 'academic' ? 'active' : ''}" data-action="set:tab" data-t="academic">🎯 النظام الأكاديمي</button>
-          <button class="tab ${tab === 'print' ? 'active' : ''}" data-action="set:tab" data-t="print">🖨️ إعدادات الطباعة</button>
-          <button class="tab ${tab === 'ui' ? 'active' : ''}" data-action="set:tab" data-t="ui">🎨 المظهر والثيمات</button>
           <button class="tab ${tab === 'users' ? 'active' : ''}" data-action="set:tab" data-t="users">👥 المستخدمون والأمان</button>
+          <button class="tab" data-action="nav:go" data-page="print-settings" style="border-style:dashed">🖨️ إعدادات الطباعة ←</button>
+          <button class="tab" data-action="nav:go" data-page="themes" style="border-style:dashed">🎨 الثيمات والمظهر ←</button>
         </div>
         <div id="set-body">${this.bodyHTML()}</div>
       </div>`;
@@ -111,136 +111,15 @@
         </div>`;
       }
 
-      if (tab === 'print') {
-        const ps = (window.PrintSettingsPro && PrintSettingsPro.getPS()) || {};
-        const fsRow = (label, id, val, min, max) => `
-          <div class="field"><label>${label}</label>
-            <div style="display:flex;align-items:center;gap:10px">
-              <input type="range" min="${min}" max="${max}" value="${val || 0}" id="${id}" data-ps-range="1" style="flex:1;padding:0">
-              <span id="${id}Val" style="color:var(--primary);font-weight:800;min-width:30px;text-align:center">${val || 0}</span>
-            </div></div>`;
+      if (tab === 'print' || tab === 'ui') {
+        /* نُقلت إلى صفحتين مستقلتين بنمط تطبيق المحطة */
         return `
         <div class="card">
-          <div class="card-title">🖨️ إعدادات الطباعة <small class="muted">نفس نظام تطبيق المحطة — تُطبّق فوراً على كل الكشوفات والسندات والشهادات وPDF</small></div>
-
-          <div class="card-title" style="font-size:14px;margin-top:8px">🔢 عدد النسخ</div>
-          <div class="field" style="display:flex;align-items:center;gap:12px;max-width:300px">
-            <button class="btn btn-ghost" data-action="set:psCopies" data-d="-1" type="button" style="width:40px">−</button>
-            <input type="number" id="psCopies" value="${ps.copies || 1}" min="1" max="20" style="width:70px;text-align:center;font-weight:800">
-            <button class="btn btn-ghost" data-action="set:psCopies" data-d="1" type="button" style="width:40px">+</button>
-            <small class="muted">(1 - 20)</small>
-          </div>
-
-          <div class="card-title" style="font-size:14px;margin-top:14px">📄 أبعاد الصفحة</div>
-          <div class="form-grid">
-            <div class="field"><label>نوع الصفحة</label>
-              <select id="psPaperSize">
-                <option value="A4" ${ps.paperSize !== 'A5' && ps.paperSize !== 'Letter' && ps.paperSize !== 'Custom' ? 'selected' : ''}>A4</option>
-                <option value="A5" ${ps.paperSize === 'A5' ? 'selected' : ''}>A5</option>
-                <option value="Letter" ${ps.paperSize === 'Letter' ? 'selected' : ''}>Letter</option>
-                <option value="Custom" ${ps.paperSize === 'Custom' ? 'selected' : ''}>مخصصة</option>
-              </select></div>
-          </div>
-          <div id="psCustomSizeRow" class="form-grid" style="display:${ps.paperSize === 'Custom' ? 'grid' : 'none'}">
-            <div class="field"><label>العرض (مم)</label><input type="number" id="psCustomWidth" value="${ps.customWidth || 210}" min="40" max="300"></div>
-            <div class="field"><label>الارتفاع (مم)</label><input type="number" id="psCustomHeight" value="${ps.customHeight || 297}" min="40" max="400"></div>
-          </div>
-          <div class="field"><label>اتجاه الصفحة</label>
-            <div style="display:flex;gap:10px">
-              <button class="btn ${ps.orientation === 'landscape' ? 'btn-ghost' : 'btn-primary'}" id="psPortrait" data-action="set:psOrientation" data-o="portrait" style="flex:1;padding:10px"> ↕ عمودي</button>
-              <button class="btn ${ps.orientation === 'landscape' ? 'btn-primary' : 'btn-ghost'}" id="psLandscape" data-action="set:psOrientation" data-o="landscape" style="flex:1;padding:10px"> ↔ أفقي</button>
-            </div>
-          </div>
-
-          <div class="card-title" style="font-size:14px;margin-top:14px">📐 الهوامش (مم)</div>
-          <div class="form-grid">
-            <div class="field"><label>أعلى</label><input type="number" id="psMarginTop" value="${ps.marginTop ?? 8}" min="0" max="50"></div>
-            <div class="field"><label>أسفل</label><input type="number" id="psMarginBottom" value="${ps.marginBottom ?? 8}" min="0" max="50"></div>
-            <div class="field"><label>يمين</label><input type="number" id="psMarginRight" value="${ps.marginRight ?? 8}" min="0" max="50"></div>
-            <div class="field"><label>يسار</label><input type="number" id="psMarginLeft" value="${ps.marginLeft ?? 8}" min="0" max="50"></div>
-          </div>
-          <div class="flex gap-8 wrap mt-8">
-            <button class="btn btn-ghost" data-action="set:psMargins" data-m="0">📄 بكامل الصفحة (بدون حواف)</button>
-            <button class="btn btn-ghost" data-action="set:psMargins" data-m="10">📐 هوامش 10مم</button>
-          </div>
-
-          <div class="card-title" style="font-size:14px;margin-top:14px">🔤 إعدادات الخط</div>
-          <div class="form-grid">
-            <div class="field"><label>نوع الخط</label>
-              <select id="psFontFamily">
-                ${['Cairo', 'Tahoma', 'Arial', 'Traditional Arabic', 'Simplified Arabic'].map((f) => `<option value="${f}" ${(ps.fontFamily || 'Cairo') === f ? 'selected' : ''}>${f}</option>`).join('')}
-              </select></div>
-          </div>
-          <div class="field"><label>حجم الخط الأساسي (نقطة): <b id="psFontSizeVal" style="color:var(--primary)">${ps.fontSize || 11}</b></label>
-            <input type="range" id="psFontSize" min="7" max="18" value="${ps.fontSize || 11}" data-ps-range="1" style="width:100%;padding:0">
-          </div>
-          <div style="font-size:12px;color:var(--text-3);margin:8px 0 4px">تخصيص حجم الخط لكل قسم (0 = الافتراضي):</div>
-          <div class="form-grid">
-            ${fsRow('عنوان المستند', 'psTitleFontSize', ps.titleFontSize, 0, 28)}
-            ${fsRow('رأس الجدول', 'psTableHeaderFontSize', ps.tableHeaderFontSize, 0, 16)}
-            ${fsRow('محتوى الجدول', 'psTableBodyFontSize', ps.tableBodyFontSize, 0, 14)}
-            ${fsRow('التذييل', 'psFooterFontSize', ps.footerFontSize, 0, 12)}
-          </div>
-
-          <div class="card-title" style="font-size:14px;margin-top:14px">⚙️ خيارات إضافية</div>
-          <div class="form-grid">
-            <div class="field"><label>ثيم المستندات</label>
-              <select id="st-theme">
-                ${(window.ThemesKit ? ThemesKit.list : []).map((t) => `<option value="${t.id}" ${(Store.getSetting('printTheme', 'royal')) === t.id ? 'selected' : ''}>${t.label}</option>`).join('')}
-              </select></div>
-            <div class="field"><label>عرض الطابعة الحرارية</label>
-              <select id="st-thermal">
-                <option value="80" ${(Store.getSetting('thermalWidth', 80) == 80) ? 'selected' : ''}>80 مم (الشائع)</option>
-                <option value="58" ${(Store.getSetting('thermalWidth', 80) == 58) ? 'selected' : ''}>58 مم</option>
-              </select></div>
-          </div>
-          <div class="grid grid-2 gap-8">
-            <label class="switch"><input type="checkbox" id="st-header" ${Store.getSetting('printHeader', true) ? 'checked' : ''}><span class="track"></span><span>ترويسة المدرسة والشعار في كل مستند</span></label>
-            <label class="switch"><input type="checkbox" id="st-watermark" ${Store.getSetting('printWatermark', true) ? 'checked' : ''}><span class="track"></span><span>علامة مائية بالشعار في الشهادات</span></label>
-            <label class="switch"><input type="checkbox" id="st-zebra" ${Store.getSetting('printZebra', true) ? 'checked' : ''}><span class="track"></span><span>تظليل متناوب لصفوف الجداول</span></label>
-          </div>
-
-          <div class="card-title" style="font-size:14px;margin-top:14px">🎨 CSS مخصص <small class="muted">اختياري — لأنماط طباعتك الخاصة</small></div>
-          <div class="field"><textarea id="psCustomCSS" rows="3" style="direction:ltr;text-align:left;font-family:monospace;font-size:12px;resize:vertical" placeholder=".print-doc td { font-size: 10pt; }">${(ps.customCSS || '').replace(/</g, '&lt;')}</textarea></div>
-
-          <div class="card-title" style="font-size:14px;margin-top:14px">👁️ معاينة مباشرة</div>
-          <div id="psLivePreview" style="padding:12px;overflow:auto;max-height:340px;border:1px solid var(--border);border-radius:12px;background:#fff;direction:rtl"></div>
-
-          <div class="flex gap-8 wrap mt-16">
-            <button class="btn btn-primary" data-action="set:savePrint">💾 حفظ إعدادات الطباعة</button>
-            <button class="btn btn-gold" data-action="set:testPrint">🖨️ طباعة تجريبية</button>
-            <button class="btn btn-ghost" data-action="set:psPreview">🔄 تحديث المعاينة</button>
-          </div>
-        </div>`;
-      }
-
-      if (tab === 'ui') {
-        const u = Store.getSetting('themeUI', Config.THEME_DEFAULTS);
-        return `
-        <div class="card mb-16">
-          <div class="card-title">🎨 ثيم الألوان</div>
-          <div class="color-row mb-16">
-            ${Config.ACCENTS.map((a) => `
-              <button class="color-swatch ${u.accent === a.id ? 'active' : ''}" style="background:${a.dot};width:52px;height:52px;border-radius:14px;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center"
-                data-action="set:accent" data-a="${a.id}" title="${a.label}">${a.label.split(' ')[0]}</button>`).join('')}
-          </div>
-          <label class="switch mb-16"><input type="checkbox" data-ui="dark" ${u.dark ? 'checked' : ''}><span class="track"></span><span>🌙 الوضع الليلي</span></label>
-        </div>
-        <div class="card">
-          <div class="card-title">📐 التحكم الحي في المقاسات <small class="muted">يُطبّق فوراً على كل الواجهة</small></div>
-          ${this.slider('حجم الخط العام', 'fontSize', u.fontSize || 15, 12, 20, 'px')}
-          ${this.slider('حجم الأيقونات ثلاثية الأبعاد', 'iconSize', u.iconSize || 46, 32, 64, 'px')}
-          ${this.slider('ارتفاع الشريط العلوي', 'topbarH', u.topbarH || 60, 48, 84, 'px')}
-          ${this.slider('ارتفاع الشريط السفلي', 'bottomnavH', u.bottomnavH || 64, 52, 84, 'px')}
-          ${this.slider('عرض القائمة الجانبية', 'sidebarW', u.sidebarW || 288, 240, 360, 'px')}
-          <div class="field mt-16"><label>كثافة العرض</label>
-            <select data-ui="density">
-              <option value="compact" ${u.density === 'compact' ? 'selected' : ''}>مضغوط</option>
-              <option value="normal" ${u.density === 'normal' ? 'selected' : ''}>عادي</option>
-              <option value="cozy" ${u.density === 'cozy' ? 'selected' : ''}>مريح</option>
-            </select></div>
-          <div class="flex gap-8 mt-8">
-            <button class="btn btn-ghost" data-action="set:resetUI">↩️ استعادة الافتراضي</button>
+          <div class="card-title">📌 انتقال</div>
+          <p class="muted mb-8">تم نقل هذا القسم إلى صفحة مستقلة بنفس نظام تطبيق المحطة بالضبط:</p>
+          <div class="flex gap-8 wrap">
+            <button class="btn btn-primary" data-action="nav:go" data-page="print-settings">🖨️ إعدادات الطباعة</button>
+            <button class="btn btn-gold" data-action="nav:go" data-page="themes">🎨 الثيمات والمظهر</button>
           </div>
         </div>`;
       }
@@ -332,13 +211,21 @@
       Store.setSetting('address', g('st-address'));
       Store.setSetting('issuedBy', g('st-issued'));
       Router.updateBranding();
+      /* نظام المحطة: الهوية تظهر فوراً في كل المواضع + مرآة الإقلاع الأصلي */
+      if (window.BootBrand) {
+        const s = Store.settings();
+        if (s.schoolName) BootBrand.applyName(s.schoolName);
+        if (window.mirrorBrandToNative) try { mirrorBrandToNative(s); } catch (e) {}
+      }
       Audit.log('تعديل', 'تحديث بيانات هوية المدرسة');
-      UI.toast('تم حفظ بيانات المدرسة ✓', 'success');
+      UI.toast('تم حفظ بيانات المدرسة ✓ — سيظهر الاسم في شاشة البداية والدخول', 'success');
     },
     pickLogo() {
       UI.pickPhoto((dataURL) => {
         Store.setSetting('logo', dataURL);
         Router.updateBranding();
+        if (window.BootBrand) BootBrand.applyLogo(dataURL);
+        if (window.mirrorBrandToNative) try { mirrorBrandToNative(Store.settings()); } catch (e) {}
         P.render(document.getElementById('page-root'));
         UI.toast('تم تحديث الشعار ✓', 'success');
         Audit.log('تعديل', 'تحديث شعار المدرسة');
@@ -347,6 +234,8 @@
     resetLogo() {
       Store.setSetting('logo', '');
       Router.updateBranding();
+      if (window.BootBrand) BootBrand.applyLogo('assets/images/logo.png');
+      if (window.mirrorBrandToNative) try { mirrorBrandToNative(Store.settings()); } catch (e) {}
       P.render(document.getElementById('page-root'));
     },
 

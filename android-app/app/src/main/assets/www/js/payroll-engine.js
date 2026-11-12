@@ -171,15 +171,31 @@
       if (!run || !run.lines.length) return;
       const st = Store.settings();
       const totalNet = H.sum(run.lines, netOf);
+      const totalBasic = H.sum(run.lines, (l) => l.basic || 0);
+      const totalDed = H.sum(run.lines, (l) => (l.deductions || 0) + (l.advance || 0));
       const rows = run.lines.map((ln, i) => {
         const e = Store.get('employees', ln.empId) || {};
-        return `<tr><td>${i + 1}</td><td style="text-align:right">${H.esc(ln.name)}</td><td>${H.esc(e.job || '')}</td>
-          <td>${H.num(ln.basic)}</td><td>${H.num(ln.allowances)}</td><td>${H.num(ln.bonus)}</td>
-          <td>${H.num(ln.deductions)}</td><td>${H.num(ln.advance)}</td>
-          <td><b>${H.num(netOf(ln))}</b></td><td>${ln.paid ? 'مصروف' : 'معلق'}</td></tr>`;
-      }).join('');
+        return [i + 1, ln.name, e.job || '', H.num(ln.basic), H.num(ln.allowances), H.num(ln.bonus), H.num(ln.deductions), H.num(ln.advance), H.num(netOf(ln)), ln.paid ? 'مصروف' : 'معلق'];
+      });
+      /* مستيل المحطة — تقرير المؤسسة الموحد (PrintProV2026) */
+      if (window.PrintProV2026) {
+        const html = PrintProV2026.reportHTML({
+          title: 'مسير رواتب الموظفين',
+          subtitle: `${H.arMonth(run.month)} ${run.month.slice(0, 4)}`,
+          kpis: [
+            { label: 'عدد الموظفين', value: H.num(run.lines.length) },
+            { label: 'إجمالي الأساسي', value: H.money(totalBasic) },
+            { label: 'إجمالي الخصومات والسلف', value: H.money(totalDed) },
+            { label: 'صافي المسير', value: H.money(totalNet) }
+          ],
+          sections: [{ icon: '💵', title: 'تفاصيل الرواتب', columns: ['#', 'الاسم', 'الوظيفة', 'الأساسي', 'البدلات', 'مكافأة', 'خصم', 'سلفة', 'الصافي', 'الحالة'], rows }]
+        });
+        return ReportIntl.preview(html, { title: 'مسير الرواتب', orientation: 'landscape' });
+      }
+      /* احتياط قديم */
+      const rowsHtml = rows.map((r) => `<tr>${r.map((c, i) => `<td ${i === 1 ? 'style="text-align:right"' : ''}>${H.esc(c)}</td>`).join('')}</tr>`).join('');
       const html = `
-      <div class="print-doc intl-doc doc-theme-${st.printTheme === 'purple' ? 'purple' : st.printTheme}">
+      <div class="print-doc intl-doc">
         <div class="pd-page">
           <div class="pd-head">
             <img src="${st.logo || 'assets/images/logo.png'}" alt="">
@@ -189,7 +205,7 @@
           <div class="pd-doc-title">مسير رواتب الموظفين</div>
           <table>
             <thead><tr><th>#</th><th style="text-align:right">الاسم</th><th>الوظيفة</th><th>الأساسي</th><th>البدلات</th><th>مكافأة</th><th>خصم</th><th>سلفة</th><th>الصافي</th><th>الحالة</th></tr></thead>
-            <tbody>${rows}</tbody>
+            <tbody>${rowsHtml}</tbody>
             <tfoot><tr><td colspan="8">الإجمالي</td><td colspan="2"><b>${H.money(totalNet)}</b></td></tr></tfoot>
           </table>
           <div class="pd-foot">

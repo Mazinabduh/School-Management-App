@@ -262,7 +262,7 @@
         ['المحصّل', H.money(paid) + ' ' + H.esc(Store.getSetting('currency', 'ريال')), 'المتبقي', `<b>${H.money(due)} ${H.esc(Store.getSetting('currency', 'ريال'))}</b>`]
       ];
       const inner = `
-        ${window.ThemesKit ? ThemesKit.headerHTML('ملف الطالب — ' + H.esc(s.name), s.sid || '') : ''}
+        ${window.ThemesKit ? ThemesKit.headerHTML('ملف الطالب', s.sid || '', { subtitle: 'الطالب: ' + (s.name || '') }) : ''}
         <div class="pp-report-section" style="margin:14px 16px;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.055)">
           <div class="pp-report-section-title"><span class="pp-report-section-title-bar"></span>👤 بيانات الطالب</div>
           <table class="pp-table"><tbody>

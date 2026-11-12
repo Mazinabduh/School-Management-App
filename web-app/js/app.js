@@ -249,7 +249,10 @@ function bindShell() {
 
   function mirrorBrandToNative(s) {
     try {
-      if (window.AndroidBridge && AndroidBridge.nativeSetPref) {
+      if (window.AndroidBridge && AndroidBridge.setBrandMirror) {
+        /* المرآة الصحيحة — نفس ملف edupro_brand الذي يقرأه SplashActivity عند الإقلاع */
+        AndroidBridge.setBrandMirror(s.schoolName || '', String(s.logo || ''));
+      } else if (window.AndroidBridge && AndroidBridge.nativeSetPref) {
         AndroidBridge.nativeSetPref('edupro_brand:schoolName', s.schoolName || '');
         const logo = String(s.logo || '');
         if (logo.startsWith('data:image')) AndroidBridge.nativeSetPref('edupro_brand:logo', logo);
@@ -270,6 +273,9 @@ function bindShell() {
     if (ln && name) ln.textContent = name;
     const sb = document.getElementById('sidebarSchoolName');
     if (sb && name) sb.textContent = name;
+    /* سطر التعريف في شاشة الدخول كان ثابتاً «تطبيق ادارة المدرسة» — يصبح باسم المدرسة */
+    const sub = document.getElementById('login-school-sub');
+    if (sub && name) sub.textContent = 'نظام EduPro الإداري الأكاديمي — ' + name;
   }
   function readBrandSettings() {
     try {

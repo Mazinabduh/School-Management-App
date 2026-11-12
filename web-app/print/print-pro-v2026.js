@@ -86,7 +86,26 @@
       showLogo: true,
       customCSS: ''
     };
-    return Object.assign(base, ps || {});
+    Object.assign(base, ps || {});
+    /* لون المستطيل العلوي يتبع الإعدادات بالنص — طلب المستخدم:
+       1) ثيم المستندات المختار (printTheme) يصبغ الترويسة والجداول والتذييل
+       2) ألوان «ألوان التقارير» في إعدادات الطباعة (intlColors) تغطي الثيم */
+    try {
+      var _themeColors = {
+        royal:   { headerBg: '#1565c0', headerColor: '#ffffff', accentColor: '#1976d2', borderColor: '#bbdefb', rowEvenBg: '#e3f2fd', footerBg: '#1565c0', footerColor: '#ffffff' },
+        emerald: { headerBg: '#2e7d32', headerColor: '#ffffff', accentColor: '#388e3c', borderColor: '#c8e6c9', rowEvenBg: '#e8f5e9', footerBg: '#2e7d32', footerColor: '#ffffff' },
+        gold:    { headerBg: '#8a6a1c', headerColor: '#ffffff', accentColor: '#C9A227', borderColor: '#efe3c0', rowEvenBg: '#fdf6e3', footerBg: '#8a6a1c', footerColor: '#ffffff' },
+        purple:  { headerBg: '#6a1b9a', headerColor: '#ffffff', accentColor: '#8e24aa', borderColor: '#e1bee7', rowEvenBg: '#f3e5f5', footerBg: '#6a1b9a', footerColor: '#ffffff' }
+      };
+      var _th = (typeof Store !== 'undefined' && Store.getSetting) ? Store.getSetting('printTheme', 'royal') : 'royal';
+      var _tc = _themeColors[_th] || _themeColors.royal;
+      Object.assign(base, _tc);
+      var _ic = (ps && ps.intlColors) || {};
+      ['headerBg', 'headerColor', 'accentColor', 'borderColor', 'rowEvenBg', 'rowOddBg', 'bodyColor', 'footerBg', 'footerColor'].forEach(function (k) {
+        if (_ic[k]) base[k] = _ic[k];
+      });
+    } catch (e) {}
+    return base;
   }
   function _paperCSS(ps) {
     ps = ps || _printSettings();
@@ -115,10 +134,16 @@
       'bdi{unicode-bidi:plaintext;direction:rtl;letter-spacing:normal}' +
       '.pp-doc,.pp-report{font-family:"' + ff + '",Cairo,Tahoma,Arial,sans-serif!important;color:' + (ps.bodyColor || '#0a1628') + '!important;font-size:' + (ps.fontSize || 11) + 'pt!important}' +
       '.pp-header{background:' + (ps.headerBg || '#1565c0') + '!important;color:' + (ps.headerColor || '#fff') + '!important}' +
-      '.pp-report-header{background:' + (ps.headerBg || '#1565c0') + '!important;color:' + (ps.headerColor || '#fff') + '!important}' +
-      '.pp-station-name,.pp-report-title{font-size:' + (ps.titleFontSize || 20) + 'pt!important;text-align:right!important}' +
-      '.pp-report-heading{display:flex;align-items:center;gap:12px;min-width:0}.pp-report-heading>div:last-child{min-width:0}' +
-      '.pp-report-logo{width:58px;height:58px;flex:0 0 58px;background:#fff;border-radius:50%;padding:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 5px 14px rgba(0,0,0,.2)}.pp-report-logo img{width:100%;height:100%;object-fit:contain;border-radius:50%}' +
+      '.pp-report-header{background:' + (ps.headerBg || '#1565c0') + '!important;color:' + (ps.headerColor || '#fff') + '!important;padding:10px 16px!important;gap:10px!important}' +
+      /* المستطيل العلوي مُصغَّر ومناسب — العنوان 13pt كحد أقصى 14pt (طلب المستخدم) */
+      '.pp-station-name{font-size:' + (ps.titleFontSize && ps.titleFontSize > 0 ? ps.titleFontSize : 20) + 'pt!important;text-align:right!important}' +
+      '.pp-report-title{font-size:' + (ps.titleFontSize && ps.titleFontSize > 0 && ps.titleFontSize <= 14 ? ps.titleFontSize : 13) + 'pt!important;font-weight:800!important;text-align:right!important;line-height:1.3!important}' +
+      '.pp-report-header>div:nth-child(2)>div:first-child{font-size:11pt!important;font-weight:800!important}' +
+      '.pp-report-header>div:nth-child(2)>div:last-child,.pp-report-header>div:nth-child(2)>div~div{font-size:8.5pt!important}' +
+      '.pp-report-header>div:nth-child(2) .pp-report-subtitle{font-size:8.5pt!important}' +
+      '.pp-report-heading{display:flex;align-items:center;gap:10px;min-width:0;max-width:46%}.pp-report-heading>div:last-child{min-width:0}' +
+      '.pp-report-logo{width:40px;height:40px;flex:0 0 40px;background:#fff;border-radius:50%;padding:3px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.18)}.pp-report-logo img{width:100%;height:100%;object-fit:contain;border-radius:50%}.pp-report-logo .pp-logo-fallback{line-height:1;font-size:16pt}' +
+      '.pp-report-meta{font-size:8pt!important;line-height:1.5!important;max-width:27%}' +
       '.pp-section-title,.pp-report-section-title,.pp-table th{background:' + (ps.accentColor || '#1565c0') + '!important;color:#fff!important;font-size:' + (ps.tableHeaderFontSize || 10) + 'pt!important}' +
       '.pp-table td{font-size:' + (ps.tableBodyFontSize || 10) + 'pt!important;border-color:' + (ps.borderColor || '#bbdefb') + '!important}' +
       '/* رؤوس الجداول كـ td.pp-th — نفس شكل th تماماً (ضمانة html2canvas) */' +
@@ -126,6 +151,14 @@
       '.pp-table thead .pp-th,.pp-table tr.pp-head-row .pp-th{background:' + (ps.accentColor || '#1565c0') + '!important}' +
       '.pp-table tbody tr:nth-child(even),.pp-summary-row.alt,.pp-cell{background:' + (ps.rowEvenBg || '#e3f2fd') + '!important}' +
       '.pp-table tbody tr:nth-child(odd),.pp-summary-row{background:' + (ps.rowOddBg || '#fff') + '!important}' +
+      /* رقعة أولوية عالية — تحمي ألوان القالب من قواعد الواجهة العامة في المعاينة وإطار الطباعة
+         (station-bundle: table:not(.print-tbl) thead th ب !important كانت تقتل لون رؤوس الجداول) */
+      'table.pp-table thead th,table.pp-table thead td.pp-th{background:' + (ps.accentColor || '#1565c0') + '!important;color:#fff!important;font-size:' + (ps.tableHeaderFontSize || 10) + 'pt!important;padding:10px 8px!important;letter-spacing:normal!important}' +
+      'table.pp-table td.pp-th,table.pp-table tbody tr td.pp-th,table.pp-table tfoot tr td.pp-th{background:' + (ps.accentColor || '#1565c0') + '!important;color:#fff!important;font-size:' + (ps.tableHeaderFontSize || 10) + 'pt!important;padding:10px 8px!important;letter-spacing:normal!important}' +
+      'table.pp-table tbody tr:nth-child(2n) td.pp-th{background:' + (ps.accentColor || '#1565c0') + '!important}' +
+      'table.pp-table tbody tr:nth-child(2n) td{background:' + (ps.rowEvenBg || '#e3f2fd') + '!important}' +
+      'table.pp-table tbody tr:nth-child(2n+1) td{background:' + (ps.rowOddBg || '#fff') + '!important}' +
+      'table.pp-table td{border-color:' + (ps.borderColor || '#bbdefb') + '!important}' +
       '.pp-footer{background:' + (ps.footerBg || '#1565c0') + '!important;color:' + (ps.footerColor || '#fff') + '!important;font-size:' + (ps.footerFontSize || 9) + 'pt!important}' +
       '.pp-doc,.pp-report{position:relative!important;overflow:hidden!important}.pp-header,.pp-info-strip,.pp-body,.pp-footer,.pp-report-header,.pp-report-body{position:relative;z-index:1}.pp-logo-watermark{z-index:0!important}' +
       (ps.showWatermark === false ? '.pp-watermark,.pp-logo-watermark{display:none!important}' : '') +
@@ -300,16 +333,16 @@
       _watermarkLogoHTML('report') +
       '<div class="pp-report-header">' +
       '<div class="pp-report-heading">' +
-      (showRepLogo ? '<div class="pp-report-logo">' + _logoHTML(54) + '</div>' : '') +
+      (showRepLogo ? '<div class="pp-report-logo">' + _logoHTML(40) + '</div>' : '') +
       '<div>' +
       '<div class="pp-report-title">' + _arTxt(headTitle) + '</div>' +
-      (subtitle ? '<div style="font-size:10pt;opacity:0.9">' + _arTxt(subtitle) + '</div>' : '') +
-      '<div style="font-size:9pt;opacity:0.85">' + _e(headSubtitle) + '</div>' +
+      (subtitle ? '<div class="pp-report-subtitle" style="font-size:8.5pt;opacity:0.9">' + _arTxt(subtitle) + '</div>' : '') +
+      '<div style="font-size:8pt;opacity:0.85">' + _e(headSubtitle) + '</div>' +
       '</div>' +
       '</div>' +
       '<div style="flex:1;text-align:center">' +
-      '<div style="font-size:14pt;font-weight:800">' + _arTxt(headStation) + '</div>' +
-      '<div style="font-size:9pt;opacity:0.85">' + _e(headSubtitle) + '</div>' +
+      '<div style="font-size:11pt;font-weight:800">' + _arTxt(headStation) + '</div>' +
+      '<div style="font-size:8pt;opacity:0.85">' + _e(headSubtitle) + '</div>' +
       '</div>' +
       '<div class="pp-report-meta">' + sideLines.map(function (l) { return '<div>' + l + '</div>'; }).join('') + '</div>' +
       '</div>' +

@@ -44,27 +44,32 @@
       if (pick) this.apply(pick.id);
     },
 
-    /* ---------- ترويسة موحدة — المستطيل العلوي بنظام المحطة ---------- */
-    headerHTML(docTitle, docNo = '') {
+    /* ---------- ترويسة موحدة — المستطيل العلوي بنظام المحطة (مُصغَّر ومناسب) ----------
+       opts: { subtitle: 'نص فرعي تحت العنوان', showYear: false } — متوافقة مع الاستدعاء القديم */
+    headerHTML(docTitle, docNo = '', opts) {
+      const o = (opts && typeof opts === 'object') ? opts : {};
       const s = Store.settings();
       const side = [];
       if (docNo) side.push(`<div>📄 <bdi>${H.esc(docNo)}</bdi></div>`);
       side.push(`<div>🗓 <bdi>${H.fmtDate(H.today())}</bdi></div>`);
-      if (s.year) side.push(`<div>${_arTxtSafe('العام الدراسي: ' + s.year)}</div>`);
+      if (o.showYear !== false && s.year) side.push(`<div>${_arTxtSafe('العام الدراسي: ' + s.year)}</div>`);
+      const underTitle = o.subtitle
+        ? `<div style="font-size:8.5pt;opacity:.9">${_arTxtSafe(o.subtitle)}</div>`
+        : `<div style="font-size:8pt;opacity:.85">${H.esc(s.schoolNameEn || '')}</div>`;
       return `
         <div class="pp-report-header">
           <div class="pp-report-heading">
-            <div class="pp-report-logo">${s.logo ? `<img src="${s.logo}" alt="الشعار">` : '<span style="font-size:22pt">🎓</span>'}</div>
+            <div class="pp-report-logo" style="width:40px;height:40px;flex:0 0 40px;padding:3px">${s.logo ? `<img src="${s.logo}" alt="الشعار" style="width:100%;height:100%;object-fit:contain;border-radius:50%">` : '<span style="font-size:14pt">🎓</span>'}</div>
             <div>
-              <div class="pp-report-title">${_arTxtSafe(docTitle || '')}</div>
-              <div style="font-size:9pt;opacity:.85">${H.esc(s.schoolNameEn || '')}</div>
+              <div class="pp-report-title" style="font-size:13pt;font-weight:800;line-height:1.3">${_arTxtSafe(docTitle || '')}</div>
+              ${underTitle}
             </div>
           </div>
           <div style="flex:1;text-align:center">
-            <div style="font-size:14pt;font-weight:800">${_arTxtSafe(s.schoolName || 'تطبيق ادارة المدرسة')}</div>
-            <div style="font-size:9pt;opacity:.85">${H.esc(s.address || '')}${s.phone ? ' • ' + H.esc(s.phone) : ''}</div>
+            <div style="font-size:11pt;font-weight:800">${_arTxtSafe(s.schoolName || 'تطبيق ادارة المدرسة')}</div>
+            <div style="font-size:8pt;opacity:.85">${H.esc(s.address || '')}${s.phone ? ' • ' + H.esc(s.phone) : ''}</div>
           </div>
-          <div class="pp-report-meta">${side.join('')}</div>
+          <div class="pp-report-meta" style="font-size:8pt;line-height:1.5">${side.join('')}</div>
         </div>`;
     },
 

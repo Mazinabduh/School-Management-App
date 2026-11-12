@@ -129,12 +129,23 @@
       });
       const css = g('psCustomCSS'); if (css !== null) patch.customCSS = css;
 
-      /* ألوان التقارير */
+      /* ألوان التقارير — تُحفظ كتجاوز فقط إذا اختلفت عن ألوان الثيم المختار
+         (حتى يظل لون المستطيل العلوي يتبع الإعدادات والثيمات — طلب المستخدم) */
       const colorIds = ['psHeaderBg', 'psHeaderColor', 'psAccentColor', 'psBorderColor', 'psRowEvenBg', 'psRowOddBg', 'psBodyColor', 'psFooterBg', 'psFooterColor'];
       const colorMap = { psHeaderBg: 'headerBg', psHeaderColor: 'headerColor', psAccentColor: 'accentColor', psBorderColor: 'borderColor', psRowEvenBg: 'rowEvenBg', psRowOddBg: 'rowOddBg', psBodyColor: 'bodyColor', psFooterBg: 'footerBg', psFooterColor: 'footerColor' };
+      const thNow = g('st-theme') || (window.ThemesKit ? ThemesKit.current() : 'royal');
+      const tdefNow = PAGES._themeDefaultColors(thNow);
       const colors = {};
-      colorIds.forEach((id) => { const el = document.getElementById(id); if (el) colors[colorMap[id]] = el.value; });
-      patch.intlColors = colors;
+      let anyCustomColor = false;
+      colorIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const k = colorMap[id];
+        const v = el.value;
+        colors[k] = v;
+        if (!tdefNow[k] || String(v).toLowerCase() !== String(tdefNow[k]).toLowerCase()) anyCustomColor = true;
+      });
+      patch.intlColors = anyCustomColor ? colors : {};
 
       if (window.PrintSettingsPro && PrintSettingsPro.savePS) PrintSettingsPro.savePS(patch);
       else { const s = Store.settings(); s.printSettings = Object.assign({}, (window.PrintSettingsPro ? PrintSettingsPro.getPS() : {}), patch); Store.flush(); }
@@ -273,11 +284,23 @@
     }
   };
 
+  /* ---------- ألوان الثيمات كاملة — نفس خريطة محرك الطباعة (print-pro-v2026) ---------- */
+  PAGES._themeColorsMap = {
+    royal:   { headerBg: '#1565c0', headerColor: '#ffffff', accentColor: '#1976d2', borderColor: '#bbdefb', rowEvenBg: '#e3f2fd', rowOddBg: '#ffffff', bodyColor: '#0a1628', footerBg: '#1565c0', footerColor: '#ffffff' },
+    emerald: { headerBg: '#2e7d32', headerColor: '#ffffff', accentColor: '#388e3c', borderColor: '#c8e6c9', rowEvenBg: '#e8f5e9', rowOddBg: '#ffffff', bodyColor: '#0a1628', footerBg: '#2e7d32', footerColor: '#ffffff' },
+    gold:    { headerBg: '#8a6a1c', headerColor: '#ffffff', accentColor: '#C9A227', borderColor: '#efe3c0', rowEvenBg: '#fdf6e3', rowOddBg: '#ffffff', bodyColor: '#0a1628', footerBg: '#8a6a1c', footerColor: '#ffffff' },
+    purple:  { headerBg: '#6a1b9a', headerColor: '#ffffff', accentColor: '#8e24aa', borderColor: '#e1bee7', rowEvenBg: '#f3e5f5', rowOddBg: '#ffffff', bodyColor: '#0a1628', footerBg: '#6a1b9a', footerColor: '#ffffff' }
+  };
+  PAGES._themeDefaultColors = function (themeId) {
+    return PAGES._themeColorsMap[themeId || (window.ThemesKit ? ThemesKit.current() : 'royal')] || PAGES._themeColorsMap.royal;
+  };
+
   /* ==================== صفحة إعدادات الطباعة ==================== */
   PAGES['print-settings'] = {
     render(root) {
       const ps = (window.PrintSettingsPro && PrintSettingsPro.getPS()) || {};
       const colors = getColors();
+      const tdef = PAGES._themeDefaultColors((document.getElementById && document.getElementById('st-theme') && document.getElementById('st-theme').value) || (window.ThemesKit ? ThemesKit.current() : 'royal'));
       const s = Store.settings();
       const _e = (v) => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -298,11 +321,14 @@
       const fontOptions = ['Cairo', 'Tahoma', 'Arial', 'Traditional Arabic', 'Simplified Arabic'].map((f) =>
         `<option value="${f}" ${(ps.fontFamily || 'Cairo') === f ? 'selected' : ''}>${f}</option>`).join('');
 
-      const colorField = (label, id, val) => `
+      const colorField = (label, id, val) => {
+        const ckey = id.slice(2).charAt(0).toLowerCase() + id.slice(3); /* psHeaderBg → headerBg */
+        return `
         <div style="display:flex;align-items:center;gap:10px;padding:6px 10px">
-          <input type="color" id="${id}" value="${_e(val || '#0b3d91')}" style="width:44px;height:32px;border-radius:8px;border:none;cursor:pointer">
+          <input type="color" id="${id}" value="${_e(val || tdef[ckey] || tdef.headerBg)}" style="width:44px;height:32px;border-radius:8px;border:none;cursor:pointer">
           <label style="flex:1;color:var(--text-2);font-size:13px">${label}</label>
         </div>`;
+      };
 
       const toggleField = (label, id, checked) => `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px">

@@ -265,16 +265,19 @@
 
         <div class="card-3d">
           <div class="card-3d-head"><h3>🏰 الحصن المحلي (نظام المحطة)</h3></div>
-          <p style="font-size:13px;color:var(--text-2);margin-bottom:10px">مرآة SQLite داخل الأندرويد + نسخ تلقائية خارجية في التنزيلات + استعادة الإقلاع إذا فُقدت البيانات — بدون أي قائمة اختيار مجلد، مثل المحطة بالضبط</p>
+          <p style="font-size:13px;color:var(--text-2);margin-bottom:10px">مرآة SQLite داخل الأندرويد + نسخ تلقائية خارجية + استعادة الإقلاع إذا فُقدت البيانات — واختيار مجلد النسخ الاحتياطية من هنا</p>
           <div style="display:grid;gap:6px;margin-bottom:10px">
             <div id="vaultEngineLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">المحرك: جارٍ التهيئة…</div>
             <div id="vaultBackupLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">النسخ الاحتياطية: —</div>
             <div id="vaultMirrorLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">مرآة SQLite: —</div>
             <div id="vaultModeLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">النسخ الخارجية: —</div>
+            <div id="vaultFolderLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px;border-right:3px solid var(--blue)">📂 مجلد النسخ الاحتياطية: —</div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn-primary" data-action="bak:vaultNow">🏰 إنشاء نسخة خارجية الآن</button>
             <button class="btn-secondary" data-action="bak:vaultMode">⏱️ تبديل النسخ التلقائية (${Store.settings().vaultMode === 'auto' || (window.StorageVault && StorageVault.mode() === 'auto') ? 'إيقاف' : 'تشغيل'})</button>
+            <button class="btn-secondary" data-action="bak:vaultFolder">📂 اختيار مجلد النسخ الاحتياطية</button>
+            <button class="btn-secondary" data-action="bak:vaultFolderClear" style="border-color:var(--red);color:var(--red)">♻️ المجلد الافتراضي</button>
           </div>
         </div>
 
@@ -469,6 +472,16 @@
       UI.toast(m === 'auto' ? 'تم تشغيل النسخ التلقائية الخارجية ✓' : 'أُوقفت النسخ التلقائية — النسخ اليدوية فقط', 'success');
       const btn = document.querySelector('[data-action="bak:vaultMode"]');
       if (btn) btn.textContent = m === 'auto' ? '⏱️ تبديل النسخ التلقائية (إيقاف)' : '⏱️ تبديل النسخ التلقائية (تشغيل)';
+    },
+    /* اختيار مجلد النسخ الاحتياطية — في قائمة النسخة الاحتياطية كما طلب المستخدم */
+    vaultFolder() {
+      if (!window.StorageVault) return;
+      StorageVault.pickFolder();
+    },
+    vaultFolderClear() {
+      if (!window.StorageVault) return;
+      if (StorageVault.clearFolder()) UI.toast('أُرجع المجلد الافتراضي ✓', 'success');
+      try { StorageVault.refreshStatus(); } catch (e) {}
     },
 
     integrity() {

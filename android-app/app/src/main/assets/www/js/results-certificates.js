@@ -337,11 +337,23 @@
       const rows = sts.map((s, i) => {
         const res = studentResults(s.id);
         const o = overallOf(res);
-        return `<tr><td>${i + 1}</td><td style="text-align:right">${H.esc(s.name)}<br><small>${H.esc(s.sid || '')}</small></td>
-          ${subs.map((sub) => { const r = res.find((x) => x.sub.id === sub.id); return `<td>${r && r.avg !== null ? H.num(r.avg) : '—'}</td>`; }).join('')}
-          <td>${H.num(o.total)}</td><td>${o.pct}%</td><td>${o.grade.label}</td><td>${ranks[s.id] || '—'}</td></tr>`;
-      }).join('');
+        return [i + 1, s.name, ...subs.map((sub) => { const r = res.find((x) => x.sub.id === sub.id); return r && r.avg !== null ? H.num(r.avg) : '—'; }), H.num(o.total), o.pct + '%', o.grade.label, ranks[s.id] || '—'];
+      });
 
+      /* مستيل المحطة — تقرير المؤسسة الموحد (PrintProV2026) */
+      if (window.PrintProV2026) {
+        return PrintProV2026.reportHTML({
+          title: 'كشف النتائج الجماعي',
+          subtitle: `${stage} / ${klass}`,
+          kpis: [
+            { label: 'عدد الطلاب', value: H.num(sts.length) },
+            { label: 'المواد', value: H.num(subs.length) },
+            { label: 'العام الدراسي', value: st.year || '—' }
+          ],
+          sections: [{ icon: '📊', title: `النتائج — ${stage} / ${klass}`, columns: ['#', 'الطالب', ...subs.map((x) => x.name), 'المجموع', 'النسبة', 'التقدير', 'الترتيب'], rows }]
+        });
+      }
+      /* احتياط قديم */
       return `
       <div class="print-doc intl-doc doc-theme-${st.printTheme === 'purple' ? 'purple' : st.printTheme}">
         <div class="pd-page">
@@ -356,7 +368,7 @@
           <div class="pd-doc-title">كشف النتائج الجماعي — ${H.esc(stage)} / ${H.esc(klass)}</div>
           <table>
             <thead><tr><th>#</th><th style="text-align:right">الطالب</th>${subs.map((s2) => `<th>${H.esc(s2.name)}</th>`).join('')}<th>المجموع</th><th>النسبة</th><th>التقدير</th><th>الترتيب</th></tr></thead>
-            <tbody>${rows}</tbody>
+            <tbody>${rows.map((r) => `<tr><td>${r[0]}</td><td style="text-align:right">${H.esc(String(r[1]).split('\n')[0])}</td>${r.slice(2).map((c) => `<td>${H.esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
           </table>
           <div class="pd-foot">
             <span>${H.esc(st.issuedBy || 'إدارة المدرسة')}</span>

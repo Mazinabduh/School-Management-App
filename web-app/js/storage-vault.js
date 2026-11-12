@@ -96,6 +96,29 @@
       return this.mode();
     },
 
+    /* ---------- مجلد النسخ الاحتياطية المختار — قائمة اختيار المجلد في قائمة النسخة الاحتياطية ---------- */
+    folderInfo() {
+      const b = nb();
+      if (!b || typeof b.getBackupFolder !== "function") return null;
+      try {
+        const o = jp(b.getBackupFolder(), null) || {};
+        return { custom: !!o.custom, label: o.label || "Download/Edupro/data/backups", uri: o.uri || "" };
+      } catch (_) { return null; }
+    },
+    pickFolder() {
+      const b = nb();
+      if (!b || typeof b.pickBackupFolder !== "function") {
+        toast("اختيار المجلد متاح في تطبيق الأندرويد", "warn");
+        return false;
+      }
+      return b.pickBackupFolder();
+    },
+    clearFolder() {
+      const b = nb();
+      if (!b || typeof b.clearBackupFolder !== "function") return false;
+      return b.clearBackupFolder();
+    },
+
     async init() {
       try {
         const b = nb();
@@ -125,6 +148,16 @@
         this.refreshStatus();
         try { setInterval(() => this.refreshStatus(), 9e4); } catch (_) {}
         try { window.addEventListener("online", () => this.refreshStatus()); } catch (_) {}
+        /* استدعاء الأندرويد بعد اختيار/تصفير المجلد من قائمة النسخة الاحتياطية */
+        const self = this;
+        window.__onBackupFolderChanged = function (stJson) {
+          try {
+            const o = typeof stJson === "string" ? JSON.parse(stJson) : stJson;
+            self._folder = { custom: !!o.custom, label: o.label || "", uri: o.uri || "" };
+            self.renderCard();
+            try { if (window.Audit) Audit.log("نسخ", "مجلد النسخ الاحتياطية: " + (o.custom ? o.label : "الافتراضي")); } catch (_) {}
+          } catch (_) {}
+        };
       } finally {
         this._bootDone = true;
       }
@@ -295,11 +328,20 @@
         const el = document.getElementById("vaultEngineLine");
         if (el) el.textContent = "المحرك: " + this.engine + (this.sqliteOk ? " — SQLite ✓" : "") + (!isNative && this.persistOk ? " — حماية من الإخلاء ✓" : "");
         const el2 = document.getElementById("vaultBackupLine");
-        if (el2) el2.textContent = (isNative ? "النسخ في Download/Edupro/data/backups: " + this.backupCount : "النسخ الاحتياطية: تصدير يدوي") + (this.lastBackupAt ? " — آخر نسخة: " + this.lastBackupAt : "");
+        if (el2) el2.textContent = (isNative ? "عدد النسخ: " + this.backupCount : "النسخ الاحتياطية: تصدير يدوي") + (this.lastBackupAt ? " — آخر نسخة: " + this.lastBackupAt : "");
         const el4 = document.getElementById("vaultMirrorLine");
         if (el4) el4.textContent = this.sqliteOk ? "مرآة SQLite: " + (this.lastMirrorAt || "جاهزة") : "مرآة SQLite: غير متاحة (المتصفح يستخدم IndexedDB أساساً)";
         const el6 = document.getElementById("vaultModeLine");
         if (el6) el6.textContent = this.mode() === "auto" ? "النسخ الخارجية: تلقائية (شغّلتها أنت)" : "النسخ الخارجية: يدوية — أنت من ينشئها";
+        /* سطر المجلد — قائمة اختيار المجلد في قائمة النسخة الاحتياطية */
+        const el7 = document.getElementById("vaultFolderLine");
+        if (el7) {
+          if (!isNative) el7.textContent = "📂 مجلد النسخ الاحتياطية: متاح في تطبيق الأندرويد";
+          else {
+            const f = this._folder || this.folderInfo() || { custom: false, label: "Download/Edupro/data/backups" };
+            el7.textContent = "📂 مجلد النسخ الاحتياطية: " + (f.custom ? f.label + " (مختار من الإعدادات)" : f.label + " — الافتراضي");
+          }
+        }
       } catch (_) {}
     }
   };

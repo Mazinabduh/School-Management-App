@@ -223,12 +223,6 @@ public class Bridge {
     }
 
     @JavascriptInterface
-    public boolean saveBackupAuto(String name, String text) {
-        byte[] bytes = (text == null ? "" : text).getBytes(StandardCharsets.UTF_8);
-        return saveToFolder(name, bytes, mimeFor(name), true, BAK_FOLDER);
-    }
-
-    @JavascriptInterface
     public boolean saveDocumentAuto(String name, String text) {
         byte[] bytes = (text == null ? "" : text).getBytes(StandardCharsets.UTF_8);
         return saveToFolder(name, bytes, mimeFor(name), true, DOC_FOLDER);
@@ -380,13 +374,177 @@ public class Bridge {
     @JavascriptInterface
     public boolean saveAutoBackup(String name, String text) {
         byte[] bytes = (text == null ? "" : text).getBytes(StandardCharsets.UTF_8);
+        if (bakTreeUri() != null) return saveToTree(name, bytes, "application/json", false);
         return saveToFolder(name, bytes, "application/json", false, AUTO_BAK_DIR);
+    }
+
+    /* ═══════════ مجلد النسخ الاحتياطية المختار — قائمة اختيار المجلد في قائمة النسخة الاحتياطية ═══════════ */
+
+    private static final String PREFS_BAK = "edupro_vault_prefs";
+    private static final String PREF_BAK_TREE = "edupro_bak_tree_uri";
+
+    private android.content.SharedPreferences bakPrefs() {
+        return act.getSharedPreferences(PREFS_BAK, Context.MODE_PRIVATE);
+    }
+
+    private Uri bakTreeUri() {
+        try {
+            String s = bakPrefs().getString(PREF_BAK_TREE, "");
+            if (s == null || s.isEmpty()) return null;
+            return Uri.parse(s);
+        } catch (Throwable t) { return null; }
+    }
+
+    private String treeFolderName(Uri tree) {
+        try {
+            String docId = android.provider.DocumentsContract.getTreeDocumentId(tree);
+            if (docId != null && docId.contains(":")) {
+                String[] parts = docId.split(":", 2);
+                String base = "primary".equals(parts[0]) ? "الذاكرة" : parts[0];
+                return base + "/" + (parts.length > 1 && !parts[1].isEmpty() ? parts[1] : "المجلد المختار");
+            }
+            return docId == null ? "المجلد المختار" : docId;
+        } catch (Throwable t) { return "المجلد المختار"; }
+    }
+
+    /* فتح منتقي المجلد — يُستدعى من زر «اختيار مجلد النسخ الاحتياطية» في قائمة النسخة الاحتياطية */
+    @JavascriptInterface
+    public boolean pickBackupFolder() {
+        ui.post(() -> {
+            try {
+                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                act.startActivityForResult(i, MainActivity.REQ_PICK_TREE);
+            } catch (Throwable t) {
+                toast("تعذّر فتح منتقي المجلدات على هذا الجهاز");
+            }
+        });
+        return true;
+    }
+
+    @JavascriptInterface
+    public String getBackupFolder() {
+        try {
+            org.json.JSONObject o = new org.json.JSONObject();
+            Uri u = bakTreeUri();
+            if (u == null) {
+                o.put("custom", false);
+                o.put("label", "Download/Edupro/data/backups");
+            } else {
+                o.put("custom", true);
+                o.put("uri", u.toString());
+                o.put("label", treeFolderName(u));
+            }
+            return o.toString();
+        } catch (Throwable t) {
+            return "{\"custom\":false,\"label\":\"Download/Edupro/data/backups\"}";
+        }
+    }
+
+    @JavascriptInterface
+    public boolean clearBackupFolder() {
+        try {
+            Uri u = bakTreeUri();
+            if (u != null) {
+                try { act.getContentResolver().releasePersistableUriPermission(u, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION); } catch (Throwable ignored) {}
+            }
+            bakPrefs().edit().remove(PREF_BAK_TREE).apply();
+            toast("أُرجع المجلد الافتراضي: Download/Edupro/data/backups");
+            notifyBackupFolderChanged();
+            return true;
+        } catch (Throwable t) { return false; }
+    }
+
+    private void notifyBackupFolderChanged() {
+        final String st = getBackupFolder();
+        ui.post(() -> {
+            try {
+                act.web.evaluateJavascript(
+                    "(function(){try{if(window.__onBackupFolderChanged)window.__onBackupFolderChanged(" + org.json.JSONObject.quote(st) + ");}catch(e){}})();", null);
+            } catch (Throwable ignored) {}
+        });
+    }
+
+    /* كتابة ملف داخل المجلد المختار (SAF tree) */
+    private boolean saveToTree(String name, byte[] bytes, String mime, boolean announce) {
+        try {
+            Uri tree = bakTreeUri();
+            if (tree == null) return false;
+            Uri docTree = android.provider.DocumentsContract.buildDocumentUriUsingTree(tree, android.provider.DocumentsContract.getTreeDocumentId(tree));
+            Uri fileUri = android.provider.DocumentsContract.createDocument(act.getContentResolver(), docTree, mime == null ? "application/json" : mime, safeName(name));
+            if (fileUri == null) return false;
+            OutputStream os = act.getContentResolver().openOutputStream(fileUri);
+            os.write(bytes); os.flush(); os.close();
+            if (announce) toast("حُفظ في " + treeFolderName(tree) + ": " + safeName(name));
+            return true;
+        } catch (Throwable t) {
+            toast("تعذّر الحفظ في المجلد المختار — أُعيد للمجلد الافتراضي");
+            return false;
+        }
+    }
+
+    /* البحث عن ملف بالاسم داخل المجلد المختار */
+    private Uri treeFindChild(String name) {
+        try {
+            Uri tree = bakTreeUri();
+            if (tree == null || name == null) return null;
+            Uri childrenUri = android.provider.DocumentsContract.buildChildDocumentsUriUsingTree(tree, android.provider.DocumentsContract.getTreeDocumentId(tree));
+            Cursor c = act.getContentResolver().query(childrenUri,
+                    new String[]{android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID, android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME},
+                    null, null, null);
+            if (c == null) return null;
+            Uri found = null;
+            while (c.moveToNext()) {
+                String nm = c.getString(1);
+                if (name.equals(nm)) {
+                    found = android.provider.DocumentsContract.buildDocumentUriUsingTree(tree, c.getString(0));
+                    break;
+                }
+            }
+            c.close();
+            return found;
+        } catch (Throwable t) { return null; }
+    }
+
+    @JavascriptInterface
+    public boolean saveBackupAuto(String name, String text) {
+        byte[] bytes = (text == null ? "" : text).getBytes(StandardCharsets.UTF_8);
+        if (bakTreeUri() != null) return saveToTree(name, bytes, mimeFor(name), true);
+        return saveToFolder(name, bytes, mimeFor(name), true, BAK_FOLDER);
     }
 
     @JavascriptInterface
     public String listAutoBackups() {
         StringBuilder sb = new StringBuilder("[");
         try {
+            /* المجلد المختار أولاً — قائمة اختيار المجلد في النسخة الاحتياطية */
+            Uri tree = bakTreeUri();
+            if (tree != null) {
+                Uri childrenUri = android.provider.DocumentsContract.buildChildDocumentsUriUsingTree(tree, android.provider.DocumentsContract.getTreeDocumentId(tree));
+                Cursor c = act.getContentResolver().query(childrenUri,
+                        new String[]{android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID, android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME, android.provider.DocumentsContract.Document.COLUMN_SIZE, android.provider.DocumentsContract.Document.COLUMN_LAST_MODIFIED},
+                        null, null, null);
+                if (c != null) {
+                    java.util.List<String[]> items = new java.util.ArrayList<>();
+                    while (c.moveToNext()) {
+                        String nm = c.getString(1);
+                        if (nm == null || !nm.toLowerCase().endsWith(".json")) continue;
+                        items.add(new String[]{nm, c.getString(2), c.getString(3), c.getString(0)});
+                    }
+                    c.close();
+                    items.sort((a, b) -> {
+                        try { return Long.compare(Long.parseLong(b[2] == null ? "0" : b[2]), Long.parseLong(a[2] == null ? "0" : a[2])); }
+                        catch (Throwable t) { return 0; }
+                    });
+                    boolean first = true;
+                    for (String[] it : items) {
+                        if (!first) sb.append(",");
+                        first = false;
+                        sb.append("{\"name\":\"").append(jesc(it[0])).append("\",\"size\":").append(it[2] == null ? "0" : it[2]).append(",\"date\":").append(it[3] == null ? "0" : it[3]).append("}");
+                    }
+                }
+                sb.append("]");
+                return sb.toString();
+            }
             if (Build.VERSION.SDK_INT >= 29) {
                 String rel = Environment.DIRECTORY_DOWNLOADS + "/" + AUTO_BAK_DIR + "/";
                 Cursor c = act.getContentResolver().query(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
@@ -427,6 +585,17 @@ public class Bridge {
     @JavascriptInterface
     public String readAutoBackup(String name) {
         try {
+            /* المجلد المختار أولاً */
+            Uri doc = treeFindChild(name);
+            if (doc != null) {
+                java.io.InputStream is = act.getContentResolver().openInputStream(doc);
+                java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = is.read(buf)) > 0) bo.write(buf, 0, n);
+                is.close();
+                return bo.toString("UTF-8");
+            }
             if (Build.VERSION.SDK_INT >= 29) {
                 String rel = Environment.DIRECTORY_DOWNLOADS + "/" + AUTO_BAK_DIR + "/";
                 Cursor c = act.getContentResolver().query(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
@@ -466,6 +635,11 @@ public class Bridge {
     @JavascriptInterface
     public boolean deleteAutoBackup(String name) {
         try {
+            /* المجلد المختار أولاً */
+            Uri doc = treeFindChild(name);
+            if (doc != null) {
+                return android.provider.DocumentsContract.deleteDocument(act.getContentResolver(), doc);
+            }
             if (Build.VERSION.SDK_INT >= 29) {
                 String rel = Environment.DIRECTORY_DOWNLOADS + "/" + AUTO_BAK_DIR + "/";
                 int n = act.getContentResolver().delete(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
@@ -865,6 +1039,30 @@ public class Bridge {
         } catch (Throwable ignored) {}
     }
 
+    /* ═══════ مرآة هوية المدرسة للإقلاع الأصلي — نفس ملف edupro_brand الذي يقرأه SplashActivity
+       (الإصلاح: كانت المرآة تكتب في ملف جلسة آخر فلا يرى الإقلاع اسم المدرسة ولا شعارها) ═══════ */
+    @JavascriptInterface
+    public boolean setBrandMirror(String name, String logo) {
+        try {
+            android.content.SharedPreferences.Editor e = act.getSharedPreferences("edupro_brand", Context.MODE_PRIVATE).edit();
+            if (name != null) e.putString("schoolName", name);
+            if (logo != null && logo.startsWith("data:image")) e.putString("logo", logo);
+            e.apply();
+            return true;
+        } catch (Throwable t) { return false; }
+    }
+
+    @JavascriptInterface
+    public String getBrandMirror() {
+        try {
+            org.json.JSONObject o = new org.json.JSONObject();
+            android.content.SharedPreferences sp = act.getSharedPreferences("edupro_brand", Context.MODE_PRIVATE);
+            o.put("schoolName", sp.getString("schoolName", ""));
+            o.put("logo", sp.getString("logo", ""));
+            return o.toString();
+        } catch (Throwable t) { return "{}"; }
+    }
+
     @JavascriptInterface
     public String nativeGetPref(String key) {
         try {
@@ -902,6 +1100,22 @@ public class Bridge {
     }
 
     void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /* اختيار مجلد النسخ الاحتياطية — من قائمة النسخة الاحتياطية */
+        if (requestCode == MainActivity.REQ_PICK_TREE) {
+            if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+                Uri tree = data.getData();
+                try {
+                    act.getContentResolver().takePersistableUriPermission(tree,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                } catch (Throwable ignored) {}
+                bakPrefs().edit().putString(PREF_BAK_TREE, tree.toString()).apply();
+                toast("مجلد النسخ الاحتياطية: " + treeFolderName(tree));
+                notifyBackupFolderChanged();
+            } else {
+                toast("لم يتم اختيار مجلد");
+            }
+            return;
+        }
         if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) {
             if (requestCode == MainActivity.REQ_OPEN_FILE) toast("لم يتم اختيار ملف");
             return;

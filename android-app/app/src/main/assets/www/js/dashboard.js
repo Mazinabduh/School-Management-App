@@ -1,147 +1,288 @@
 /* =========================================================
-   dashboard.js — لوحة التحكم الرئيسية — بنمط المحطة
-   بطاقات إحصاء 3D بأيقونات حقيقية + إجراءات سريعة + رسوم
+   dashboard.js — لوحة التحكم — هيكل تطبيق المحطة بالضبط
+   stats-grid (بطاقات stat-3d) + إجراءات سريعة (quick-3d)
+   + مؤشر التحصيل (gauge) + ملخص مالي (bars) + آخر النشاطات
+   البيانات: المدرسة (طلاب/موظفون/أقساط/ميزانية) — الشكل: المحطة حرفياً
    ========================================================= */
 'use strict';
 
 (function () {
   const P = {
-    id: 'dashboard',
-
     render(root) {
-      const s = Store.settings();
-      const students = Store.col('students').filter((x) => x.status !== 'withdrawn');
-      const staff = Store.col('employees');
-      const txs = Store.col('transactions');
-      const income = H.sum(txs.filter((t) => t.type === 'income'), (t) => t.amount);
-      const expense = H.sum(txs.filter((t) => t.type === 'expense'), (t) => t.amount);
-      const plans = Store.col('feeplans');
-      const due = H.sum(plans, (p) => H.sum((p.items || []).filter((i) => !i.paid), (i) => i.amount));
-      const busSubs = Store.count('busSubs', (b) => b.status === 'active');
-      const audit = Store.col('audit').slice(-7).reverse();
+      const d = this._data();
+      const today = new Date();
+      let dateS = '';
+      try { dateS = today.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
+      catch (e) { dateS = H.fmtDate(today.toISOString().slice(0, 10)); }
 
       root.innerHTML = `
-        <div class="page">
-          ${UI.pageHead('🏠 لوحة التحكم', `
-            <button class="btn btn-primary btn-write" data-action="students:add">➕ تسجيل طالب</button>
-            <button class="btn btn-gold" data-action="insts:receipt">🧾 سند قبض</button>
-          `)}
+      <div class="page">
+        <div class="page-head">
+          <h2 class="page-title-3d">
+            <div class="title-icon-3d ti-blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="24" height="24" aria-hidden="true">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            لوحة التحكم الرئيسية
+          </h2>
+          <div class="page-date" id="todayDate">${H.esc(dateS)}</div>
+        </div>
 
-          <div class="dash-hero shine">
-            <h3>أهلاً بك، ${H.esc((AuthGuard.user || {}).name || '')} 👋</h3>
-            <p>${H.esc(s.schoolName || '')} — ${H.esc(s.slogan || '')}</p>
-            <div class="hero-meta">
-              <span class="hero-chip">📅 ${H.arDate(Date.now())}</span>
-              <span class="hero-chip">🗓️ العام: ${H.esc(s.year || '')}</span>
-              <span class="hero-chip">🎯 v${Config.VERSION}</span>
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-3d stat-blue">
+            <div class="stat-3d-icon">👨‍🎓</div>
+            <div class="stat-3d-val" id="s_students">${H.num(d.students)}</div>
+            <div class="stat-3d-label">الطلاب</div>
+            <div class="stat-3d-shine"></div>
+          </div>
+          <div class="stat-3d stat-purple">
+            <div class="stat-3d-icon">👥</div>
+            <div class="stat-3d-val" id="s_employees">${H.num(d.employees)}</div>
+            <div class="stat-3d-label">الموظفون</div>
+            <div class="stat-3d-shine"></div>
+          </div>
+          <div class="stat-3d stat-green">
+            <div class="stat-3d-icon">💰</div>
+            <div class="stat-3d-val" id="s_collected">${H.num(d.collected)}</div>
+            <div class="stat-3d-label">المحصّل (${H.esc(Store.getSetting('currency', 'ريال'))})</div>
+            <div class="stat-3d-shine"></div>
+          </div>
+          <div class="stat-3d stat-orange">
+            <div class="stat-3d-icon">⚠️</div>
+            <div class="stat-3d-val" id="s_arrears">${H.num(d.arrears)}</div>
+            <div class="stat-3d-label">المتأخرات</div>
+            <div class="stat-3d-shine"></div>
+          </div>
+          <div class="stat-3d stat-teal">
+            <div class="stat-3d-icon">🚌</div>
+            <div class="stat-3d-val" id="s_bus">${H.num(d.busSubs)}</div>
+            <div class="stat-3d-label">مشتركو الباص</div>
+            <div class="stat-3d-shine"></div>
+          </div>
+          <div class="stat-3d stat-red">
+            <div class="stat-3d-icon">📊</div>
+            <div class="stat-3d-val" id="s_net">${H.num(d.net)}</div>
+            <div class="stat-3d-label">صافي الميزانية</div>
+            <div class="stat-3d-shine"></div>
+          </div>
+        </div>
+
+        <div class="card-3d">
+          <div class="card-3d-head"><h3>⚡ إجراءات سريعة</h3></div>
+          <div class="quick-grid">
+            <button class="quick-3d" data-action="students:add">
+              <div class="quick-3d-icon" style="background:transparent"><img class="nav-icon-3d" src="assets/icons/nav-students.png" alt=""></div>
+              <span>تسجيل طالب</span>
+            </button>
+            <button class="quick-3d" data-action="nav:go" data-page="grades-engine">
+              <div class="quick-3d-icon" style="background:transparent"><img class="nav-icon-3d" src="assets/icons/nav-grades.png" alt=""></div>
+              <span>رصد درجات</span>
+            </button>
+            <button class="quick-3d" data-action="nav:go" data-page="installments">
+              <div class="quick-3d-icon" style="background:transparent"><img class="nav-icon-3d" src="assets/icons/nav-installments.png" alt=""></div>
+              <span>سند قبض</span>
+            </button>
+            <button class="quick-3d" data-action="nav:go" data-page="results-certificates">
+              <div class="quick-3d-icon" style="background:transparent"><img class="nav-icon-3d" src="assets/icons/nav-certificate.png" alt=""></div>
+              <span>الشهادات</span>
+            </button>
+            <button class="quick-3d" data-action="nav:go" data-page="reports-center">
+              <div class="quick-3d-icon" style="background:transparent"><img class="nav-icon-3d" src="assets/icons/nav-reports.png" alt=""></div>
+              <span>التقارير</span>
+            </button>
+            <button class="quick-3d" data-action="nav:go" data-page="backup-restore">
+              <div class="quick-3d-icon" style="background:transparent"><img class="nav-icon-3d" src="assets/icons/nav-backup.png" alt=""></div>
+              <span>النسخ الاحتياطي</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="card-3d chart-card">
+            <div class="card-3d-head"><h3>📈 مؤشر التحصيل</h3></div>
+            <div class="gauge-wrap">
+              <canvas id="gaugeCanvas" width="220" height="140" aria-label="مؤشر نسبة التحصيل"></canvas>
+              <div class="gauge-val" id="gaugeVal">0%</div>
+              <div class="gauge-lbl">نسبة التحصيل</div>
             </div>
           </div>
 
-          <div class="grid grid-4 stagger" style="margin-bottom:14px">
-            ${this.stat('nav-students', 'عدد الطلاب', H.num(students.length), 'طالب مسجل', 'students', '#38bdf8')}
-            ${this.stat('nav-employees', 'الموظفون', H.num(staff.length), 'معلم وإداري وعامل', 'hr-employees', '#34d399')}
-            ${this.stat('nav-bus', 'مشتركو الباص', H.num(busSubs), 'اشتراك نشط', 'bus-management', '#818cf8')}
-            ${this.stat('nav-installments', 'متأخرات متبقية', H.money(due), 'أقساط لم تُسدد', 'installments', '#f87171')}
-          </div>
-
-          <div class="finance-mini stagger" style="margin-bottom:14px">
-            <div class="fm-box fm-income">
-              <div class="fm-label">💰 إجمالي الإيرادات</div>
-              <div class="fm-value money">${H.money(income)}</div>
-              <div class="fm-sub">أقساط + باص + زي وكتب</div>
-            </div>
-            <div class="fm-box fm-expense">
-              <div class="fm-label">💸 إجمالي المصروفات</div>
-              <div class="fm-value money">${H.money(expense)}</div>
-              <div class="fm-sub">رواتب + تشغيل + صيانة</div>
+          <div class="card-3d chart-card">
+            <div class="card-3d-head"><h3>📊 ملخص مالي</h3></div>
+            <div class="barchart-wrap">
+              <canvas id="barCanvas" width="300" height="180" aria-label="ملخص مالي"></canvas>
             </div>
           </div>
+        </div>
 
-          <div class="card" style="margin-bottom:14px">
-            <div class="card-title">⚡ الإجراءات السريعة</div>
-            <div class="quick-grid">
-              ${this.quick('nav-students', 'طلاب جديد', 'students')}
-              ${this.quick('nav-grades', 'رصد درجات', 'grades-engine')}
-              ${this.quick('nav-installments', 'سند قبض', 'installments', true)}
-              ${this.quick('nav-finance', 'الميزانية', 'finance-budget')}
-              ${this.quick('nav-bus', 'باصات', 'bus-management')}
-              ${this.quick('nav-payroll', 'رواتب', 'payroll-engine')}
-              ${this.quick('nav-cards', 'بطاقات', 'id-card-studio')}
-              ${this.quick('nav-reports', 'تقارير', 'reports-center')}
+        <div class="card-3d">
+          <div class="card-3d-head">
+            <h3>🕐 آخر النشاطات</h3>
+            <button class="see-all-btn" type="button" data-action="nav:go" data-page="audit-log" title="عرض سجل النشاط الكامل">عرض الكل</button>
+          </div>
+          <div class="activity-feed" id="activityFeed">
+            <div class="empty-box">
+              <div class="empty-icon">📋</div>
+              <p>لا توجد نشاطات بعد</p>
             </div>
           </div>
-
-          <div class="grid grid-2" style="margin-bottom:14px">
-            <div class="chart-card">
-              <div class="card-title">📈 الإيرادات مقابل المصروفات (آخر 6 أشهر)</div>
-              <div class="chart-wrap"><canvas id="ch-fin"></canvas></div>
-            </div>
-            <div class="chart-card">
-              <div class="card-title">🥧 توزيع الطلاب على المراحل</div>
-              <div class="chart-wrap"><canvas id="ch-stg"></canvas></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">🕘 آخر الحركات <button class="btn btn-soft btn-sm" data-action="nav:go" data-page="audit-log">الكل ◂</button></div>
-            <div class="activity-list">
-              ${audit.length ? audit.map((a) => `
-                <div class="activity-item">
-                  <span class="icon3d sm ${a.type === 'حذف' ? 'ic-rose' : a.type === 'إضافة' ? 'ic-green' : 'ic-blue'}">${a.type === 'حذف' ? '🗑️' : a.type === 'إضافة' ? '➕' : '📝'}</span>
-                  <div class="a-txt"><b>${H.esc(a.action)}</b><small>${H.esc(a.detail || '')}</small></div>
-                  <small class="muted">${H.timeAgo(a.time)}</small>
-                </div>`).join('') : UI.empty('🗒️', 'لا حركات مسجلة بعد')}
-            </div>
-          </div>
-        </div>`;
-
-      /* الرسوم */
-      const months = [];
-      const inc = [], exp = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(); d.setMonth(d.getMonth() - i);
-        const k = d.toISOString().slice(0, 7);
-        months.push(H.arMonth(k));
-        inc.push(H.round2(H.sum(txs.filter((t) => t.type === 'income' && H.monthKey(t.date) === k), (t) => t.amount)));
-        exp.push(H.round2(H.sum(txs.filter((t) => t.type === 'expense' && H.monthKey(t.date) === k), (t) => t.amount)));
-      }
-      ChartsEngine.make('ch-fin', 'bar', {
-        labels: months,
-        datasets: [
-          { label: 'إيرادات', data: inc, backgroundColor: '#16a34a', borderRadius: 7 },
-          { label: 'مصروفات', data: exp, backgroundColor: '#dc2626', borderRadius: 7 }
-        ]
-      });
-
-      const stages = Store.col('stages');
-      const stgData = stages.map((st) => Store.count('students', (x) => x.stageId === st.id && x.status !== 'withdrawn'));
-      ChartsEngine.make('ch-stg', 'doughnut', {
-        labels: stages.map((st) => st.name),
-        datasets: [{ data: stgData, backgroundColor: ChartsEngine.palette(stages.length), borderWidth: 0 }]
-      }, { cutout: '62%' });
-    },
-
-    /* بطاقة إحصاء بنمط المحطة — أيقونة 3D حقيقية */
-    stat(icon, label, value, sub, page, color) {
-      return `<div class="stat-card" data-action="nav:go" data-page="${page}" style="--sc:${color || 'var(--primary)'}">
-        <span class="stat-ico"><img src="assets/icons/${icon}.png" alt="" loading="lazy"></span>
-        <div class="st-info">
-          <div class="st-label">${label}</div>
-          <div class="st-value">${value}</div>
-          <div class="st-sub muted">${sub}</div>
         </div>
       </div>`;
+
+      this._drawGauge(d);
+      this._drawBars(d);
+      this._renderActivity();
+      if (window.StationCylinder) StationCylinder.update();
     },
 
-    quick(icon, label, page, isAction) {
-      const act = isAction ? `data-action="insts:receipt"` : `data-action="nav:go" data-page="${page}"`;
-      return `<button class="quick-item" ${act}>
-        <img src="assets/icons/${icon}.png" alt="" loading="lazy"><span>${label}</span>
-      </button>`;
+    /* ---------- بيانات المدرسة ---------- */
+    _data() {
+      const students = Store.count('students');
+      const employees = Store.count('employees');
+      let billed = 0, collected = 0;
+      (Store.col('feeplans') || []).forEach((p) => {
+        (p.items || []).forEach((i) => { billed += Number(i.amount) || 0; if (i.paid) collected += Number(i.amount) || 0; });
+      });
+      const paymentsTotal = H.sum(Store.col('payments'), (p) => p.amount);
+      if (billed === 0 && paymentsTotal > 0) collected = paymentsTotal;
+      const arrears = Math.max(0, billed - collected);
+      const busSubs = Store.count('busSubs', (b) => b.status === 'active');
+      const income = H.sum(Store.col('transactions').filter((t) => t.type === 'income'), (t) => t.amount);
+      const expense = H.sum(Store.col('transactions').filter((t) => t.type === 'expense'), (t) => t.amount);
+      const net = income - expense;
+      return { students, employees, billed, collected, arrears, busSubs, income, expense, net };
+    },
+
+    /* ---------- مؤشر التحصيل — رسم المحطة بالضبط ---------- */
+    _drawGauge(s) {
+      const canvas = document.getElementById('gaugeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const cx = w / 2, cy = h - 10, radius = 85;
+      const pct = s.billed > 0 ? Math.min(s.collected / s.billed * 100, 100) : 0;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, Math.PI, 2 * Math.PI);
+      ctx.lineWidth = 18;
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      const valAngle = Math.PI + pct / 100 * Math.PI;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, Math.PI, valAngle);
+      ctx.lineWidth = 24;
+      ctx.strokeStyle = 'rgba(0,180,255,0.08)';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      const grad = ctx.createLinearGradient(0, cy, w, 0);
+      grad.addColorStop(0, '#00b4ff');
+      grad.addColorStop(1, '#00ff88');
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, Math.PI, valAngle);
+      ctx.lineWidth = 18;
+      ctx.strokeStyle = grad;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      const dotX = cx + radius * Math.cos(valAngle);
+      const dotY = cy + radius * Math.sin(valAngle);
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = '#00b4ff';
+      ctx.shadowBlur = 15;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      const el = document.getElementById('gaugeVal');
+      if (el) el.textContent = Math.round(pct) + '%';
+    },
+
+    /* ---------- الملخص المالي — أشرطة المحطة بالضبط ---------- */
+    _drawBars(s) {
+      const canvas = document.getElementById('barCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const data = [
+        { l: 'محصّل', v: s.collected, c1: '#00e676', c2: '#00c853' },
+        { l: 'متأخرات', v: s.arrears, c1: '#ffa726', c2: '#e65100' },
+        { l: 'مصروفات', v: Math.max(s.expense, 0), c1: '#ff5252', c2: '#c62828' },
+        { l: 'صافي', v: Math.max(s.net, 0), c1: '#42a5f5', c2: '#1565c0' }
+      ];
+      const maxV = Math.max(...data.map((d) => d.v), 1);
+      const bw = 44;
+      const gap = (w - data.length * bw) / (data.length + 1);
+      const bot = 30, top = 12;
+      const ch = h - bot - top;
+      data.forEach((d, i) => {
+        const x = gap + i * (bw + gap);
+        const bh = Math.max(d.v / maxV * ch, 2);
+        const y = h - bot - bh;
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        this._rRect(ctx, x + 3, y + 3, bw, bh, 5);
+        ctx.fill();
+        const g = ctx.createLinearGradient(x, y, x, h - bot);
+        g.addColorStop(0, d.c1);
+        g.addColorStop(1, d.c2 + '88');
+        ctx.fillStyle = g;
+        this._rRect(ctx, x, y, bw, bh, 5);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        this._rRect(ctx, x, y, bw / 3, bh, [5, 0, 0, 5]);
+        ctx.fill();
+        ctx.fillStyle = '#8da4bf';
+        ctx.font = '10px Cairo, Tahoma';
+        ctx.textAlign = 'center';
+        ctx.fillText(d.l, x + bw / 2, h - 8);
+        if (d.v > 0) {
+          ctx.fillStyle = '#e8f0fe';
+          ctx.font = 'bold 10px Cairo, Tahoma';
+          ctx.fillText(Number(d.v).toLocaleString('ar-EG'), x + bw / 2, y - 5);
+        }
+      });
+    },
+
+    _rRect(ctx, x, y, w, h, r) {
+      if (typeof r === 'number') r = [r, r, r, r];
+      ctx.beginPath();
+      ctx.moveTo(x + r[0], y);
+      ctx.lineTo(x + w - r[1], y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r[1]);
+      ctx.lineTo(x + w, y + h - r[2]);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r[2], y + h);
+      ctx.lineTo(x + r[3], y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r[3]);
+      ctx.lineTo(x, y + r[0]);
+      ctx.quadraticCurveTo(x, y, x + r[0], y);
+      ctx.closePath();
+    },
+
+    /* ---------- آخر النشاطات — بنمط المحطة ---------- */
+    _renderActivity() {
+      const feed = document.getElementById('activityFeed');
+      if (!feed) return;
+      const acts = Store.sortBy(Store.col('audit'), 'ts', false).slice(0, 8);
+      if (!acts.length) {
+        feed.innerHTML = '<div class="empty-box"><div class="empty-icon">📋</div><p>لا توجد نشاطات بعد</p></div>';
+        return;
+      }
+      const colorOf = (t) => {
+        if ((t || '').includes('حذف')) return 'a-err';
+        if ((t || '').includes('تعديل')) return 'a-warn';
+        if ((t || '').includes('إضافة') || (t || '').includes('دخول')) return 'a-ok';
+        return 'a-info';
+      };
+      feed.innerHTML = acts.map((a) => `
+        <div class="activity-row">
+          <div class="activity-dot ${colorOf(a.type)}"></div>
+          <div class="activity-msg">${a.type ? '【' + H.esc(a.type) + '】' : ''} ${H.esc(a.msg || '')}</div>
+          <div class="activity-time">${H.esc(a.time || H.fmtDate((a.ts || '').slice(0, 10)))}</div>
+        </div>`).join('');
     }
   };
-
-  Actions.register('dash', {});
 
   window.Pages = window.Pages || {};
   Pages.dashboard = P;

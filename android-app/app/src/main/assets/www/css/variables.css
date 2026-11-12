@@ -4,10 +4,26 @@
    خط Cairo محلي — يعمل دون إنترنت بالكامل
    ========================================================= */
 
+/* خطوط Cairo الثابتة — نفس نظام المحطة بالنص (Regular + Bold)
+   الخطوط الثابتة إلزامية: الخط المتغيّر يكسر تشكيل العربية العريضة في PDF */
 @font-face {
   font-family: 'Cairo';
-  src: url('../assets/fonts/Cairo.ttf') format('truetype');
-  font-weight: 200 1000;
+  src: url('../assets/fonts/Cairo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('../assets/fonts/Cairo-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('../assets/fonts/Cairo-Bold.ttf') format('truetype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }

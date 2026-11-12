@@ -4,7 +4,7 @@
    ========================================================= */
 'use strict';
 
-const VERSION  = '3.2.0';
+const VERSION  = '3.6.0';
 const CACHE    = `edupro-v${VERSION}`;
 const RUNTIME  = `edupro-runtime-v${VERSION}`;
 
@@ -12,7 +12,8 @@ const RUNTIME  = `edupro-runtime-v${VERSION}`;
 const SHELL = [
   './', './index.html', './manifest.json',
   // assets
-  './assets/fonts/Cairo.ttf', './assets/fonts/Cairo-Regular.ttf',
+  './assets/fonts/Cairo.ttf', './assets/fonts/Cairo-Regular.ttf', './assets/fonts/Cairo-Bold.ttf',
+  './fonts/Cairo-Regular.ttf', './fonts/Cairo-Bold.ttf',
   './assets/images/logo.png', './assets/images/logo-128.png',
   './assets/images/default-avatar.png', './assets/images/watermark.png',
   './assets/images/ycms-logo.png', './assets/images/ycms-mark.png',
@@ -24,19 +25,18 @@ const SHELL = [
   './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js', './vendor/qrcode-generator.js',
   './vendor/xlsx.full.min.js', './vendor/pdfmake.min.js', './vendor/pdfmake-rtl.js',
   './vendor/vfs_fonts.js', './vendor/zxing.min.js', './vendor/arabic-reshaper.js',
-  // css (26)
-  './css/variables.css', './css/base.css', './css/splash.css', './css/login.css',
-  './css/layout.css', './css/sidebar.css', './css/icons3d.css', './css/dashboard.css',
-  './css/charts.css', './css/students.css', './css/academics.css', './css/grades-matrix.css',
-  './css/certificates.css', './css/finance.css', './css/store-inventory.css', './css/bus-system.css',
-  './css/hr-payroll.css', './css/id-cards.css', './css/reports.css', './css/modals.css',
-  './css/tables.css', './css/forms.css', './css/enhancements.css', './css/responsive.css',
-  './css/themes-intl.css', './css/print.css',
-  './css/pro-shell.css',
+  // css — أساس المدرسة + حزمة المحطة + الجسر
+  './css/variables.css', './css/splash.css', './css/login.css', './css/themes-intl.css',
+  './css/academics.css', './css/grades-matrix.css', './css/certificates.css', './css/finance.css',
+  './css/store-inventory.css', './css/bus-system.css', './css/hr-payroll.css', './css/id-cards.css',
+  './css/reports.css', './css/charts.css', './css/print.css', './css/print-pro.css',
+  './css/station/station-bundle.css', './css/station/ui-nav-icons.css', './css/station/nav-pro.css',
+  './css/station/theme-harmony.css', './css/station/app-pro-16.css', './css/station/app-pro-17.css',
+  './css/station/app-pro-18.css', './css/twin-bridge.css',
   // print engines (نظام تطبيق المحطة)
   './print/reliable-print.js', './print/print-settings-pro.js',
   './print/print-settings-engine.js', './print/thermal-print.js', './print/thermal-receipt.js',
-  './print/report-intl.js', './print/id-card-printer.js', './print/pdf-enterprise.js',
+  './print/print-pro-v2026.js', './print/report-intl.js', './print/id-card-printer.js', './print/pdf-enterprise.js',
   './print/office-pro.js', './print/office-export.js',
   // core js (10)
   './js/config.js', './js/encryption.js', './js/database.js', './js/auth.js', './js/ui.js',
@@ -47,8 +47,9 @@ const SHELL = [
   './js/store-books-uniform.js', './js/bus-management.js', './js/hr-employees.js',
   './js/payroll-engine.js', './js/id-card-studio.js', './js/communications.js',
   './js/reports-center.js', './js/settings-branding.js', './js/audit-log.js',
-  './js/backup-restore.js', './js/professional-themes.js',
-  './js/demo-data.js',
+  './js/backup-restore.js', './js/storage-vault.js', './js/professional-themes.js', './js/print-settings-page.js',
+  './js/demo-data.js', './js/station-cylinder.js', './js/station-themes.js',
+  './assets/icons/nav-print.png',
   // main engine (last)
   './js/login-bg.js',
   './js/app.js'
