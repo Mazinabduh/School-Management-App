@@ -262,7 +262,7 @@
 .pp-table thead {
     display: table-header-group;
 }
-.pp-table thead th {
+.pp-table thead th, .pp-table .pp-th {
     background: var(--pp-primary-light);
     color: #ffffff !important;
     padding: 10px 8px;
@@ -605,7 +605,7 @@
         page-break-inside: auto;
     }
 
-    .pp-header, .pp-section-title, .pp-table thead th,
+    .pp-header, .pp-section-title, .pp-table thead th, .pp-table thead .pp-th,
     .pp-summary-row.total, .pp-receipt-header,
     .pp-footer, .pp-info-strip {
         -webkit-print-color-adjust: exact !important;
@@ -682,7 +682,7 @@
     body.thermal-80mm .pp-section-title { padding: 5px 8px !important; font-size: 9pt !important; }
     body.thermal-80mm .pp-cell { padding: 5px 6px !important; }
     body.thermal-80mm .pp-cell-value { font-size: 9pt !important; }
-    body.thermal-80mm .pp-table th,
+    body.thermal-80mm .pp-table th, body.thermal-80mm .pp-table .pp-th,
     body.thermal-80mm .pp-table td { padding: 4px 3px !important; font-size: 8pt !important; }
     body.thermal-80mm .pp-summary-row { padding: 5px 8px !important; font-size: 9pt !important; }
     body.thermal-80mm .pp-grid-2,
@@ -705,7 +705,7 @@
     body.thermal-58mm .pp-grid-2,
     body.thermal-58mm .pp-grid-3,
     body.thermal-58mm .pp-grid-4 { grid-template-columns: 1fr !important; }
-    body.thermal-58mm .pp-table th,
+    body.thermal-58mm .pp-table th, body.thermal-58mm .pp-table .pp-th,
     body.thermal-58mm .pp-table td { padding: 3px 2px !important; font-size: 7.5pt !important; }
     body.thermal-58mm .pp-watermark { display: none !important; }
 }
@@ -733,8 +733,30 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
     page-break-inside: avoid;
     break-inside: avoid;
+}
+/* منع تداخل العنوان مع اسم المدرسة — كل جزء مساحة محفوظة */
+.pp-report-header > .pp-report-heading {
+    flex: 0 1 auto;
+    max-width: 46%;
+    min-width: 0;
+}
+.pp-report-header > div:nth-child(2) {
+    flex: 1 1 210px;
+    min-width: 210px;
+    text-align: center;
+}
+.pp-report-header > .pp-report-meta {
+    flex: 0 0 auto;
+    max-width: 27%;
+}
+.pp-report-title {
+    font-size: 17pt;
+    font-weight: 900;
+    line-height: 1.35;
 }
 .pp-report-title {
     font-size: 20pt;
@@ -863,10 +885,18 @@ html[data-theme="dark"] .pp-report,
     .pp-table thead{display:table-header-group!important}
     .pp-table tfoot{display:table-footer-group!important}
     .pp-table tr{page-break-inside:avoid!important;break-inside:avoid!important}
-    .pp-table th{padding:10px 8px!important;font-size:10pt!important;line-height:1.45!important;white-space:nowrap!important}
+    .pp-table th,.pp-table .pp-th{padding:10px 8px!important;font-size:10pt!important;line-height:1.45!important;white-space:nowrap!important}
     .pp-table td{padding:9px 8px!important;font-size:10pt!important;line-height:1.5!important}
-    .pp-table th,.pp-table td{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;white-space:normal!important;vertical-align:middle!important}
+    .pp-table th,.pp-table .pp-th,.pp-table td{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;white-space:normal!important;vertical-align:middle!important}
     .pp-footer{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 /* عرض المعاينة داخل التطبيق — نفس هيئة المحطة */
 .pp-report{box-shadow:0 20px 70px rgba(15,23,42,.10);border-radius:14px;overflow:hidden}
+
+/* حماية رؤوس الجداول المحوّلة (td.pp-th) من تلوين الصفوف الزبرا */
+.pp-table tbody tr td.pp-th,
+.pp-table tbody tr:nth-child(even) td.pp-th,
+.pp-table tfoot tr td.pp-th {
+    background: var(--pp-primary-light) !important;
+    color: #ffffff !important;
+}

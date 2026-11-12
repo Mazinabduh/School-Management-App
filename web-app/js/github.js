@@ -83,10 +83,13 @@
       }
     },
 
-    /* ---------- تنزيل نسخة — نظام المحطة v2026.82 بالنص ----------
-       الملفات الأكبر من 1MB لا تُعيد GitHub محتواها (content: null) —
-       فيُجلب النص من download_url مثل readJson في المحطة تماماً،
-       مع تحويل Base64 الآمن للأسطر عند توفر المحتوى. */
+    /* ---------- تنزيل نسخة — نظام المحطة v2026.100 بالنص ----------
+       ترتيب القنوات الموثوق:
+       1) واجهة Contents مع Accept: application/vnd.github.raw (نفس الأصل
+          api.github.com — تدعم المستودعات الخاصة والملفات حتى 100MB)
+       2) محتوى Base64 من نفس الاستجابة (الملفات الصغيرة)
+       3) download_url (المستودعات العامة)
+       القبول مرن: نسخة EduPro الكاملة أو أي JSON يحوي بيانات أقسام صالحة. */
     async pull() {
       const c = this.cfg();
       if (!c.token || !c.repo) return { ok: false, msg: 'أكمل إعدادات GitHub أولاً' };
@@ -101,25 +104,24 @@
         }
         const j = await r.json();
         let text = '';
-        if (j.content) {
-          const bytes = Uint8Array.from(atob(j.content.replace(/\n/g, '')), (ch) => ch.charCodeAt(0));
-          text = new TextDecoder().decode(bytes);
-        } else if (j.download_url) {
-          /* الملفات الأكبر من 1MB لا تُعيد GitHub محتواها — القناة الأولى:
-             نفس واجهة Contents مع Accept: application/vnd.github.raw
-             (نفس الأصل api.github.com — تتجاوز CORS وتدعم المستودعات الخاصة حتى 100MB)
-             والقناة الثانية download_url كما في المحطة v2026.82 (بدون توكن — للمستودعات العامة) */
-          let raw = await fetch(this._url(c.path), { headers: { ...this._headers(), 'Accept': 'application/vnd.github.raw' } });
-          if (raw.ok) {
-            text = await raw.text();
-          } else {
-            const raw2 = await fetch(j.download_url);
-            if (!raw2.ok) return { ok: false, msg: `تعذر جلب محتوى النسخة (${raw.status}/${raw2.status})` };
-            text = await raw2.text();
-          }
-        } else {
-          return { ok: false, msg: 'استجابة غير متوقعة من GitHub — تأكد من المسار' };
+        /* القناة الأولى: raw عبر نفس واجهة Contents — الأقوى */
+        try {
+          const raw = await fetch(this._url(c.path), { headers: { ...this._headers(), 'Accept': 'application/vnd.github.raw' } });
+          if (raw.ok) text = await raw.text();
+        } catch (e) {}
+        /* القناة الثانية: Base64 من نفس الاستجابة */
+        if (!text && j.content) {
+          try {
+            const bytes = Uint8Array.from(atob(j.content.replace(/\n/g, '')), (ch) => ch.charCodeAt(0));
+            text = new TextDecoder().decode(bytes);
+          } catch (e) {}
         }
+        /* القناة الثالثة: download_url (عامة فقط) */
+        if (!text && j.download_url) {
+          const raw2 = await fetch(j.download_url);
+          if (raw2.ok) text = await raw2.text();
+        }
+        if (!text) return { ok: false, msg: 'تعذر جلب محتوى النسخة — تحقق من الاتصال والمسار' };
         let json;
         try { json = JSON.parse(text); } catch (e) { return { ok: false, msg: 'محتوى النسخة تالف (ليس JSON صالحاً)' }; }
         return { ok: true, data: json, sha: j.sha || '', msg: 'تم تنزيل النسخة ✓' };
@@ -128,6 +130,15 @@
       } finally {
         UI.loading(false);
       }
+    },
+
+    /* هل الحمولة قابلة للاستعادة؟ — مرن مع كل الصيغ الصادرة من هذا التطبيق */
+    isRestorable(data) {
+      if (!data || typeof data !== 'object') return false;
+      if (data._app && data.settings) return true;               /* نسخة كاملة صادرة من EduPro */
+      if (data.format === 'edupro-backup' && data.data) return true; /* نسخة الحصن الخارجية */
+      if (data.settings && (data.students || data.employees || data.feeplans || data.grades)) return true;
+      return false;
     }
   };
 

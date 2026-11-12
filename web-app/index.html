@@ -17,9 +17,23 @@
   @font-face {
     font-family: 'Cairo';
     font-style: normal;
-    font-weight: 200 1000;
+    font-weight: 400;
     font-display: swap;
-    src: url('fonts/Cairo.ttf') format('truetype');
+    src: url('fonts/Cairo-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Cairo';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/Cairo-Bold.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Cairo';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('fonts/Cairo-Bold.ttf') format('truetype');
   }
   body, input, button, select, textarea {
     font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif !important;
@@ -49,38 +63,38 @@
      3) محركات القوائم الثلاثة + الثيمات + الانسجام (ui-nav / nav-pro / harmony / pro16-17-18)
      4) جسر التوائم (twin-bridge) — يوحّد عناصر المدرسة مع المحطة (يُحمَّل أخيراً)
      ════════════════════════════════════════════════════════════════ -->
-<link rel="stylesheet" href="css/variables.css?v=3.4.0">
-<link rel="stylesheet" href="css/login.css?v=3.4.0">
-<link rel="stylesheet" href="css/splash.css?v=3.4.0">
+<link rel="stylesheet" href="css/variables.css?v=3.5.0">
+<link rel="stylesheet" href="css/login.css?v=3.5.0">
+<link rel="stylesheet" href="css/splash.css?v=3.5.0">
 
-<link rel="stylesheet" href="css/academics.css?v=3.4.0">
-<link rel="stylesheet" href="css/grades-matrix.css?v=3.4.0">
-<link rel="stylesheet" href="css/certificates.css?v=3.4.0">
-<link rel="stylesheet" href="css/finance.css?v=3.4.0">
-<link rel="stylesheet" href="css/store-inventory.css?v=3.4.0">
-<link rel="stylesheet" href="css/bus-system.css?v=3.4.0">
-<link rel="stylesheet" href="css/hr-payroll.css?v=3.4.0">
-<link rel="stylesheet" href="css/id-cards.css?v=3.4.0">
-<link rel="stylesheet" href="css/themes-intl.css?v=3.4.0">
-<link rel="stylesheet" href="css/reports.css?v=3.4.0">
-<link rel="stylesheet" href="css/charts.css?v=3.4.0">
+<link rel="stylesheet" href="css/academics.css?v=3.5.0">
+<link rel="stylesheet" href="css/grades-matrix.css?v=3.5.0">
+<link rel="stylesheet" href="css/certificates.css?v=3.5.0">
+<link rel="stylesheet" href="css/finance.css?v=3.5.0">
+<link rel="stylesheet" href="css/store-inventory.css?v=3.5.0">
+<link rel="stylesheet" href="css/bus-system.css?v=3.5.0">
+<link rel="stylesheet" href="css/hr-payroll.css?v=3.5.0">
+<link rel="stylesheet" href="css/id-cards.css?v=3.5.0">
+<link rel="stylesheet" href="css/themes-intl.css?v=3.5.0">
+<link rel="stylesheet" href="css/reports.css?v=3.5.0">
+<link rel="stylesheet" href="css/charts.css?v=3.5.0">
 
 <!-- الحزمة المطابقة لتطبيق المحطة -->
-<link rel="stylesheet" href="css/station/station-bundle.css?v=3.4.0">
-<link rel="stylesheet" href="css/station/ui-nav-icons.css?v=3.4.0">
-<link rel="stylesheet" href="css/station/nav-pro.css?v=3.4.0">
-<link rel="stylesheet" href="css/station/theme-harmony.css?v=3.4.0">
-<link rel="stylesheet" href="css/station/app-pro-16.css?v=3.4.0">
-<link rel="stylesheet" href="css/station/app-pro-17.css?v=3.4.0">
-<link rel="stylesheet" href="css/station/app-pro-18.css?v=3.4.0">
+<link rel="stylesheet" href="css/station/station-bundle.css?v=3.5.0">
+<link rel="stylesheet" href="css/station/ui-nav-icons.css?v=3.5.0">
+<link rel="stylesheet" href="css/station/nav-pro.css?v=3.5.0">
+<link rel="stylesheet" href="css/station/theme-harmony.css?v=3.5.0">
+<link rel="stylesheet" href="css/station/app-pro-16.css?v=3.5.0">
+<link rel="stylesheet" href="css/station/app-pro-17.css?v=3.5.0">
+<link rel="stylesheet" href="css/station/app-pro-18.css?v=3.5.0">
 
 <!-- جسر توحيد عناصر وحدات المدرسة مع هوية المحطة -->
-<link rel="stylesheet" href="css/twin-bridge.css?v=3.4.0">
+<link rel="stylesheet" href="css/twin-bridge.css?v=3.5.0">
 
 <!-- طباعة المدرسة (تُحمَّل بعد الحزمة حتى تسود على الطباعة) -->
-<link rel="stylesheet" href="css/print.css?v=3.4.0">
+<link rel="stylesheet" href="css/print.css?v=3.5.0">
 <!-- مستيل الطباعة المؤسسي — نظام تطبيق المحطة بالضبط -->
-<link rel="stylesheet" href="css/print-pro.css?v=3.4.0">
+<link rel="stylesheet" href="css/print-pro.css?v=3.5.0">
 </head>
 
 <body>
@@ -89,7 +103,7 @@
   <div class="splash-inner">
     <img id="splash-logo" src="assets/images/logo.png" alt="الشعار">
     <h1 class="splash-title" id="splash-title">تطبيق ادارة المدرسة</h1>
-    <p class="splash-sub" id="splash-sub">نظام الإدارة المتكامل — الإصدار 3.4</p>
+    <p class="splash-sub" id="splash-sub">نظام الإدارة المتكامل — الإصدار 3.5</p>
     <div class="splash-bar"><i id="splash-bar"></i></div>
     <p class="splash-note">جارٍ تجهيز النظام…</p>
     <p class="splash-rights">جميع الحقوق محفوظة لشركة YCMS</p>
@@ -296,16 +310,7 @@
         <nav class="sidebar-menu" id="sidebarMenu"><!-- تُبنى من navigation.js بنمط المحطة --></nav>
 
         <div class="sidebar-foot">
-            <div class="sidebar-user">
-                <span class="avatar" id="sidebar-avatar">م</span>
-                <div><b id="sidebar-username">—</b><small id="sidebar-role">—</small></div>
-            </div>
-            <button class="btn btn-danger-soft btn-block" data-action="shell:logoutBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                تسجيل الخروج
-            </button>
-            <small class="sidebar-foot-ver" id="sidebar-version">ادارة المدرسة v3.3 — YCMS</small>
-            <small class="sidebar-foot-ver">برمجة وتطوير مازن عبدالوهاب<br>إدارة محاسبية صدام نجم الدين</small>
+            <div class="sidebar-foot-ver" id="sidebar-version">v3.5</div>
         </div>
     </aside>
 
@@ -325,70 +330,71 @@
 <iframe id="print-frame" title="طباعة" style="position:fixed;width:0;height:0;border:0;visibility:hidden"></iframe>
 
 <!-- ═══════════ المكتبات الخارجية ═══════════ -->
-<script src="vendor/html2canvas.min.js?v=3.4.0"></script>
-<script src="vendor/jspdf.umd.min.js?v=3.4.0"></script>
-<script src="vendor/qrcode-generator.js?v=3.4.0"></script>
-<script src="vendor/xlsx.full.min.js?v=3.4.0"></script>
-<script src="vendor/pdfmake.min.js?v=3.4.0"></script>
-<script src="vendor/pdfmake-rtl.js?v=3.4.0"></script>
-<script src="vendor/vfs_fonts.js?v=3.4.0"></script>
-<script src="vendor/zxing.min.js?v=3.4.0"></script>
-<script src="vendor/arabic-reshaper.js?v=3.4.0"></script>
+<script src="vendor/html2canvas.min.js?v=3.5.0"></script>
+<script src="vendor/jspdf.umd.min.js?v=3.5.0"></script>
+<script src="vendor/qrcode-generator.js?v=3.5.0"></script>
+<script src="vendor/xlsx.full.min.js?v=3.5.0"></script>
+<script src="vendor/pdfmake.min.js?v=3.5.0"></script>
+<script src="vendor/pdfmake-rtl.js?v=3.5.0"></script>
+<script src="vendor/vfs_fonts.js?v=3.5.0"></script>
+<script src="vendor/zxing.min.js?v=3.5.0"></script>
+<script src="vendor/arabic-reshaper.js?v=3.5.0"></script>
 
 <!-- ═══════════ محركات الطباعة (نظام تطبيق المحطة) ═══════════ -->
-<script src="print/reliable-print.js?v=3.4.0"></script>
-<script src="print/print-settings-pro.js?v=3.4.0"></script>
-<script src="print/print-settings-engine.js?v=3.4.0"></script>
-<script src="print/thermal-print.js?v=3.4.0"></script>
-<script src="print/thermal-receipt.js?v=3.4.0"></script>
+<script src="print/reliable-print.js?v=3.5.0"></script>
+<script src="print/print-settings-pro.js?v=3.5.0"></script>
+<script src="print/print-settings-engine.js?v=3.5.0"></script>
+<script src="print/thermal-print.js?v=3.5.0"></script>
+<script src="print/thermal-receipt.js?v=3.5.0"></script>
 <!-- محرك الطباعة المؤسسي — نظام تطبيق المحطة (PrintProV2026) قبل بوابة القوالب -->
-<script src="print/print-pro-v2026.js?v=3.4.0"></script>
-<script src="print/report-intl.js?v=3.4.0"></script>
-<script src="print/id-card-printer.js?v=3.4.0"></script>
-<script src="print/pdf-enterprise.js?v=3.4.0"></script>
-<script src="print/office-pro.js?v=3.4.0"></script>
-<script src="print/office-export.js?v=3.4.0"></script>
+<script src="print/print-pro-v2026.js?v=3.5.0"></script>
+<script src="print/report-intl.js?v=3.5.0"></script>
+<script src="print/id-card-printer.js?v=3.5.0"></script>
+<script src="print/pdf-enterprise.js?v=3.5.0"></script>
+<script src="print/office-pro.js?v=3.5.0"></script>
+<script src="print/office-export.js?v=3.5.0"></script>
 
 <!-- ═══════════ النواة (Core) ═══════════ -->
-<script src="js/config.js?v=3.4.0"></script>
-<script src="js/encryption.js?v=3.4.0"></script>
-<script src="js/database.js?v=3.4.0"></script>
-<script src="js/auth.js?v=3.4.0"></script>
-<script src="js/ui.js?v=3.4.0"></script>
-<script src="js/permissions.js?v=3.4.0"></script>
-<script src="js/charts.js?v=3.4.0"></script>
-<script src="js/github.js?v=3.4.0"></script>
-<script src="js/helpers.js?v=3.4.0"></script>
+<script src="js/config.js?v=3.5.0"></script>
+<script src="js/encryption.js?v=3.5.0"></script>
+<script src="js/database.js?v=3.5.0"></script>
+<script src="js/auth.js?v=3.5.0"></script>
+<script src="js/ui.js?v=3.5.0"></script>
+<script src="js/permissions.js?v=3.5.0"></script>
+<script src="js/charts.js?v=3.5.0"></script>
+<script src="js/github.js?v=3.5.0"></script>
+<script src="js/helpers.js?v=3.5.0"></script>
 
 <!-- ═══════════ الوحدات (Pages) ═══════════ -->
-<script src="js/dashboard.js?v=3.4.0"></script>
-<script src="js/students.js?v=3.4.0"></script>
-<script src="js/stages-classes.js?v=3.4.0"></script>
-<script src="js/grades-engine.js?v=3.4.0"></script>
-<script src="js/results-certificates.js?v=3.4.0"></script>
-<script src="js/finance-budget.js?v=3.4.0"></script>
-<script src="js/installments.js?v=3.4.0"></script>
-<script src="js/store-books-uniform.js?v=3.4.0"></script>
-<script src="js/bus-management.js?v=3.4.0"></script>
-<script src="js/hr-employees.js?v=3.4.0"></script>
-<script src="js/payroll-engine.js?v=3.4.0"></script>
-<script src="js/id-card-studio.js?v=3.4.0"></script>
-<script src="js/communications.js?v=3.4.0"></script>
-<script src="js/reports-center.js?v=3.4.0"></script>
-<script src="js/settings-branding.js?v=3.4.0"></script>
-<script src="js/audit-log.js?v=3.4.0"></script>
-<script src="js/backup-restore.js?v=3.4.0"></script>
-<script src="js/demo-data.js?v=3.4.0"></script>
-<script src="js/professional-themes.js?v=3.4.0"></script>
-<script src="js/print-settings-page.js?v=3.4.0"></script>
+<script src="js/dashboard.js?v=3.5.0"></script>
+<script src="js/students.js?v=3.5.0"></script>
+<script src="js/stages-classes.js?v=3.5.0"></script>
+<script src="js/grades-engine.js?v=3.5.0"></script>
+<script src="js/results-certificates.js?v=3.5.0"></script>
+<script src="js/finance-budget.js?v=3.5.0"></script>
+<script src="js/installments.js?v=3.5.0"></script>
+<script src="js/store-books-uniform.js?v=3.5.0"></script>
+<script src="js/bus-management.js?v=3.5.0"></script>
+<script src="js/hr-employees.js?v=3.5.0"></script>
+<script src="js/payroll-engine.js?v=3.5.0"></script>
+<script src="js/id-card-studio.js?v=3.5.0"></script>
+<script src="js/communications.js?v=3.5.0"></script>
+<script src="js/reports-center.js?v=3.5.0"></script>
+<script src="js/settings-branding.js?v=3.5.0"></script>
+<script src="js/audit-log.js?v=3.5.0"></script>
+<script src="js/backup-restore.js?v=3.5.0"></script>
+<script src="js/storage-vault.js?v=3.5.0"></script>
+<script src="js/demo-data.js?v=3.5.0"></script>
+<script src="js/professional-themes.js?v=3.5.0"></script>
+<script src="js/print-settings-page.js?v=3.5.0"></script>
 
 <!-- ═══════════ محركات المحطة (الأسطوانة + الثيمات المطابقة) ═══════════ -->
-<script src="js/station-cylinder.js?v=3.4.0"></script>
-<script src="js/station-themes.js?v=3.4.0"></script>
+<script src="js/station-cylinder.js?v=3.5.0"></script>
+<script src="js/station-themes.js?v=3.5.0"></script>
 
 <!-- ═══════════ التنقل والمحرك الرئيسي (الأخيراً) ═══════════ -->
-<script src="js/navigation.js?v=3.4.0"></script>
-<script src="js/login-bg.js?v=3.4.0"></script>
-<script src="js/app.js?v=3.4.0"></script>
+<script src="js/navigation.js?v=3.5.0"></script>
+<script src="js/login-bg.js?v=3.5.0"></script>
+<script src="js/app.js?v=3.5.0"></script>
 </body>
 </html>

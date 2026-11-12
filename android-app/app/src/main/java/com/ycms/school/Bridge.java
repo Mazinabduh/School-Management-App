@@ -202,8 +202,13 @@ public class Bridge {
 
     /* ═══════════ حفظ الملفات ═══════════ */
 
-    private static final String DOC_FOLDER = "Hara Document";
-    private static final String BAK_FOLDER = "Hara Backup";
+    /* مجلدات مستقلة تماماً لتطبيق المدرسة — لا تختلط مع أي تطبيق آخر */
+    private static final String DOC_FOLDER = "Edupro Document";
+    private static final String BAK_FOLDER = "Edupro Backup";
+    private static final String AUTO_BAK_DIR = "Edupro/data/backups";
+    private static final String SQL_DB_DEFAULT = "edupro_vault_v1";
+
+    private final java.util.Map<String, android.database.sqlite.SQLiteDatabase> sqlDbs = new java.util.HashMap<>();
 
     private boolean isBackupName(String name) {
         String n = (name == null ? "" : name).toLowerCase();
@@ -248,6 +253,243 @@ public class Bridge {
         } catch (Throwable t) {
             toast("فشل حفظ PDF: " + t.getMessage());
             return false;
+        }
+    }
+
+    /* ═══════════ قاعدة البيانات المحلية SQLite — نفس تطبيق المحطة v2026.100 بالنص ═══════════ */
+
+    private synchronized android.database.sqlite.SQLiteDatabase sqlDb(String dbName) {
+        try {
+            String name = (dbName == null || dbName.trim().isEmpty()) ? SQL_DB_DEFAULT : dbName.replaceAll("[^A-Za-z0-9_.-]", "");
+            android.database.sqlite.SQLiteDatabase db = sqlDbs.get(name);
+            if (db == null || !db.isOpen()) {
+                File f = act.getDatabasePath(name);
+                db = android.database.sqlite.SQLiteDatabase.openOrCreateDatabase(f.getAbsolutePath(), null);
+                sqlDbs.put(name, db);
+            }
+            return db;
+        } catch (Throwable t) {
+            throw new RuntimeException(t.getMessage());
+        }
+    }
+
+    private Object[] sqlBind(String paramsJson) {
+        try {
+            org.json.JSONArray arr = new org.json.JSONArray(paramsJson == null ? "[]" : paramsJson);
+            Object[] out = new Object[arr.length()];
+            for (int i = 0; i < arr.length(); i++) {
+                Object v = arr.get(i);
+                out[i] = (v == org.json.JSONObject.NULL) ? null : v;
+            }
+            return out;
+        } catch (Throwable t) {
+            return new Object[0];
+        }
+    }
+
+    private String[] sqlBindStr(String paramsJson) {
+        Object[] o = sqlBind(paramsJson);
+        String[] out = new String[o.length];
+        for (int i = 0; i < o.length; i++) out[i] = o[i] == null ? null : String.valueOf(o[i]);
+        return out;
+    }
+
+    private static String jesc(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+    }
+
+    @JavascriptInterface
+    public String sqlOpen(String dbName) {
+        try {
+            sqlDb(dbName);
+            return "{\"ok\":true}";
+        } catch (Throwable t) {
+            return "{\"error\":\"" + jesc(t.getMessage()) + "\"}";
+        }
+    }
+
+    @JavascriptInterface
+    public String sqlExec(String dbName, String sql, String paramsJson) {
+        try {
+            android.database.sqlite.SQLiteDatabase db = sqlDb(dbName);
+            db.execSQL(sql, sqlBind(paramsJson));
+            return "{\"ok\":true}";
+        } catch (Throwable t) {
+            return "{\"error\":\"" + jesc(t.getMessage()) + "\"}";
+        }
+    }
+
+    @JavascriptInterface
+    public String sqlQuery(String dbName, String sql, String paramsJson) {
+        try {
+            android.database.sqlite.SQLiteDatabase db = sqlDb(dbName);
+            Cursor c = db.rawQuery(sql, sqlBindStr(paramsJson));
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            int cols = c.getColumnCount();
+            String[] names = c.getColumnNames();
+            while (c.moveToNext()) {
+                if (!first) sb.append(",");
+                first = false;
+                sb.append("{");
+                for (int i = 0; i < cols; i++) {
+                    if (i > 0) sb.append(",");
+                    String v;
+                    switch (c.getType(i)) {
+                        case Cursor.FIELD_TYPE_NULL: v = "null"; break;
+                        case Cursor.FIELD_TYPE_INTEGER: v = String.valueOf(c.getLong(i)); break;
+                        case Cursor.FIELD_TYPE_FLOAT: v = String.valueOf(c.getDouble(i)); break;
+                        default: v = "\"" + jesc(c.getString(i)) + "\"";
+                    }
+                    sb.append("\"").append(jesc(names[i])).append("\":").append(v);
+                }
+                sb.append("}");
+            }
+            c.close();
+            return "{\"ok\":true,\"rows\":" + sb.toString() + "}";
+        } catch (Throwable t) {
+            return "{\"error\":\"" + jesc(t.getMessage()) + "\"}";
+        }
+    }
+
+    @JavascriptInterface
+    public String sqlBatch(String dbName, String statementsJson) {
+        try {
+            android.database.sqlite.SQLiteDatabase db = sqlDb(dbName);
+            org.json.JSONArray arr = new org.json.JSONArray(statementsJson == null ? "[]" : statementsJson);
+            db.beginTransaction();
+            try {
+                for (int i = 0; i < arr.length(); i++) {
+                    org.json.JSONObject o = arr.getJSONObject(i);
+                    String params = o.has("params") ? o.getString("params") : "[]";
+                    db.execSQL(o.getString("sql"), sqlBind(params));
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+            return "{\"ok\":true,\"count\":" + arr.length() + "}";
+        } catch (Throwable t) {
+            return "{\"error\":\"" + jesc(t.getMessage()) + "\"}";
+        }
+    }
+
+    /* ═══════════ النسخ التلقائية الخارجية — Download/Edupro/data/backups ═══════════ */
+
+    @JavascriptInterface
+    public boolean saveAutoBackup(String name, String text) {
+        byte[] bytes = (text == null ? "" : text).getBytes(StandardCharsets.UTF_8);
+        return saveToFolder(name, bytes, "application/json", false, AUTO_BAK_DIR);
+    }
+
+    @JavascriptInterface
+    public String listAutoBackups() {
+        StringBuilder sb = new StringBuilder("[");
+        try {
+            if (Build.VERSION.SDK_INT >= 29) {
+                String rel = Environment.DIRECTORY_DOWNLOADS + "/" + AUTO_BAK_DIR + "/";
+                Cursor c = act.getContentResolver().query(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        new String[]{MediaStore.Downloads.DISPLAY_NAME, MediaStore.Downloads.SIZE, MediaStore.Downloads.DATE_MODIFIED},
+                        MediaStore.Files.FileColumns.RELATIVE_PATH + "=?",
+                        new String[]{rel}, MediaStore.Downloads.DATE_MODIFIED + " DESC");
+                if (c != null) {
+                    boolean first = true;
+                    while (c.moveToNext()) {
+                        if (!first) sb.append(",");
+                        first = false;
+                        String nm = c.getString(0);
+                        long sz = c.isNull(1) ? 0 : c.getLong(1);
+                        long dm = c.isNull(2) ? 0 : c.getLong(2) * 1000L;
+                        sb.append("{\"name\":\"").append(jesc(nm)).append("\",\"size\":").append(sz).append(",\"date\":").append(dm).append("}");
+                    }
+                    c.close();
+                }
+            } else {
+                File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), AUTO_BAK_DIR);
+                File[] fs = dir.listFiles();
+                if (fs != null) {
+                    java.util.Arrays.sort(fs, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                    boolean first = true;
+                    for (File f : fs) {
+                        if (f.isDirectory() || !f.getName().endsWith(".json")) continue;
+                        if (!first) sb.append(",");
+                        first = false;
+                        sb.append("{\"name\":\"").append(jesc(f.getName())).append("\",\"size\":").append(f.length()).append(",\"date\":").append(f.lastModified()).append("}");
+                    }
+                }
+            }
+        } catch (Throwable ignored) {}
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @JavascriptInterface
+    public String readAutoBackup(String name) {
+        try {
+            if (Build.VERSION.SDK_INT >= 29) {
+                String rel = Environment.DIRECTORY_DOWNLOADS + "/" + AUTO_BAK_DIR + "/";
+                Cursor c = act.getContentResolver().query(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        new String[]{MediaStore.Downloads._ID},
+                        MediaStore.Files.FileColumns.RELATIVE_PATH + "=? AND " + MediaStore.Downloads.DISPLAY_NAME + "=?",
+                        new String[]{rel, name}, null);
+                if (c != null && c.moveToFirst()) {
+                    long id = c.getLong(0);
+                    c.close();
+                    Uri uri = android.content.ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id);
+                    java.io.InputStream is = act.getContentResolver().openInputStream(uri);
+                    java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+                    byte[] buf = new byte[8192];
+                    int n;
+                    while ((n = is.read(buf)) > 0) bo.write(buf, 0, n);
+                    is.close();
+                    return bo.toString("UTF-8");
+                }
+                if (c != null) c.close();
+                return "";
+            } else {
+                File f = new File(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), AUTO_BAK_DIR), name);
+                if (!f.exists()) return "";
+                java.io.FileInputStream fi = new java.io.FileInputStream(f);
+                java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = fi.read(buf)) > 0) bo.write(buf, 0, n);
+                fi.close();
+                return bo.toString("UTF-8");
+            }
+        } catch (Throwable t) {
+            return "";
+        }
+    }
+
+    @JavascriptInterface
+    public boolean deleteAutoBackup(String name) {
+        try {
+            if (Build.VERSION.SDK_INT >= 29) {
+                String rel = Environment.DIRECTORY_DOWNLOADS + "/" + AUTO_BAK_DIR + "/";
+                int n = act.getContentResolver().delete(MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        MediaStore.Files.FileColumns.RELATIVE_PATH + "=? AND " + MediaStore.Downloads.DISPLAY_NAME + "=?",
+                        new String[]{rel, name});
+                return n > 0;
+            } else {
+                File f = new File(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), AUTO_BAK_DIR), name);
+                return f.exists() && f.delete();
+            }
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    @JavascriptInterface
+    public String vaultStatus() {
+        try {
+            org.json.JSONObject o = new org.json.JSONObject();
+            File f = act.getDatabasePath(SQL_DB_DEFAULT);
+            o.put("sqlite", f.exists() ? f.length() : 0);
+            return o.toString();
+        } catch (Throwable t) {
+            return "{}";
         }
     }
 

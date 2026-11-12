@@ -129,6 +129,7 @@ public class SplashActivity extends Activity {
 
         private float W, H, groundY;
         private Bitmap logo;
+        private String schoolName = "تطبيق ادارة المدرسة";
 
         SplashView(android.content.Context ctx) {
             super(ctx);
@@ -151,7 +152,47 @@ public class SplashActivity extends Activity {
             } catch (Throwable t) {
                 logo = null;
             }
+            loadBranding(ctx);
             anim.postDelayed(tick, 16);
+        }
+
+        /* ---------- اسم المدرسة وشعارها من الإعدادات (مرآة SharedPreferences) ----------
+           تطبيق الويب يحفظ schoolName و logo في ملف edupro_brand — تُقرأ هنا ليعرض
+           الإقلاع الأصلي اسم المدرسة وشعارها المحفوظ مثل تطبيق الويب تماماً. */
+        private void loadBranding(android.content.Context ctx) {
+            try {
+                android.content.SharedPreferences sp = ctx.getSharedPreferences("edupro_brand", android.content.Context.MODE_PRIVATE);
+                String nm = sp.getString("schoolName", "");
+                if (nm != null && !nm.trim().isEmpty()) schoolName = nm.trim();
+                String lg = sp.getString("logo", "");
+                if (lg != null && lg.startsWith("data:image")) {
+                    int comma = lg.indexOf(',');
+                    if (comma > 0) {
+                        byte[] bytes = android.util.Base64.decode(lg.substring(comma + 1), android.util.Base64.DEFAULT);
+                        BitmapFactory.Options o = new BitmapFactory.Options();
+                        o.inJustDecodeBounds = true;
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, o);
+                        o.inSampleSize = 1;
+                        while ((o.outWidth / o.inSampleSize) > 512) o.inSampleSize *= 2;
+                        o.inJustDecodeBounds = false;
+                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, o);
+                        if (bm != null) logo = bm;
+                    }
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        /* نص مُقاس يناسب عرض الشاشة — مثل drawFittedGlowText بالمحطة */
+        private void drawFittedText(Canvas cv, String text, float cx, float y, float startSize, Paint paint) {
+            float size = startSize;
+            paint.setTextSize(size);
+            float measured = paint.measureText(text);
+            float maxW = W * 0.92f;
+            if (measured > maxW) {
+                size = Math.max(startSize * 0.42f, startSize * (maxW / measured));
+                paint.setTextSize(size);
+            }
+            cv.drawText(text, cx, y, paint);
         }
 
         void stop() {
@@ -583,13 +624,12 @@ public class SplashActivity extends Activity {
                 cv.drawBitmap(logo, null, rect, p);
             }
 
-            /* ─── العنوان ─── */
+            /* ─── العنوان: اسم المدرسة من الإعدادات (مثل تطبيق الويب) ─── */
             p.setAlpha((int) (255 * a));
             p.setColor(Color.WHITE);
             p.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-            p.setTextSize(unit * 8.0f);
             p.setTextAlign(Paint.Align.CENTER);
-            cv.drawText("تطبيق ادارة المدرسة", cx, cy + unit * 24.5f, p);
+            drawFittedText(c, schoolName, cx, cy + unit * 24.5f, unit * 8.0f, p);
 
             p.setColor(Color.parseColor("#8DA4BF"));
             p.setTextSize(unit * 3.2f);

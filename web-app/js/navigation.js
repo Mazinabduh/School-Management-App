@@ -2,7 +2,7 @@
    navigation.js — نظام التنقل — هيكل تطبيق المحطة بالضبط
    القائمة الجانبية: sidebar-link + أيقونات 3D + مجموعات np قابلة للطي
    + بحث فوري في الدرج + وضع مضغوط على الكمبيوتر (الهامبرغر)
-   الشريط السفلي: bottom-tab بأيقونات PNG (5 تبويبات + المزيد)
+   الشريط السفلي: bottom-tab بأيقونات PNG (6 تبويبات مباشرة — بدون المزيد مثل المحطة v2026.100)
    + أسطوانة الأخبار في القائمة العلوية (station-cylinder.js)
    ========================================================= */
 'use strict';
@@ -72,7 +72,8 @@
     { id: 'students', icon: 'nav-students', label: 'الطلاب' },
     { id: 'grades-engine', icon: 'nav-grades', label: 'الدرجات' },
     { id: 'installments', icon: 'nav-installments', label: 'الأقساط' },
-    { id: 'reports-center', icon: 'nav-reports', label: 'التقارير' }
+    { id: 'reports-center', icon: 'nav-reports', label: 'التقارير' },
+    { id: 'settings-branding', icon: 'nav-settings', label: 'الإعدادات' }
   ];
 
   const ico = (name) => `<img class="nav-icon-3d" src="assets/icons/${name}.png" alt="" loading="lazy">`;
@@ -185,7 +186,8 @@
       inp.addEventListener('click', (e) => e.stopPropagation());
     },
 
-    /* ---------- الشريط السفلي — تبويبات المحطة بالضبط ---------- */
+    /* ---------- الشريط السفلي — تبويبات المحطة v2026.100 بالضبط ----------
+       ستة تبويبات مباشرة بدون زر «المزيد» — كل الأقسام في القائمة الجانبية */
     buildBottomBar() {
       const bar = document.getElementById('bottomBar');
       if (!bar) return;
@@ -195,11 +197,8 @@
           <div class="bottom-tab-icon"><img class="nav-icon-3d" src="assets/icons/${t.icon}.png" alt=""></div>
           <span>${t.label}</span>
         </button>`).join('');
-      bar.innerHTML = '<div class="bottom-bar-bg"></div>' + tabs + `
-        <button class="bottom-tab np-more-tab" data-action="nav:more">
-          <div class="bottom-tab-icon"><div class="np-more-plus">＋</div></div>
-          <span>المزيد</span>
-        </button>`;
+      bar.innerHTML = '<div class="bottom-bar-bg"></div>' + tabs;
+      bar.setAttribute('data-navpro', '1');
     },
 
     /* ---------- أسطوانة الأخبار (تفويض لمحرك المحطة) ---------- */
@@ -251,16 +250,6 @@
     },
 
     refresh() { if (this.current) this.go(this.current); },
-
-    /* ---------- «المزيد» — ورقة سفلية بأيقونات 3D ---------- */
-    async more() {
-      const bottomSet = new Set(BOTTOM.map((b) => b.id));
-      const items = this.allowedItems().filter((i) => !bottomSet.has(i.id))
-        .map((i) => ({ ico: i.icon, label: i.label, sub: '', id: i.id }));
-      if (!items.length) return;
-      const picked = await UI.sheet({ title: 'كل الأقسام', items });
-      if (picked && picked.id) this.go(picked.id);
-    },
 
     /* ---------- القائمة الجانبية (هاتف) ---------- */
     toggleSidebar() {
@@ -335,7 +324,6 @@
 
   Actions.register('nav', {
     go(ds) { if (ds && ds.page) Router.go(ds.page); },
-    more() { Router.more(); },
     refresh() { Router.refresh(); }
   });
 

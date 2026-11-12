@@ -211,13 +211,21 @@
       Store.setSetting('address', g('st-address'));
       Store.setSetting('issuedBy', g('st-issued'));
       Router.updateBranding();
+      /* نظام المحطة: الهوية تظهر فوراً في كل المواضع + مرآة الإقلاع الأصلي */
+      if (window.BootBrand) {
+        const s = Store.settings();
+        if (s.schoolName) BootBrand.applyName(s.schoolName);
+        if (window.mirrorBrandToNative) try { mirrorBrandToNative(s); } catch (e) {}
+      }
       Audit.log('تعديل', 'تحديث بيانات هوية المدرسة');
-      UI.toast('تم حفظ بيانات المدرسة ✓', 'success');
+      UI.toast('تم حفظ بيانات المدرسة ✓ — سيظهر الاسم في شاشة البداية والدخول', 'success');
     },
     pickLogo() {
       UI.pickPhoto((dataURL) => {
         Store.setSetting('logo', dataURL);
         Router.updateBranding();
+        if (window.BootBrand) BootBrand.applyLogo(dataURL);
+        if (window.mirrorBrandToNative) try { mirrorBrandToNative(Store.settings()); } catch (e) {}
         P.render(document.getElementById('page-root'));
         UI.toast('تم تحديث الشعار ✓', 'success');
         Audit.log('تعديل', 'تحديث شعار المدرسة');
@@ -226,6 +234,8 @@
     resetLogo() {
       Store.setSetting('logo', '');
       Router.updateBranding();
+      if (window.BootBrand) BootBrand.applyLogo('assets/images/logo.png');
+      if (window.mirrorBrandToNative) try { mirrorBrandToNative(Store.settings()); } catch (e) {}
       P.render(document.getElementById('page-root'));
     },
 

@@ -250,25 +250,27 @@
       return m;
     },
 
-    /* ---------- طباعة ملف الطالب (عبر محرك الطباعة المعزول) ---------- */
+    /* ---------- طباعة ملف الطالب — مستيل المحطة (المستطيل العلوي + pp-table) ---------- */
     printProfile(s) {
-      const o = PrintSettingsEngine.opts();
       const plan = Store.find('feeplans', (p) => p.studentId === s.id);
       const paid = plan ? H.sum((plan.items || []).filter((i) => i.paid), (i) => i.amount) : 0;
       const due = plan ? H.sum((plan.items || []).filter((i) => !i.paid), (i) => i.amount) : 0;
+      const infoRows = [
+        ['اسم الطالب', `<b>${H.esc(s.name)}</b>`, 'الرقم', H.esc(s.sid || '—')],
+        ['الصف', H.esc(this.stageName(s.stageId)) + ' — ' + H.esc(this.className(s.classId)), 'المرحلة', H.esc(this.stageName(s.stageId))],
+        ['ولي الأمر', H.esc(s.guardian || '—'), 'الهاتف', `<bdi>${H.esc(s.phone || '—')}</bdi>`],
+        ['المحصّل', H.money(paid) + ' ' + H.esc(Store.getSetting('currency', 'ريال')), 'المتبقي', `<b>${H.money(due)} ${H.esc(Store.getSetting('currency', 'ريال'))}</b>`]
+      ];
       const inner = `
-        <div class="pd-page">
-          ${window.ThemesKit ? ThemesKit.headerHTML('ملف الطالب — ' + H.esc(s.name), s.sid || '') : ''}
-          <table style="margin-bottom:9px"><tbody>
-            <tr><th style="width:20%">اسم الطالب</th><td colspan="3" style="text-align:right"><b>${H.esc(s.name)}</b></td></tr>
-            <tr><th>الرقم</th><td>${H.esc(s.sid || '')}</td><th style="width:18%">الصف</th><td>${H.esc(this.stageName(s.stageId))} — ${H.esc(this.className(s.classId))}</td></tr>
-            <tr><th>ولي الأمر</th><td>${H.esc(s.guardian || '—')}</td><th>الهاتف</th><td>${H.esc(s.phone || '—')}</td></tr>
-            <tr><th>المحصّل</th><td>${H.money(paid)}</td><th>المتبقي</th><td>${H.money(due)}</td></tr>
+        ${window.ThemesKit ? ThemesKit.headerHTML('ملف الطالب — ' + H.esc(s.name), s.sid || '') : ''}
+        <div class="pp-report-section" style="margin:14px 16px;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.055)">
+          <div class="pp-report-section-title"><span class="pp-report-section-title-bar"></span>👤 بيانات الطالب</div>
+          <table class="pp-table"><tbody>
+            ${infoRows.map((r) => `<tr><th style="width:16%">${H.esc(r[0])}</th><td style="text-align:right">${r[1]}</td><th style="width:16%">${H.esc(r[2])}</th><td style="text-align:right">${r[3]}</td></tr>`).join('')}
           </tbody></table>
-          ${s.notes ? `<div style="border:1.5px solid #9db1c9;border-radius:9px;padding:10px 13px;font-size:12.5px">📝 ${H.esc(s.notes)}</div>` : ''}
-          <div class="pd-foot"><span>مدير المدرسة: ..................</span><span>جميع الحقوق محفوظة لشركة YCMS</span></div>
-          ${window.ThemesKit ? ThemesKit.footerHTML() : ''}
-        </div>`;
+        </div>
+        ${s.notes ? `<div class="pp-notes" style="margin:12px 16px"><div class="pp-notes-title">📝 ${H.esc('ملاحظات')}</div>${H.esc(s.notes)}</div>` : ''}
+        ${window.ThemesKit ? ThemesKit.footerHTML() : ''}`;
       PrintSettingsEngine.print(inner, { title: 'ملف الطالب' });
     },
 

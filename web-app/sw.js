@@ -4,7 +4,7 @@
    ========================================================= */
 'use strict';
 
-const VERSION  = '3.4.0';
+const VERSION  = '3.5.0';
 const CACHE    = `edupro-v${VERSION}`;
 const RUNTIME  = `edupro-runtime-v${VERSION}`;
 
@@ -12,7 +12,8 @@ const RUNTIME  = `edupro-runtime-v${VERSION}`;
 const SHELL = [
   './', './index.html', './manifest.json',
   // assets
-  './assets/fonts/Cairo.ttf', './assets/fonts/Cairo-Regular.ttf',
+  './assets/fonts/Cairo.ttf', './assets/fonts/Cairo-Regular.ttf', './assets/fonts/Cairo-Bold.ttf',
+  './fonts/Cairo-Regular.ttf', './fonts/Cairo-Bold.ttf',
   './assets/images/logo.png', './assets/images/logo-128.png',
   './assets/images/default-avatar.png', './assets/images/watermark.png',
   './assets/images/ycms-logo.png', './assets/images/ycms-mark.png',
@@ -46,7 +47,7 @@ const SHELL = [
   './js/store-books-uniform.js', './js/bus-management.js', './js/hr-employees.js',
   './js/payroll-engine.js', './js/id-card-studio.js', './js/communications.js',
   './js/reports-center.js', './js/settings-branding.js', './js/audit-log.js',
-  './js/backup-restore.js', './js/professional-themes.js', './js/print-settings-page.js',
+  './js/backup-restore.js', './js/storage-vault.js', './js/professional-themes.js', './js/print-settings-page.js',
   './js/demo-data.js', './js/station-cylinder.js', './js/station-themes.js',
   './assets/icons/nav-print.png',
   // main engine (last)

@@ -23,7 +23,7 @@
 .print-doc thead { display: table-header-group; }
 .print-doc tfoot { display: table-footer-group; }
 .print-doc th, .print-doc td { border: 1px solid #9db1c9; padding: 5px 7px; text-align: center; }
-.print-doc th { background: #e8eff9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-weight: 800; }
+.print-doc th, .print-doc .pp-th { background: #e8eff9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-weight: 800; }
 .print-doc tr { page-break-inside: avoid; }
 .print-doc tr:nth-child(even) td { background: #f5f8fc; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
@@ -197,7 +197,7 @@ body.native-printing #printZone .print-page {
 .print-doc.user-colors .pd-head { border-bottom-color: var(--uc-head, #0b3d91); }
 .print-doc.user-colors .pd-head b { color: var(--uc-head, #0b3d91); }
 .print-doc.user-colors .pd-doc-title { color: var(--uc-head, #0b3d91); }
-.print-doc.user-colors table th { background: var(--uc-accent, #e8eff9) !important; }
+.print-doc.user-colors table th, .print-doc.user-colors table .pp-th { background: var(--uc-accent, #e8eff9) !important; }
 .print-doc.user-colors th, .print-doc.user-colors td { border-color: var(--uc-border, #9db1c9); }
 .print-doc.user-colors tr:nth-child(even) td { background: var(--uc-even, #f5f8fc); }
 .print-doc.user-colors tbody td { color: var(--uc-body, #111); }

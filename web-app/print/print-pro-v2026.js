@@ -100,15 +100,15 @@
     var s = _settings();
     return s.currency || 'ريال';
   }
-  /* خط Cairo المحلي — نفس نظام المحطة */
+  /* خط Cairo المحلي — نفس نظام المحطة (خطوط ثابتة Regular + Bold — الضمانة ضد انقلاب العربية في PDF) */
   function _fontCSS() {
     var ps = _printSettings();
     var ff = ps.fontFamily || 'Cairo';
     var fontBase = 'fonts';
     var css = '<style>' +
-      '@font-face{font-family:"Cairo";font-weight:400;font-style:normal;font-display:swap;src:url("' + fontBase + '/Cairo.ttf") format("truetype")}' +
-      '@font-face{font-family:"Cairo";font-weight:700;font-style:normal;font-display:swap;src:url("' + fontBase + '/Cairo.ttf") format("truetype")}' +
-      '@font-face{font-family:"Cairo";font-weight:900;font-style:normal;font-display:swap;src:url("' + fontBase + '/Cairo.ttf") format("truetype")}' +
+      '@font-face{font-family:"Cairo";font-weight:400;font-style:normal;font-display:block;src:url("' + fontBase + '/Cairo-Regular.ttf") format("truetype")}' +
+      '@font-face{font-family:"Cairo";font-weight:700;font-style:normal;font-display:block;src:url("' + fontBase + '/Cairo-Bold.ttf") format("truetype")}' +
+      '@font-face{font-family:"Cairo";font-weight:900;font-style:normal;font-display:block;src:url("' + fontBase + '/Cairo-Bold.ttf") format("truetype")}' +
       _paperCSS(ps) +
       '*{margin:0;padding:0;box-sizing:border-box}' +
       'html,body{background:#fff;color:' + (ps.bodyColor || '#0a1628') + ';font-family:"' + ff + '",Cairo,Tahoma,Arial,sans-serif;direction:rtl;text-align:right;letter-spacing:normal !important;word-spacing:normal !important}' +
@@ -121,6 +121,9 @@
       '.pp-report-logo{width:58px;height:58px;flex:0 0 58px;background:#fff;border-radius:50%;padding:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 5px 14px rgba(0,0,0,.2)}.pp-report-logo img{width:100%;height:100%;object-fit:contain;border-radius:50%}' +
       '.pp-section-title,.pp-report-section-title,.pp-table th{background:' + (ps.accentColor || '#1565c0') + '!important;color:#fff!important;font-size:' + (ps.tableHeaderFontSize || 10) + 'pt!important}' +
       '.pp-table td{font-size:' + (ps.tableBodyFontSize || 10) + 'pt!important;border-color:' + (ps.borderColor || '#bbdefb') + '!important}' +
+      '/* رؤوس الجداول كـ td.pp-th — نفس شكل th تماماً (ضمانة html2canvas) */' +
+      '.pp-table .pp-th{background:' + (ps.accentColor || '#1565c0') + '!important;color:#fff!important;font-size:' + (ps.tableHeaderFontSize || 10) + 'pt!important;font-weight:800!important;text-align:center!important;vertical-align:middle!important;padding:10px 8px!important;border-color:' + (ps.borderColor || '#bbdefb') + '!important}' +
+      '.pp-table thead .pp-th,.pp-table tr.pp-head-row .pp-th{background:' + (ps.accentColor || '#1565c0') + '!important}' +
       '.pp-table tbody tr:nth-child(even),.pp-summary-row.alt,.pp-cell{background:' + (ps.rowEvenBg || '#e3f2fd') + '!important}' +
       '.pp-table tbody tr:nth-child(odd),.pp-summary-row{background:' + (ps.rowOddBg || '#fff') + '!important}' +
       '.pp-footer{background:' + (ps.footerBg || '#1565c0') + '!important;color:' + (ps.footerColor || '#fff') + '!important;font-size:' + (ps.footerFontSize || 9) + 'pt!important}' +
@@ -144,11 +147,17 @@
   }
   function _watermarkLogoHTML(kind) {
     try {
+      var ps = _printSettings();
+      if (ps.showLogo === false) return '';
       var s = _settings();
-      if (s.showWatermark === false) return '';
       var logo = s.logo;
       if (!logo) return '';
-      return '<div class="pp-logo-watermark" aria-hidden="true"><img src="' + _e(logo) + '" alt="" onerror="this.parentNode.style.display=\'none\'"></div>';
+      var isReport = kind === 'report';
+      var size = isReport ? 360 : 330;
+      var top = isReport ? '48%' : '50%';
+      return '<div class="pp-logo-watermark" aria-hidden="true" style="position:absolute;z-index:0;left:50%;top:' + top + ';width:' + size + 'px;height:' + size + 'px;transform:translate(-50%,-50%);opacity:.055;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%">' +
+        '<img src="' + _e(logo) + '" alt="" style="width:100%;height:100%;object-fit:contain;filter:grayscale(100%)">' +
+        '</div>';
     } catch (e) { return ''; }
   }
 
@@ -274,6 +283,7 @@
     var headStation = s.schoolName || 'المدرسة الدولية الخاصة';
     var headSubtitle = s.schoolNameEn || 'EDUPRO SCHOOL MANAGEMENT';
     var headPhone = s.phone || '';
+    var headAddress = s.address || '';
     var period = opts.period || '';
     var kpis = opts.kpis || [];
     var sections = opts.sections || [];
@@ -282,6 +292,7 @@
     var showRepLogo = ps.showLogo !== false;
     var sideLines = [];
     if (headPhone) sideLines.push('☎ <bdi>' + _e(headPhone) + '</bdi>');
+    if (headAddress) sideLines.push('📍 ' + _e(headAddress));
     if (period) sideLines.push('📅 ' + _arTxt(period));
     sideLines.push('🗓 <bdi>' + now + '</bdi>');
     return _fontCSS() +

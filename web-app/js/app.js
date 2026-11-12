@@ -225,7 +225,7 @@ function bindShell() {
     progress(60);
     /* ---------- نظام المحطة _splash بالنص: اسم المدرسة وشعارها يظهران
        في شاشة البداية وشاشة الدخول فوراً من الإعدادات — قبل أي دخول ---------- */
-    applySplashBranding();
+    bootBranding();
     progress(75);
     bindShell();
     const restored = await AuthGuard.restore();
@@ -241,26 +241,81 @@ function bindShell() {
     }
   }
 
-  /* ---------- هوية المدرسة في البداية — نفس نظام المحطة بالنص ----------
-     العنوان = اسم المدرسة من الإعدادات، الشعار = شعار المدرسة المحفوظ،
-     مع الهوية على شاشة الدخول — وتُحدَّث تلقائياً بعد تغيير الاسم. */
-  function applySplashBranding() {
+  /* ---------- هوية المدرسة في البداية — نظام boot-login بالمحطة v2026.100 بالنص ----------
+     استقصاء كل 150ms حتى تظهر الإعدادات + مراقب MutationObserver على شاشة الدخول
+     يُعيد التطبيق عند كل ظهور لها — الاسم والشعار يُطبّقان في كل المواضع دفعة واحدة،
+     وتُرسل مرآة الهوية إلى SharedPreferences ليظهرا في الإقلاع الأصلي أيضاً. */
+  const bootApplied = { logo: null, name: null };
+
+  function mirrorBrandToNative(s) {
     try {
+      if (window.AndroidBridge && AndroidBridge.nativeSetPref) {
+        AndroidBridge.nativeSetPref('edupro_brand:schoolName', s.schoolName || '');
+        const logo = String(s.logo || '');
+        if (logo.startsWith('data:image')) AndroidBridge.nativeSetPref('edupro_brand:logo', logo);
+      }
+    } catch (e) {}
+  }
+
+  function applyLogoEverywhere(logo) {
+    ['splash-logo', 'login-logo', 'sidebarLogoImg', 'topLogoMiniImg'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) { el.src = logo; el.style.display = 'block'; }
+    });
+  }
+  function applyNameEverywhere(name) {
+    const t = document.getElementById('splash-title');
+    if (t && name) t.textContent = name;
+    const ln = document.getElementById('login-school-name');
+    if (ln && name) ln.textContent = name;
+    const sb = document.getElementById('sidebarSchoolName');
+    if (sb && name) sb.textContent = name;
+  }
+  function readBrandSettings() {
+    try {
+      if (typeof Store === 'undefined' || !Store.ready) return null;
       const s = Store.settings();
-      const logo = s.logo || 'assets/images/logo.png';
-      const name = s.schoolName || 'تطبيق ادارة المدرسة';
-      const title = document.getElementById('splash-title');
-      if (title) title.textContent = name;
-      const img = document.getElementById('splash-logo');
-      if (img) img.src = logo;
-      /* شاشة الدخول — نفس الوظيفة */
-      const limg = document.getElementById('login-logo');
-      if (limg) limg.src = logo;
-      const lname = document.getElementById('login-school-name');
-      if (lname) lname.textContent = name;
-      const lsub = document.getElementById('login-school-sub');
-      if (lsub && s.schoolNameEn) lsub.textContent = s.schoolNameEn;
-    } catch (e) { console.warn('splash branding:', e); }
+      return s && typeof s === 'object' ? s : null;
+    } catch (e) { return null; }
+  }
+  function bootBranding() {
+    let tries = 0;
+    const timer = setInterval(() => {
+      tries++;
+      const s = readBrandSettings();
+      let done = true;
+      if (s) {
+        if (s.logo && bootApplied.logo !== s.logo) {
+          bootApplied.logo = s.logo;
+          applyLogoEverywhere(s.logo);
+        }
+        if (s.schoolName && bootApplied.name !== s.schoolName) {
+          bootApplied.name = s.schoolName;
+          applyNameEverywhere(s.schoolName);
+          mirrorBrandToNative(s);
+        }
+        done = (!!s.logo || tries > 40) && (bootApplied.name !== null || tries > 40);
+      } else {
+        done = false;
+      }
+      if (done || tries >= 60) clearInterval(timer);
+    }, 150);
+    try {
+      const login = document.getElementById('login-screen');
+      if (login && typeof MutationObserver !== 'undefined') {
+        new MutationObserver(() => {
+          if (!login.hidden && bootApplied.logo) {
+            applyLogoEverywhere(bootApplied.logo);
+            if (bootApplied.name) applyNameEverywhere(bootApplied.name);
+          }
+        }).observe(login, { attributes: true, attributeFilter: ['hidden', 'style'] });
+      }
+    } catch (e2) {}
+    window.BootBrand = {
+      applyLogo: (l) => { if (l) { bootApplied.logo = l; applyLogoEverywhere(l); } },
+      applyName: (n) => { if (n) { bootApplied.name = n; applyNameEverywhere(n); } }
+    };
+    window.mirrorBrandToNative = mirrorBrandToNative;
   }
 
   /* ---------- تجهيزات شاشة الدخول ---------- */
@@ -296,6 +351,12 @@ function bindShell() {
     const s = Store.settings();
     /* تطبيق ثيم المحطة قبل إظهار الواجهة */
     if (window.ThemePro) ThemePro.apply();
+    /* إعادة تطبيق الهوية فور الدخول — نفس boot-login بالمحطة */
+    if (window.BootBrand) {
+      if (s.logo) BootBrand.applyLogo(s.logo);
+      if (s.schoolName) BootBrand.applyName(s.schoolName);
+      try { mirrorBrandToNative(s); } catch (e) {}
+    }
 
     RBAC.init();
     Router.updateBranding();

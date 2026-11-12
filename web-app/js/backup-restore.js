@@ -264,6 +264,21 @@
         </div>
 
         <div class="card-3d">
+          <div class="card-3d-head"><h3>🏰 الحصن المحلي (نظام المحطة)</h3></div>
+          <p style="font-size:13px;color:var(--text-2);margin-bottom:10px">مرآة SQLite داخل الأندرويد + نسخ تلقائية خارجية في التنزيلات + استعادة الإقلاع إذا فُقدت البيانات — بدون أي قائمة اختيار مجلد، مثل المحطة بالضبط</p>
+          <div style="display:grid;gap:6px;margin-bottom:10px">
+            <div id="vaultEngineLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">المحرك: جارٍ التهيئة…</div>
+            <div id="vaultBackupLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">النسخ الاحتياطية: —</div>
+            <div id="vaultMirrorLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">مرآة SQLite: —</div>
+            <div id="vaultModeLine" style="font-size:12.5px;color:var(--text-2);background:var(--bg-3);border-radius:8px;padding:8px 10px">النسخ الخارجية: —</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-primary" data-action="bak:vaultNow">🏰 إنشاء نسخة خارجية الآن</button>
+            <button class="btn-secondary" data-action="bak:vaultMode">⏱️ تبديل النسخ التلقائية (${Store.settings().vaultMode === 'auto' || (window.StorageVault && StorageVault.mode() === 'auto') ? 'إيقاف' : 'تشغيل'})</button>
+          </div>
+        </div>
+
+        <div class="card-3d">
           <div class="card-3d-head"><h3>💾 نسخة احتياطية كاملة</h3></div>
           <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">إنشاء نسخة احتياطية كاملة أو استعادتها — يتم حفظها بالتاريخ والوقت تلقائياً</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -392,10 +407,12 @@
     },
 
     ghSave() {
-      Store.setSetting('ghToken', document.getElementById('gh-token').value.trim());
-      Store.setSetting('ghRepo', document.getElementById('gh-repo').value.trim());
-      Store.setSetting('ghBranch', document.getElementById('gh-branch').value.trim() || 'main');
-      Store.setSetting('ghPath', document.getElementById('gh-path').value.trim() || 'backup/edupro-backup.json');
+      const cur = Store.settings();
+      const tok = document.getElementById('gh-token').value.trim();
+      Store.setSetting('ghToken', tok || cur.ghToken || '');
+      Store.setSetting('ghRepo', document.getElementById('gh-repo').value.trim() || cur.ghRepo || '');
+      Store.setSetting('ghBranch', document.getElementById('gh-branch').value.trim() || cur.ghBranch || 'main');
+      Store.setSetting('ghPath', document.getElementById('gh-path').value.trim() || cur.ghPath || 'backup/edupro-backup.json');
       UI.toast('تم حفظ إعدادات GitHub ✓', 'success');
     },
 
@@ -417,17 +434,41 @@
       Actions.call('bak', 'ghSave', {});
       const r = await GitHubSync.pull();
       if (!r.ok) return UI.toast(r.msg, 'error');
-      /* تحقق من صحة الملف قبل أي استعادة — نفس حارس «استعادة نسخة كاملة» */
-      if (!r.data || typeof r.data !== 'object' || !r.data._app || !r.data.settings) {
-        return UI.toast('الملف السحابي ليس نسخة EduPro كاملة — تأكد من المسار', 'error');
+      /* فك غلاف الحصن الخارجي إن وُجد */
+      let payload = r.data;
+      if (payload && payload.format === 'edupro-backup' && payload.data) payload = payload.data;
+      /* قبول مرن — نفس حارس الاستعادة الموسع */
+      if (!GitHubSync.isRestorable(payload)) {
+        return UI.toast('الملف السحابي لا يحتوي بيانات EduPro صالحة — تأكد من المسار', 'error');
       }
-      if (!await UI.confirm({ title: 'استعادة من GitHub', msg: `نسخة صادرة ${H.fmtDateTime(r.data._exported)}<br>سيتم استبدال البيانات الحالية بالنسخة السحابية. متابعة؟`, okLabel: 'استعادة' })) return;
+      if (!await UI.confirm({ title: 'استعادة من GitHub', msg: `سيتم استبدال البيانات الحالية بالنسخة السحابية.<br>إعدادات GitHub (التوكن والمستودع) لن تُمسّ. متابعة؟`, okLabel: 'استعادة' })) return;
       UI.loading(true, 'جارٍ الاستعادة…');
-      await Store.import(r.data);
-      UI.loading(false);
-      Audit.log('نسخ', 'استعادة نسخة من GitHub');
-      UI.toast('تمت الاستعادة ✓ — سيتم تحديث الواجهة', 'success');
-      setTimeout(() => location.reload(), 900);
+      try {
+        /* حفظ إعدادات GitHub الحالية — لا تُطمس أبداً */
+        const cur = Store.settings();
+        const keep = { ghToken: cur.ghToken, ghRepo: cur.ghRepo, ghBranch: cur.ghBranch, ghPath: cur.ghPath };
+        await Store.import(payload, { replace: true });
+        Object.entries(keep).forEach(([k, v]) => { if (v) Store.setSetting(k, v); });
+        await Store.flush();
+        try { if (window.StorageVault) StorageVault.refreshStatus(); } catch (e) {}
+        UI.loading(false);
+        Audit.log('نسخ', 'استعادة نسخة من GitHub');
+        UI.toast('تمت الاستعادة ✓ — سيتم تحديث الواجهة', 'success');
+        setTimeout(() => location.reload(), 900);
+      } catch (e) {
+        UI.loading(false);
+        UI.toast('فشل الاستعادة: ' + e.message, 'error');
+      }
+    },
+
+    vaultNow() { if (window.StorageVault) StorageVault.backupNow(); },
+    vaultMode() {
+      if (!window.StorageVault) return;
+      const m = StorageVault.mode() === 'auto' ? 'manual' : 'auto';
+      StorageVault.setMode(m);
+      UI.toast(m === 'auto' ? 'تم تشغيل النسخ التلقائية الخارجية ✓' : 'أُوقفت النسخ التلقائية — النسخ اليدوية فقط', 'success');
+      const btn = document.querySelector('[data-action="bak:vaultMode"]');
+      if (btn) btn.textContent = m === 'auto' ? '⏱️ تبديل النسخ التلقائية (إيقاف)' : '⏱️ تبديل النسخ التلقائية (تشغيل)';
     },
 
     integrity() {
@@ -477,4 +518,10 @@
 
   window.Pages = window.Pages || {};
   Pages['backup-restore'] = P;
+
+  /* تهيئة الحصن المحلي بعد جاهزية الصفحة */
+  if (window.StorageVault && !window.__EduproVaultBooted) {
+    window.__EduproVaultBooted = true;
+    setTimeout(() => { try { StorageVault.init(); } catch (e) {} }, 400);
+  }
 })();

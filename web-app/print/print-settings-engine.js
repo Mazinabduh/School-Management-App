@@ -61,8 +61,18 @@
         </body></html>`;
     },
 
+    /* ---------- تحويل th إلى td.pp-th ----------
+       عطل معروف في html2canvas على الأندرويد: نصوص <th> تُرسم مكسورة/مقلوبة —
+       نستبدلها بـ td بنفس التنسيق (pp-th) فتُصيَّر بمنتهى الدقة مثل باقي الجدول. */
+    fixTableHeads(html) {
+      return String(html || '')
+        .replace(/<th(?=[\s>])/g, '<td class="pp-th"')
+        .replace(/<\/th>/g, '</td>');
+    },
+
     /* ---------- الطباعة عبر iframe srcdoc معزول (نفس المحطة — محتوى فقط بلا واجهة) ---------- */
     async print(html, { orientation = 'portrait', mode = 'a4', onDone = null, title = 'طباعة' } = {}) {
+      html = this.fixTableHeads(html);
       /* حراري → يمر عبر مسار الحراري كما هو */
       if (mode === 'thermal') {
         const doc = this.buildDoc({ bodyClass: 'thermal', inner: html, mode, orientation });

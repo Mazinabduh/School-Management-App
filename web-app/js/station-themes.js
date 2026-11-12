@@ -74,6 +74,11 @@
     const glassOn = t.glassEnabled !== false;
     const glassAlpha = Math.min(1, Math.max(.15, parseFloat(t.glassOpacity) || .85));
     const glassBlur = Math.min(40, Math.max(0, parseInt(t.glassBlur, 10) || 24));
+    /* ألوان الوضع الحالي تُورَّث تلقائياً — فتعمل الشفافية فوراً حتى دون اختيار ثيم مسبق */
+    const modeColors = MODE_COLORS[mode] || MODE_COLORS.dark;
+    const topCol = t.topBarColor || modeColors.topBarColor || '';
+    const bottomCol = t.bottomBarColor || modeColors.bottomBarColor || '';
+    const sideCol = t.sidebarColor || modeColors.sidebarColor || '';
 
     root.style.setProperty('--glass-blur', glassBlur + 'px', 'important');
     root.style.setProperty('--glass-alpha', String(glassAlpha), 'important');
@@ -91,38 +96,38 @@
       } catch (_) { return hex; }
     };
 
-    if (t.topBarColor) {
-      root.style.setProperty('--topbar-bg', barCol(t.topBarColor), 'important');
-      if (topBarBg) topBarBg.style.setProperty('background', barCol(t.topBarColor), 'important');
+    if (topCol) {
+      root.style.setProperty('--topbar-bg', barCol(topCol), 'important');
+      if (topBarBg) topBarBg.style.setProperty('background', barCol(topCol), 'important');
       const topBar = document.querySelector('.top-bar');
-      if (topBar) topBar.style.setProperty('background-color', barCol(t.topBarColor), 'important');
+      if (topBar) topBar.style.setProperty('background-color', barCol(topCol), 'important');
     } else {
       root.style.removeProperty('--topbar-bg');
       if (topBarBg) topBarBg.style.removeProperty('background');
       const topBar = document.querySelector('.top-bar');
       if (topBar) topBar.style.removeProperty('background-color');
     }
-    if (t.bottomBarColor) {
-      root.style.setProperty('--bottombar-bg', barCol(t.bottomBarColor), 'important');
-      if (bottomBarBg) bottomBarBg.style.setProperty('background', barCol(t.bottomBarColor), 'important');
+    if (bottomCol) {
+      root.style.setProperty('--bottombar-bg', barCol(bottomCol), 'important');
+      if (bottomBarBg) bottomBarBg.style.setProperty('background', barCol(bottomCol), 'important');
       const bottomBar = document.querySelector('.bottom-bar');
-      if (bottomBar) bottomBar.style.setProperty('background-color', barCol(t.bottomBarColor), 'important');
+      if (bottomBar) bottomBar.style.setProperty('background-color', barCol(bottomCol), 'important');
     } else {
       root.style.removeProperty('--bottombar-bg');
       if (bottomBarBg) bottomBarBg.style.removeProperty('background');
       const bottomBar = document.querySelector('.bottom-bar');
       if (bottomBar) bottomBar.style.removeProperty('background-color');
     }
-    if (t.sidebarColor && sidebar) {
+    if (sideCol && sidebar) {
       if (glassOn) {
-        const c = t.sidebarColor, h = String(c).replace('#', '');
+        const c = sideCol, h = String(c).replace('#', '');
         let rgba = 'rgba(7,20,40,' + glassAlpha + ')';
         if (/^[0-9a-fA-F]{6}$/.test(h)) {
           const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
           rgba = `rgba(${r},${g},${b},${glassAlpha})`;
         }
         sidebar.style.setProperty('background', rgba, 'important');
-      } else sidebar.style.setProperty('background', t.sidebarColor, 'important');
+      } else sidebar.style.setProperty('background', sideCol, 'important');
     } else if (sidebar) sidebar.style.removeProperty('background');
 
     if (t.mainBgColor) {

@@ -55,26 +55,36 @@
 
   PAGES._getPSColors = getColors;
 
-  /* ==================== بناء المعاينة (نموذج مدرسي) ==================== */
+  /* ==================== بناء المعاينة (نموذج مدرسي — مستيل المحطة) ==================== */
   PAGES._buildSampleDoc = function () {
     const s = Store.settings();
-    const th = window.ThemesKit ? ThemesKit.current() : 'royal';
+    const cur = H.esc(s.currency || 'ريال');
     const rows = [
       ['الرسوم الدراسية', '1', '450,000', '450,000'],
       ['اشتراك الباص', '1', '120,000', '120,000'],
       ['الزي المدرسي', '2', '60,000', '120,000']
     ];
     const inner = `
-      <table class="pd-table"><tbody>
-        <tr><th style="width:22%">الطالب</th><td><b>أحمد محمد عبدالله التجريبي</b></td><th style="width:16%">الرقم</th><td>STU-0001</td></tr>
-        <tr><th>الصف</th><td>المرحلة الابتدائية — الصف الرابع</td><th>العام</th><td>${H.esc(s.year || '')}</td></tr>
-      </tbody></table>
-      <table class="pd-table">
-        <thead><tr><th>البيان</th><th>العدد</th><th>السعر</th><th>الإجمالي</th></tr></thead>
-        <tbody>${rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="num">${r[2]}</td><td class="num">${r[3]}</td></tr>`).join('')}</tbody>
-        <tfoot><tr><td colspan="3" style="text-align:left;font-weight:800">الإجمالي المستحق</td><td class="num" style="font-weight:900">690,000</td></tr></tfoot>
-      </table>
-      <div class="pd-sign"><span>المحاسب</span><span>ولي الأمر</span><span>مدير المدرسة</span></div>`;
+      <div class="pp-report-section" style="margin:14px 16px;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.055)">
+        <div class="pp-report-section-title"><span class="pp-report-section-title-bar"></span>👤 بيانات الطالب</div>
+        <table class="pp-table"><tbody>
+          <tr><th style="width:18%">الطالب</th><td style="text-align:right"><b>أحمد محمد عبدالله التجريبي</b></td><th style="width:14%">الرقم</th><td><bdi>STU-0001</bdi></td></tr>
+          <tr><th>الصف</th><td style="text-align:right">المرحلة الابتدائية — الصف الرابع</td><th>العام</th><td><bdi>${H.esc(s.year || '')}</bdi></td></tr>
+        </tbody></table>
+      </div>
+      <div class="pp-report-section" style="margin:14px 16px;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.055)">
+        <div class="pp-report-section-title"><span class="pp-report-section-title-bar"></span>💰 بيانات المستحقات</div>
+        <table class="pp-table">
+          <thead><tr><th>البيان</th><th>العدد</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+          <tbody>${rows.map((r) => `<tr><td>${r[0]}</td><td style="text-align:center;direction:ltr">${r[1]}</td><td style="text-align:center;direction:ltr"><bdi>${r[2]} ${cur}</bdi></td><td style="text-align:center;direction:ltr"><bdi>${r[3]} ${cur}</bdi></td></tr>`).join('')}</tbody>
+          <tfoot><tr class="pp-total"><td colspan="3" style="text-align:right;font-weight:800">الإجمالي المستحق</td><td style="text-align:center;direction:ltr;font-weight:900"><bdi>690,000 ${cur}</bdi></td></tr></tfoot>
+        </table>
+      </div>
+      <div class="pp-signatures" style="margin:18px 16px">
+        <div class="pp-sign"><div class="pp-sign-line"></div><div class="pp-sign-name">المحاسب</div></div>
+        <div class="pp-sign"><div class="pp-sign-line"></div><div class="pp-sign-name">ولي الأمر</div></div>
+        <div class="pp-sign"><div class="pp-sign-line"></div><div class="pp-sign-name">مدير المدرسة</div></div>
+      </div>`;
     return window.ThemesKit
       ? ThemesKit.wrap('سند قائمة مستحقات — نموذج معاينة', inner, 'PREVIEW-001')
       : inner;

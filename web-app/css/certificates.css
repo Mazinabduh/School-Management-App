@@ -37,7 +37,7 @@
 
 /* جدول الدرجات في الشهادة */
 .cert-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px; }
-.cert-table th {
+.cert-table th, .cert-table .pp-th {
   background: var(--c-head, var(--primary)); color: #fff;
   padding: 7px 6px; font-size: 11.5px; border: 1px solid rgba(255,255,255,.25);
 }
@@ -142,4 +142,11 @@
 @media print {
   .honor-cert { page-break-inside: avoid; }
   .honor-cert .hc-frame { border-color: #b8860b !important; }
+}
+
+/* حماية رؤوس الجداول المحوّلة (td.pp-th) */
+.cert-table tbody tr td.pp-th,
+.cert-table tbody tr:nth-child(even) td.pp-th {
+    background: var(--accent, #1565c0) !important;
+    color: #fff !important;
 }
