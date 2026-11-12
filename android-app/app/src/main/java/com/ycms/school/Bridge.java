@@ -883,11 +883,6 @@ public class Bridge {
 
     /* ═══════════ أدوات ═══════════ */
 
-    private static String jesc(String s) {
-        if (s == null) return "";
-        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
-    }
-
     private static String safeName(String n) {
         String s = (n == null ? "" : n).replaceAll("[\\\\/:*?\"<>|]", "-").trim();
         return s.isEmpty() ? "School-Documents" : s;
